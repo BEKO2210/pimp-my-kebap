@@ -37,6 +37,8 @@ if (root) {
   let streetTouched = false;
 
   const itemsList = root.querySelector<HTMLUListElement>('[data-cart-items]')!;
+  const headerCount = root.querySelector<HTMLElement>('[data-cart-header-count]')!;
+  const scrollArea = root.querySelector<HTMLElement>('[data-cart-scroll]')!;
   const empty = root.querySelector<HTMLElement>('[data-cart-empty]')!;
   const totalsItems = root.querySelector<HTMLElement>('[data-totals-items]')!;
   const totalsDeposit = root.querySelector<HTMLElement>('[data-totals-deposit]')!;
@@ -58,6 +60,8 @@ if (root) {
   const zoneSel = root.querySelector<HTMLSelectElement>('[data-cart-zone]')!;
   const plzInp = root.querySelector<HTMLInputElement>('[data-cart-plz]')!;
   const streetInp = root.querySelector<HTMLInputElement>('[data-cart-street]')!;
+  const pickupLabel = root.querySelector<HTMLElement>('[data-cart-pickup-label]')!;
+  const fulfillmentBtns = Array.from(root.querySelectorAll<HTMLButtonElement>('[data-cart-fulfillment]'));
 
   const bar = document.querySelector<HTMLElement>('[data-cart-bar]');
   const barCount = document.querySelector<HTMLElement>('[data-cart-bar-count]');
@@ -167,65 +171,62 @@ if (root) {
     itemsList.replaceChildren();
     if (lines.length === 0) {
       empty.hidden = false;
-    } else {
-      empty.hidden = true;
-      for (const line of lines) {
-        const li = document.createElement('li');
-        li.className = 'card p-3 flex flex-col gap-2';
-        li.dataset.lineId = line.id;
+      return;
+    }
+    empty.hidden = true;
+    for (const line of lines) {
+      const li = document.createElement('li');
+      li.className = 'card p-3 flex flex-col gap-2';
+      li.dataset.lineId = line.id;
 
-        const top = document.createElement('div');
-        top.className = 'flex items-start justify-between gap-2';
-        const title = document.createElement('p');
-        title.className = 'text-brand-cream text-sm font-semibold';
-        title.textContent = lineSummary(line);
-        const right = document.createElement('div');
-        right.className = 'flex flex-col items-end gap-1';
-        const price = document.createElement('span');
-        price.className = 'text-brand-gold font-semibold text-sm';
-        price.textContent = formatEUR(line.unitPriceEur * line.quantity);
-        right.appendChild(price);
-        top.append(title, right);
-        li.appendChild(top);
+      const top = document.createElement('div');
+      top.className = 'flex items-start justify-between gap-3';
+      const title = document.createElement('p');
+      title.className = 'display text-base text-brand-cream leading-tight';
+      title.textContent = lineSummary(line);
+      const price = document.createElement('span');
+      price.className = 'text-brand-gold font-semibold text-base num shrink-0';
+      price.textContent = formatEUR(line.unitPriceEur * line.quantity);
+      top.append(title, price);
+      li.appendChild(top);
 
-        const details = lineDetails(line);
-        if (details) {
-          const p = document.createElement('p');
-          p.className = 'text-xs text-brand-cream/55';
-          p.textContent = details;
-          li.appendChild(p);
-        }
-
-        const stepperRow = document.createElement('div');
-        stepperRow.className = 'flex items-center justify-between gap-2 mt-1';
-        const stepper = document.createElement('div');
-        stepper.className = 'inline-flex items-center gap-1';
-        const dec = document.createElement('button');
-        dec.type = 'button';
-        dec.className = 'btn-secondary !px-2 !py-1';
-        dec.setAttribute('aria-label', 'Weniger');
-        dec.textContent = '−';
-        dec.addEventListener('click', () => setQuantity(line.id, line.quantity - 1));
-        const qty = document.createElement('span');
-        qty.className = 'min-w-6 text-center font-mono text-brand-cream';
-        qty.textContent = String(line.quantity);
-        const inc = document.createElement('button');
-        inc.type = 'button';
-        inc.className = 'btn-secondary !px-2 !py-1';
-        inc.setAttribute('aria-label', 'Mehr');
-        inc.textContent = '+';
-        inc.addEventListener('click', () => setQuantity(line.id, line.quantity + 1));
-        stepper.append(dec, qty, inc);
-        const remove = document.createElement('button');
-        remove.type = 'button';
-        remove.className = 'text-xs text-brand-cream/60 hover:text-brand-red-fire';
-        remove.textContent = 'Entfernen';
-        remove.addEventListener('click', () => removeLine(line.id));
-        stepperRow.append(stepper, remove);
-        li.appendChild(stepperRow);
-
-        itemsList.appendChild(li);
+      const details = lineDetails(line);
+      if (details) {
+        const p = document.createElement('p');
+        p.className = 'text-xs text-brand-cream/60 leading-relaxed';
+        p.textContent = details;
+        li.appendChild(p);
       }
+
+      const stepperRow = document.createElement('div');
+      stepperRow.className = 'flex items-center justify-between gap-2 mt-1';
+      const stepper = document.createElement('div');
+      stepper.className = 'inline-flex items-center gap-2';
+      const dec = document.createElement('button');
+      dec.type = 'button';
+      dec.className = 'btn-secondary !px-3 !py-1.5 text-base';
+      dec.setAttribute('aria-label', 'Weniger');
+      dec.textContent = '−';
+      dec.addEventListener('click', () => setQuantity(line.id, line.quantity - 1));
+      const qty = document.createElement('span');
+      qty.className = 'min-w-[1.5rem] text-center font-semibold num text-brand-cream';
+      qty.textContent = String(line.quantity);
+      const inc = document.createElement('button');
+      inc.type = 'button';
+      inc.className = 'btn-secondary !px-3 !py-1.5 text-base';
+      inc.setAttribute('aria-label', 'Mehr');
+      inc.textContent = '+';
+      inc.addEventListener('click', () => setQuantity(line.id, line.quantity + 1));
+      stepper.append(dec, qty, inc);
+      const remove = document.createElement('button');
+      remove.type = 'button';
+      remove.className = 'text-xs text-brand-cream/60 hover:text-brand-red-fire transition-colors';
+      remove.textContent = 'Entfernen';
+      remove.addEventListener('click', () => removeLine(line.id));
+      stepperRow.append(stepper, remove);
+      li.appendChild(stepperRow);
+
+      itemsList.appendChild(li);
     }
   }
 
@@ -279,37 +280,41 @@ if (root) {
     document.body.classList.toggle('has-cart-bar', count > 0);
     if (barCount) barCount.textContent = String(count);
     if (barTotal) barTotal.textContent = formatEUR(t.grandTotalEur);
+    headerCount.textContent = count === 0 ? '' : `${count} Artikel`;
   }
+
+  const PICKUP_LABEL: Record<FulfillmentMode, string> = {
+    abholung: 'Abholzeit',
+    'vor-ort': 'Wunsch-Uhrzeit',
+    lieferung: 'Lieferzeit',
+  };
 
   function renderCustomer() {
     const c = $customer.get();
-    firstName.value = c.firstName;
-    notes.value = c.notes ?? '';
+    // Avoid clobbering inputs the user is currently editing — and avoid
+    // triggering input events that would bounce back through patchCustomer.
+    if (firstName.value !== c.firstName) firstName.value = c.firstName;
+    const notesValue = c.notes ?? '';
+    if (notes.value !== notesValue) notes.value = notesValue;
     deliveryBlock.hidden = c.fulfillment !== 'lieferung';
-    // Time-picker label adapts to fulfillment mode (Abholzeit/Lieferzeit/Wunsch-Uhrzeit).
-    const pickupLabelEl = root!.querySelector<HTMLElement>('[data-cart-pickup-label]');
-    if (pickupLabelEl) {
-      pickupLabelEl.textContent =
-        c.fulfillment === 'lieferung'
-          ? 'Lieferzeit'
-          : c.fulfillment === 'vor-ort'
-            ? 'Wunsch-Uhrzeit'
-            : 'Abholzeit';
-    }
+    pickupLabel.textContent = PICKUP_LABEL[c.fulfillment];
     if (c.delivery) {
-      zoneSel.value = c.delivery.zoneId;
-      plzInp.value = c.delivery.postalCode;
-      streetInp.value = c.delivery.street;
+      if (zoneSel.value !== c.delivery.zoneId) zoneSel.value = c.delivery.zoneId;
+      if (plzInp.value !== c.delivery.postalCode) plzInp.value = c.delivery.postalCode;
+      if (streetInp.value !== c.delivery.street) streetInp.value = c.delivery.street;
     }
-    root!.querySelectorAll<HTMLButtonElement>('[data-cart-fulfillment]').forEach((btn) => {
+    for (const btn of fulfillmentBtns) {
       const active = btn.getAttribute('data-cart-fulfillment') === c.fulfillment;
       btn.setAttribute('aria-pressed', String(active));
       btn.setAttribute('data-active', String(active));
-    });
+    }
   }
 
   function setOpen(open: boolean) {
-    if (open) rebuildPickupOptions();
+    if (open) {
+      rebuildPickupOptions();
+      scrollArea.scrollTop = 0;
+    }
     root!.classList.toggle('hidden', !open);
     root!.setAttribute('aria-hidden', String(!open));
     document.body.style.overflow = open ? 'hidden' : '';
@@ -343,12 +348,12 @@ if (root) {
     });
   });
 
-  root.querySelectorAll<HTMLButtonElement>('[data-cart-fulfillment]').forEach((btn) => {
+  for (const btn of fulfillmentBtns) {
     btn.addEventListener('click', () => {
       const mode = btn.getAttribute('data-cart-fulfillment') as FulfillmentMode;
       patchCustomer({ fulfillment: mode });
     });
-  });
+  }
 
   function syncDeliveryAddress() {
     if ($customer.get().fulfillment !== 'lieferung') return;

@@ -103,7 +103,6 @@ if (root) {
     const parts: string[] = [];
     const meat = MEATS.find((m) => m.id === line.config.meat);
     if (meat) parts.push(meat.name);
-    if (line.config.meatUpgradeSteak) parts.push('Steak-Upgrade');
     if (line.config.extraMeat50g > 0) parts.push(`+${line.config.extraMeat50g}× 50 g Fleisch`);
     if (line.config.schmelzkaese) parts.push('Schmelzkäse');
     if (line.config.sauces.length > 0) {

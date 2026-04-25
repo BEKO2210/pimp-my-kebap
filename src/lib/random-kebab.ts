@@ -31,7 +31,6 @@ export function randomKebab(): KebabConfig {
     bread: pick(BREADS).id,
     base: pick(BASES).id,
     meat: pick(MEATS).id,
-    meatUpgradeSteak: Math.random() < 0.2,
     extraMeat50g: Math.random() < 0.25 ? 1 : 0,
     schmelzkaese: Math.random() < 0.4,
     sauces,

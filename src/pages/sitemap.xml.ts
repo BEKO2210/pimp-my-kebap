@@ -5,6 +5,9 @@ export function GET() {
   const siteUrl = (import.meta.env.PUBLIC_SITE_URL ?? 'https://beko2210.github.io/pimp-my-kebap').replace(/\/$/, '');
   const urls = [
     { loc: `${siteUrl}/`, changefreq: 'weekly', priority: '1.0' },
+    { loc: `${siteUrl}/konfigurator`, changefreq: 'weekly', priority: '0.9' },
+    { loc: `${siteUrl}/pimp-my-pizza`, changefreq: 'weekly', priority: '0.9' },
+    { loc: `${siteUrl}/speisekarte`, changefreq: 'weekly', priority: '0.9' },
     { loc: `${siteUrl}/impressum`, changefreq: 'yearly', priority: '0.3' },
     { loc: `${siteUrl}/datenschutz`, changefreq: 'yearly', priority: '0.3' },
   ];

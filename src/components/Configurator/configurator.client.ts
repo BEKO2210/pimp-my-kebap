@@ -18,7 +18,6 @@ if (root) {
     bread: 'klassisch',
     base: 'kebap_basic',
     meat: 'rinderhack',
-    meatUpgradeSteak: false,
     extraMeat50g: 0,
     schmelzkaese: false,
     sauces: [],
@@ -111,14 +110,11 @@ if (root) {
     });
   });
 
-  // Schmelzkäse + steak upgrade flags
+  // Schmelzkäse flag (the only boolean toggle that remains)
   root.querySelectorAll<HTMLInputElement>('[data-cfg-flag]').forEach((cb) => {
     cb.addEventListener('change', () => {
-      const flag = cb.getAttribute('data-cfg-flag') as keyof KebabConfig;
-      // Only boolean flags are wired here.
-      if (flag === 'schmelzkaese' || flag === 'meatUpgradeSteak') {
-        state[flag] = cb.checked;
-      }
+      const flag = cb.getAttribute('data-cfg-flag');
+      if (flag === 'schmelzkaese') state.schmelzkaese = cb.checked;
       recompute();
     });
   });
@@ -155,7 +151,6 @@ if (root) {
     state.bread = cfg.bread;
     state.base = cfg.base;
     state.meat = cfg.meat;
-    state.meatUpgradeSteak = cfg.meatUpgradeSteak;
     state.extraMeat50g = cfg.extraMeat50g;
     state.schmelzkaese = cfg.schmelzkaese;
     state.sauces = [...cfg.sauces];
@@ -165,7 +160,6 @@ if (root) {
     setActive('bread', state.bread);
     setActive('base', state.base);
     setActive('meat', state.meat);
-    // sauces & toppings: tick checkboxes + visual cards
     root!.querySelectorAll<HTMLInputElement>('[data-cfg-sauce]').forEach((cb) => {
       const id = cb.getAttribute('data-cfg-sauce') as SauceId;
       cb.checked = state.sauces.includes(id);
@@ -179,7 +173,6 @@ if (root) {
     root!.querySelectorAll<HTMLInputElement>('[data-cfg-flag]').forEach((cb) => {
       const flag = cb.getAttribute('data-cfg-flag');
       if (flag === 'schmelzkaese') cb.checked = state.schmelzkaese;
-      if (flag === 'meatUpgradeSteak') cb.checked = state.meatUpgradeSteak;
     });
     extraMeatVal.textContent = String(state.extraMeat50g);
     recompute();

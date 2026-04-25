@@ -25,32 +25,31 @@ export const BASES: readonly BaseOption[] = [
     shortName: 'Kebap Basic',
     name: 'Kebap Basic (im Brot)',
     basePriceEur: 6.5,
-    description: '100 g Fleisch + Salat (Kraut, Zwiebel, Tomaten) + 2 Soßen nach Wahl.',
+    description: '100 g vom Spieß deiner Wahl + Salat (Kraut, Zwiebel, Tomaten) + 2 Soßen.',
   },
   {
     id: 'yufka_basic',
     shortName: 'Yufka Basic',
     name: 'Yufka Basic',
     basePriceEur: 7.5,
-    description: '100 g Fleisch + Salat + 2 Soßen — gerollt im warmen Yufka-Fladen.',
+    description: '100 g vom Spieß deiner Wahl + Salat + 2 Soßen — gerollt im warmen Yufka.',
   },
   {
     id: 'kebap_box',
     shortName: 'Kebap Box',
     name: 'Kebap Box',
     basePriceEur: 6.5,
-    description: '100 g Fleisch + Salat + 2 Soßen — in der praktischen Box.',
+    description: '100 g vom Spieß deiner Wahl + Salat + 2 Soßen — in der praktischen Box.',
   },
 ] as const;
 
 export const MEATS: readonly MeatOption[] = [
-  { id: 'rinderhack', name: 'Rinderhack', upchargeEur: 0 },
-  { id: 'haehnchen', name: 'Hähnchenfleisch', upchargeEur: 0 },
-  { id: 'rindersteak', name: 'Rindersteak', upchargeEur: 1.0 },
+  { id: 'rinderhack', name: 'Hackfleisch Drehspieß', upchargeEur: 0 },
+  { id: 'haehnchen', name: 'Chicken Kebab', upchargeEur: 0 },
+  { id: 'rindersteak', name: 'Steak Döner', upchargeEur: 1.0 },
 ] as const;
 
 /* ── Pricing constants ── */
-export const STEAK_UPGRADE_PRICE_EUR = 1.0; // +100g Rindfleisch upgrade flag (separate from meat choice)
 export const EXTRA_MEAT_50G_PRICE_EUR = 1.5;
 export const SCHMELZKAESE_PRICE_EUR = 1.0;
 export const MAX_EXTRA_MEAT = 3;

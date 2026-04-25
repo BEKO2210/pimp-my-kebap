@@ -1,20 +1,24 @@
 ---
 // Powered by skill: seo-local, security
-// Static OSM tile via <img>. No JS map, no iframe — DSGVO-friendly.
+// Static OSM tile via <img> — DSGVO-friendly preview (no JS map, no iframe,
+// no Google tracking). The "Route in Google Maps" CTA below opens directions
+// in Google Maps, which is what most customers actually navigate with.
 import { BRAND } from '../data/brand';
+import Icon from './Icon.astro';
 
 const { latitude, longitude } = BRAND.geo;
 // OSM static-tile URL: zoom 17, 600x400. Allowed under CSP img-src.
-// Note: OSM has no official static-image API; we use the standard tile server
-// for a *single* tile near the address. For a real production site, swap to a
-// self-hosted Stadia / MapTiler static image once licensed.
 const tileX = Math.floor(((longitude + 180) / 360) * 2 ** 17);
 const lat_rad = (latitude * Math.PI) / 180;
 const tileY = Math.floor(
   ((1 - Math.log(Math.tan(lat_rad) + 1 / Math.cos(lat_rad)) / Math.PI) / 2) * 2 ** 17,
 );
 const mapImg = `https://tile.openstreetmap.org/17/${tileX}/${tileY}.png`;
-const directionsUrl = `https://www.openstreetmap.org/?mlat=${latitude}&mlon=${longitude}#map=17/${latitude}/${longitude}`;
+// Google Maps directions deep-link — works on iOS, Android and desktop.
+const destination = encodeURIComponent(
+  `${BRAND.address.street}, ${BRAND.address.postalCode} ${BRAND.address.city}`,
+);
+const directionsUrl = `https://www.google.com/maps/dir/?api=1&destination=${destination}`;
 ---
 
 <section id="standort" class="px-4 sm:px-6 lg:px-8 py-12" aria-labelledby="standort-heading">
@@ -26,13 +30,17 @@ const directionsUrl = `https://www.openstreetmap.org/?mlat=${latitude}&mlon=${lo
       </h2>
       <address class="not-italic text-brand-cream/85 mt-4 space-y-1">
         <p><strong>{BRAND.marketingName}</strong></p>
-        <p>{BRAND.address.street}</p>
-        <p>{BRAND.address.postalCode} {BRAND.address.city}</p>
-        <p class="pt-2">
-          📞 <a href={`tel:${BRAND.contact.phoneE164}`} class="underline decoration-brand-gold/40 hover:decoration-brand-gold">{BRAND.contact.phoneDisplay}</a>
+        <p class="flex items-center gap-2">
+          <Icon name="map-pin" size={16} class="text-brand-gold shrink-0" />
+          <span>{BRAND.address.street}, {BRAND.address.postalCode} {BRAND.address.city}</span>
         </p>
-        <p>
-          ✉️ <a href={`mailto:${BRAND.contact.email}`} class="underline decoration-brand-gold/40 hover:decoration-brand-gold">{BRAND.contact.email}</a>
+        <p class="flex items-center gap-2 pt-2">
+          <Icon name="phone" size={16} class="text-brand-gold shrink-0" />
+          <a href={`tel:${BRAND.contact.phoneE164}`} class="underline decoration-brand-gold/40 hover:decoration-brand-gold">{BRAND.contact.phoneDisplay}</a>
+        </p>
+        <p class="flex items-center gap-2">
+          <Icon name="mail" size={16} class="text-brand-gold shrink-0" />
+          <a href={`mailto:${BRAND.contact.email}`} class="underline decoration-brand-gold/40 hover:decoration-brand-gold">{BRAND.contact.email}</a>
         </p>
       </address>
       <h3 class="display text-lg text-brand-cream mt-6">Öffnungszeiten</h3>
@@ -42,16 +50,18 @@ const directionsUrl = `https://www.openstreetmap.org/?mlat=${latitude}&mlon=${lo
         <div class="flex justify-between max-w-xs"><dt>Feiertags</dt><dd>{BRAND.openingHours.holiday.open} – {BRAND.openingHours.holiday.close} Uhr</dd></div>
       </dl>
       {BRAND.social.instagramUrl && (
-        <p class="mt-4 text-sm text-brand-cream/70">
-          📸 <a href={BRAND.social.instagramUrl} target="_blank" rel="noopener noreferrer" class="underline decoration-brand-gold/40 hover:decoration-brand-gold">@{BRAND.social.instagramHandle}</a>
+        <p class="mt-4 flex items-center gap-2 text-sm text-brand-cream/70">
+          <Icon name="instagram" size={16} class="text-brand-gold shrink-0" />
+          <a href={BRAND.social.instagramUrl} target="_blank" rel="noopener noreferrer" class="underline decoration-brand-gold/40 hover:decoration-brand-gold">@{BRAND.social.instagramHandle}</a>
         </p>
       )}
     </div>
     <div class="card overflow-hidden">
-      <a href={directionsUrl} target="_blank" rel="noopener noreferrer" aria-label="Route zu Pimp My Kebap">
+      <a href={directionsUrl} target="_blank" rel="noopener noreferrer" aria-label={`Route zu ${BRAND.marketingName} in Google Maps`}>
         <img src={mapImg} alt={`Karte ${BRAND.address.street}`} width="600" height="400" loading="lazy" decoding="async" class="w-full h-auto block" />
-        <span class="block px-4 py-3 text-sm text-brand-cream/80 hover:text-brand-cream">
-          Route in OpenStreetMap öffnen →
+        <span class="flex items-center gap-2 px-4 py-3 text-sm text-brand-cream/80 hover:text-brand-cream">
+          <Icon name="map-pin" size={14} />
+          <span>Route in Google Maps öffnen →</span>
         </span>
       </a>
     </div>

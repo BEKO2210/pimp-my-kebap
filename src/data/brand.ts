@@ -50,8 +50,8 @@ export const BRAND = {
   },
 
   social: {
-    instagramHandle: 'zentrumdoner',
-    instagramUrl: 'https://www.instagram.com/zentrumdoner/',
+    instagramHandle: 'pimp_my_kebap_zentrum',
+    instagramUrl: 'https://www.instagram.com/pimp_my_kebap_zentrum/',
     facebook: null as string | null,
     googleBusinessProfile: null as string | null,
   },

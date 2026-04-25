@@ -100,10 +100,13 @@ Mo–Fr ≤16 bleibt sie voll funktional, an Mo–Fr nach 16 zeigt sie
 weiter den "außerhalb Schulzeit"-Hinweis (kein Stepper, wie L1).
 Tests: 4 neue Cases für `isSchoolDay`.
 
-### 10. Konfigurator-Footer-Hint inline am Step [ ]
-Aktuell sagt der Footer "Wähle deine Basis", aber der User scrollt
-runter zum Footer. Zusätzlich ein kleiner Pfeil/Hinweis am
-aktiven Step, falls noch nichts gewählt ist.
+### 10. Konfigurator-Footer-Hint inline am Step [x]
+Jede Step-Legend (Basis, Brot) trägt jetzt einen `data-cfg-step-hint`
+mit "← hier starten" / "← hier weitermachen". Der Client-Controller
+setzt aktiv: `base` wenn baseChosen=false, `bread` wenn baseChosen
+aber breadOk=false, sonst `null` (alle Hints aus). Sanfte
+`cfg-pulse` Animation bewegt den Pfeil 2 px hin- und her, damit das
+Auge ihn findet — abgeschaltet bei `prefers-reduced-motion`.
 
 ### 11. Page-Title je Route [ ]
 Aktuell hat jede Seite ihren `<title>` (gut), aber Wording prüfen:

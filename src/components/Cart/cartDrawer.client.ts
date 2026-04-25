@@ -235,6 +235,9 @@ if (root) {
 
     const count = $itemCount.get();
     if (bar) bar.hidden = count === 0;
+    // Body class lets the configurator's sticky footer lift itself above the
+    // mobile cart bar so its "In den Warenkorb"-button stays visible.
+    document.body.classList.toggle('has-cart-bar', count > 0);
     if (barCount) barCount.textContent = String(count);
     if (barTotal) barTotal.textContent = formatEUR(t.grandTotalEur);
   }

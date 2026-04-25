@@ -1,0 +1,103 @@
+# Masterplan — Polishing & Debugging Pimp My Kebap
+
+> Wir arbeiten **einen Punkt nach dem anderen** ab. Pro Punkt: Fix → typecheck/lint/vitest/build → Commit → Push → kurzer Status, dann nächster Schritt.
+>
+> Reihenfolge gewählt nach Endnutzer-Wirkung: erst Dinge die Aktionen blockieren oder Bestellungen verfälschen, dann Form-UX, dann Polish, zum Schluss Aufräumen.
+
+## Status-Legende
+- [x] erledigt (Commit-SHA in Klammern)
+- [ ] offen
+- [→] aktuell in Arbeit
+
+---
+
+## Plan
+
+### 1. Konfigurator-Empty-State klar [x] (08e027c)
+"6,50 € + Add disabled" war widersprüchlich. Footer zeigt jetzt
+"Schritt 1 · Wähle deine Basis" / "Schritt 2 · Wähle dein Brot",
+echter Preis erst wenn beides gewählt.
+
+### 2. Sticky-Cart-Bar überdeckt Konfigurator-Footer auf Mobile [x]
+Body bekommt jetzt eine Klasse `has-cart-bar` sobald der Cart Items
+enthält; CSS hebt die Sticky-Konfigurator-Summary auf Mobile auf
+`bottom: 5.25rem`, sodass sie über der ~60px hohen Cart-Bar sitzt.
+Auf Desktop (Cart-Bar ist eh `lg:hidden`) Reset auf `1rem`. Beide
+Konfigurator-Footer (Kebap + Pizza) sind über die Klasse
+`.cfg-sticky-footer` markiert.
+
+### 3. Pickup-Zeiten beim Cart-Öffnen neu generieren [ ]
+`buildPickupOptions()` läuft genau einmal beim Page-Load. Wer 5 Min
+in der Speisekarte liest und dann den Cart öffnet, bekommt evtl.
+einen Slot, der bereits in der Vergangenheit liegt. Lösung: Beim
+Wechsel von `$isCartOpen` auf `true` neu bauen.
+
+### 4. PLZ visuell als invalid markieren [ ]
+Bei Lieferung mit leerer / falscher PLZ steht der rote Hinweis-Text,
+das Input-Feld selbst sieht aber unverändert aus. `aria-invalid="true"`
++ roter Border bei Fehler, sonst neutral.
+
+### 5. "Auf Anfrage"-Items: Telefon-Action [ ]
+`chili-cheese-pommes` & `chili-cheese-pommes-sucuk` haben
+`priceEur: null`. Aktuell Hinweis "Auf Anfrage", aber kein Weg zum
+Bestellen. Lösung: Statt nur Text einen "Anrufen / WhatsApp"-Mini-CTA
+auf der Karte zeigen.
+
+### 6. WhatsApp-URL-Längenlimit absichern [ ]
+Eine sehr lange Bestellung kann den `wa.me`-Link über das praktische
+Limit (~6 KB) hinaus aufblähen — WhatsApp bricht dann stillschweigend
+oder gar nicht. Lösung: Vor dem `window.open` Länge prüfen, bei
+Überschreitung den User warnen und Fallback (z.B. "Per Telefon
+bestellen, Liste zu lang").
+
+### 7. Konfigurator: Default-Spieß deutlicher hervorheben [ ]
+`rinderhack` ist `aria-checked=true` aber visuell ähnlich zu
+unselektiert. Stärkere Active-Variante (gold-ring) damit klar ist,
+dass das die aktuelle Wahl ist und ggf. geändert werden kann.
+
+### 8. Filter-Dropdown: Auto-Close bei Allergen-Reset [ ]
+Aktuell bleibt der Dropdown nach "Alle Filter zurücksetzen" offen.
+Reset sollte auch zumachen, weil Action abgeschlossen.
+
+### 9. Schüler-Section am Sonntag/Feiertag verstecken [ ]
+Aktuell bleibt die Sektion sichtbar (gedimmt + "außerhalb Schulzeit"-
+Badge). An Tagen, an denen das Restaurant gar nicht öffnet bzw.
+Schule geschlossen ist (Sonntag, Feiertag), ist auch die ganze
+Sektion uninteressant. Sauberer: ganz ausblenden.
+
+### 10. Konfigurator-Footer-Hint inline am Step [ ]
+Aktuell sagt der Footer "Wähle deine Basis", aber der User scrollt
+runter zum Footer. Zusätzlich ein kleiner Pfeil/Hinweis am
+aktiven Step, falls noch nichts gewählt ist.
+
+### 11. Page-Title je Route [ ]
+Aktuell hat jede Seite ihren `<title>` (gut), aber Wording prüfen:
+"… · Pimp My Kebap Freiberg" am Ende für SEO-Konsistenz.
+
+### 12. Footer: Links sauber ausrichten [ ]
+Sichtprüfung — Impressum/Datenschutz/Allergene-Liste auf Mobile +
+Desktop. Spacing, Tab-Order.
+
+### 13. Toast-Stack auf Mobile [ ]
+Mehrere Toasts schnell nacheinander → wie sieht das aus? Position
+und Stacking-Verhalten prüfen.
+
+### 14. Veraltete E2E-Tests aufräumen [ ]
+`tests/e2e/konfigurator.spec.ts` testet noch alte Routen / alte
+Step-Reihenfolge. Entweder anpassen oder ersetzen, damit niemand
+auf veralteten Code blickt.
+
+### 15. CSP/Security-Header Sichtprüfung [ ]
+Nach allen Änderungen einmal `dist/index.html` prüfen: stimmen die
+CSP-Direktiven noch (img-src für tile.openstreetmap.org), keine
+inline-Scripts ohne nonce.
+
+---
+
+## Workflow pro Schritt
+1. Schritt aus dem Plan herausgreifen, [→] markieren
+2. Fix umsetzen
+3. `npx astro check && npx eslint . --ext .js,.mjs,.ts,.astro && npx vitest run && npx astro build`
+4. `git add -A && git commit -m "…" && git push -u origin claude/fix-hamburger-menu-hVO2d`
+5. In CLAUDE.md auf [x] mit Commit-SHA setzen
+6. Im Chat: "Schritt N erledigt — als Nächstes Schritt N+1: …"

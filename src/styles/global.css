@@ -49,6 +49,15 @@ body.mobile-nav-open { overflow: hidden; touch-action: none; }
   body.mobile-nav-open { overflow: auto; touch-action: auto; }
 }
 
+/* When the mobile cart bar is showing, lift the configurator's sticky footer
+ * above it so the "In den Warenkorb"-button isn't covered. The cart bar is
+ * fixed at bottom-0 and ~60px tall on mobile; we leave a small breathing gap. */
+body.has-cart-bar .cfg-sticky-footer { bottom: 5.25rem; }
+@media (min-width: 1024px) {
+  /* Cart bar is hidden ≥lg, so reset to the original 1rem offset. */
+  body.has-cart-bar .cfg-sticky-footer { bottom: 1rem; }
+}
+
 a { color: inherit; text-decoration: none; }
 
 h1, h2, h3, .display { font-family: var(--font-display); letter-spacing: -0.01em; }

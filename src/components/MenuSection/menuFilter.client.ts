@@ -62,6 +62,9 @@ if (searchInput) {
     const filtersActive = q !== '' || state.veg || state.spicy || state.excludeAllergens.size > 0;
     for (const section of sections) {
       const localCards = section.querySelectorAll<HTMLElement>('[data-item-id]');
+      // Sections without filterable items (e.g. Drinks, which are rendered
+      // through a different component) must never get auto-hidden.
+      if (localCards.length === 0) continue;
       const someVisible = Array.from(localCards).some((c) => !c.hasAttribute('hidden'));
       section.toggleAttribute('hidden', !someVisible);
       const acc = section.querySelector<HTMLDetailsElement>('details[data-menu-accordion]');
@@ -120,6 +123,9 @@ if (searchInput) {
       b.removeAttribute('data-active');
     });
     apply();
+    // Reset is a final action — close the dropdown so the user sees their
+    // unfiltered list without an open panel still hanging over it.
+    if (filterDropdown) filterDropdown.open = false;
   });
 
   // Filter dropdown: close on outside click + ESC

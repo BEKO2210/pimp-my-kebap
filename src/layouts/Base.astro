@@ -22,7 +22,11 @@ const {
 
 const siteUrl = (import.meta.env.PUBLIC_SITE_URL ?? 'https://beko2210.github.io/pimp-my-kebap').replace(/\/$/, '');
 const canonical = pathname === '/' ? siteUrl : `${siteUrl}${pathname}`;
-const ogImageUrl = ogImage.startsWith('http') ? ogImage : `${siteUrl}${withBase(ogImage)}`;
+// PUBLIC_SITE_URL already carries the project sub-path (e.g.
+// .../pimp-my-kebap), so we must not prepend it a second time via
+// withBase() — that produced a 404 og:image and killed the WhatsApp
+// link preview. ogImage paths are absolute from the root by convention.
+const ogImageUrl = ogImage.startsWith('http') ? ogImage : `${siteUrl}${ogImage}`;
 
 const jsonLdItems = jsonLd ? (Array.isArray(jsonLd) ? jsonLd : [jsonLd]) : [];
 

@@ -147,6 +147,18 @@ export function isSchoolHoursWindow(date: Date = new Date()): boolean {
   return minutes(now.hour, now.minute) < minutes(16, 0);
 }
 
+/**
+ * "Schultag" — der Kalendertag, an dem Schüler-Angebote überhaupt sinnvoll
+ * sind (Mo–Fr, kein Feiertag). Unabhängig von der Uhrzeit, im Gegensatz zu
+ * isSchoolHoursWindow. Wird benutzt, um die Schüler-Sektion am Wochenende
+ * und an Feiertagen ganz aus der Speisekarte zu entfernen.
+ */
+export function isSchoolDay(date: Date = new Date()): boolean {
+  const now = getBerlinNow(date);
+  if (now.weekday > 5) return false;
+  return !isHolidayBW(date);
+}
+
 export function getCurrentWeekday(date: Date = new Date()): BerlinNow['weekday'] {
   return getBerlinNow(date).weekday;
 }

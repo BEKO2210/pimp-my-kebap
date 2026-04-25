@@ -66,6 +66,19 @@ input[aria-invalid='true'] {
   box-shadow: 0 0 0 1px var(--color-brand-red-fire);
 }
 
+/* Step-hint pulse — gentle attention nudge next to the active configurator
+ * step legend ("← hier starten" / "← hier weitermachen"). */
+.cfg-pulse {
+  animation: cfg-pulse 1.6s ease-in-out infinite;
+}
+@keyframes cfg-pulse {
+  0%, 100% { opacity: .65; transform: translateX(0); }
+  50%      { opacity: 1;   transform: translateX(2px); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .cfg-pulse { animation: none; opacity: .9; }
+}
+
 a { color: inherit; text-decoration: none; }
 
 h1, h2, h3, .display { font-family: var(--font-display); letter-spacing: -0.01em; }
@@ -117,10 +130,13 @@ h1, h2, h3, .display { font-family: var(--font-display); letter-spacing: -0.01em
   transition: background-color .15s ease, border-color .15s ease, color .15s ease;
 }
 .btn-secondary:hover { background-color: rgba(212,175,55,.08); border-color: var(--color-brand-gold); color: var(--color-brand-gold-light); }
-.btn-secondary[aria-pressed="true"], .btn-secondary[data-active="true"] {
-  background-color: rgba(212,175,55,.14);
+.btn-secondary[aria-pressed="true"],
+.btn-secondary[aria-checked="true"],
+.btn-secondary[data-active="true"] {
+  background-color: rgba(212,175,55,.18);
   border-color: var(--color-brand-gold);
   color: var(--color-brand-gold-light);
+  box-shadow: 0 0 0 1px var(--color-brand-gold), 0 4px 14px rgba(212,175,55,.18);
 }
 
 /* Cards: subtle gold thread at the top, sharper than the body radius for

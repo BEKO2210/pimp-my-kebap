@@ -61,36 +61,69 @@ grüne Bestätigung, drei große CTA-Karten ("Noch einen Kebap pimpen" /
 "Bestellung abschließen"-Button, der den Drawer öffnet. So kann der
 User beliebig kombinieren, ohne in den Drawer gezwungen zu werden.
 
-### 6. WhatsApp-URL-Längenlimit absichern [ ]
-Eine sehr lange Bestellung kann den `wa.me`-Link über das praktische
-Limit (~6 KB) hinaus aufblähen — WhatsApp bricht dann stillschweigend
-oder gar nicht. Lösung: Vor dem `window.open` Länge prüfen, bei
-Überschreitung den User warnen und Fallback (z.B. "Per Telefon
-bestellen, Liste zu lang").
+### 6. WhatsApp-URL-Längenlimit absichern [x]
+Im Checkout-Click wird die wa.me-URL jetzt VOR dem Confirm-Dialog
+gebaut. Schwelle `WHATSAPP_URL_SAFE_LIMIT = 6500` (Zeichen, encoded).
+Bei Überschreitung erscheint ein "Hinweis"-Block oberhalb der
+Vorschau im selben Dialog, der die ungefähre Größe in KB nennt und
+die Restaurant-Telefonnummer als sicheren Alternativweg anbietet.
+Mehrere Hinweise (geschlossener Laden + langer Link) werden in einen
+einzigen Confirm-Dialog konsolidiert, statt den User durch zwei
+hintereinander zu schicken.
 
-### 7. Konfigurator: Default-Spieß deutlicher hervorheben [ ]
-`rinderhack` ist `aria-checked=true` aber visuell ähnlich zu
-unselektiert. Stärkere Active-Variante (gold-ring) damit klar ist,
-dass das die aktuelle Wahl ist und ggf. geändert werden kann.
+### 7. Konfigurator: Default-Spieß deutlicher hervorheben [x]
+Zwei Probleme: (1) der Active-Selector `.btn-secondary[aria-pressed="true"]`
+griff nicht auf die Spieß-Buttons, weil sie `role="radio"` mit
+`aria-checked` benutzen, nicht `aria-pressed`. (2) Der Active-Look war
+sowieso zu zurückhaltend (nur Tönung).
+Fix: Selektor um `[aria-checked="true"]` erweitert, Active-Variante
+verstärkt um einen Gold-Ring + soften Glow (`box-shadow: 0 0 0 1px
+gold, 0 4px 14px gold/.18`). Server-side wird der erste MEAT jetzt
+schon mit `data-active="true"` ausgeliefert, also ist der Highlight
+sofort sichtbar — auch ohne JS-Hydrate. Nebeneffekt: Filter-Buttons
+in der Speisekarte und der Bestellart-Toggle im Cart bekommen den
+gleichen klaren Active-Look — konsistent durch die App.
 
-### 8. Filter-Dropdown: Auto-Close bei Allergen-Reset [ ]
-Aktuell bleibt der Dropdown nach "Alle Filter zurücksetzen" offen.
-Reset sollte auch zumachen, weil Action abgeschlossen.
+### 8. Filter-Dropdown: Auto-Close bei Allergen-Reset [x]
+Reset-Handler in `menuFilter.client.ts` schließt den
+`data-menu-filter-dropdown` (`<details>`) jetzt zusätzlich nach dem
+`apply()`. Action abgeschlossen → Panel zu, User sieht direkt die
+ungefilterte Liste.
 
-### 9. Schüler-Section am Sonntag/Feiertag verstecken [ ]
-Aktuell bleibt die Sektion sichtbar (gedimmt + "außerhalb Schulzeit"-
-Badge). An Tagen, an denen das Restaurant gar nicht öffnet bzw.
-Schule geschlossen ist (Sonntag, Feiertag), ist auch die ganze
-Sektion uninteressant. Sauberer: ganz ausblenden.
+### 9. Schüler-Section am Sonntag/Feiertag verstecken [x]
+Neuer Helper `isSchoolDay()` in `lib/time.ts` (Mo–Fr, kein Feiertag —
+unabhängig von der Uhrzeit, im Gegensatz zum bestehenden
+`isSchoolHoursWindow`). `Speisekarte.astro` filtert die Kategorien-
+Liste mit ihm: an Sa/So/Feiertagen verschwinden sowohl die
+Quick-Jump-Nav-Pille als auch die ganze Schüler-Sektion. An
+Mo–Fr ≤16 bleibt sie voll funktional, an Mo–Fr nach 16 zeigt sie
+weiter den "außerhalb Schulzeit"-Hinweis (kein Stepper, wie L1).
+Tests: 4 neue Cases für `isSchoolDay`.
 
-### 10. Konfigurator-Footer-Hint inline am Step [ ]
-Aktuell sagt der Footer "Wähle deine Basis", aber der User scrollt
-runter zum Footer. Zusätzlich ein kleiner Pfeil/Hinweis am
-aktiven Step, falls noch nichts gewählt ist.
+### 10. Konfigurator-Footer-Hint inline am Step [x]
+Jede Step-Legend (Basis, Brot) trägt jetzt einen `data-cfg-step-hint`
+mit "← hier starten" / "← hier weitermachen". Der Client-Controller
+setzt aktiv: `base` wenn baseChosen=false, `bread` wenn baseChosen
+aber breadOk=false, sonst `null` (alle Hints aus). Sanfte
+`cfg-pulse` Animation bewegt den Pfeil 2 px hin- und her, damit das
+Auge ihn findet — abgeschaltet bei `prefers-reduced-motion`.
 
-### 11. Page-Title je Route [ ]
-Aktuell hat jede Seite ihren `<title>` (gut), aber Wording prüfen:
-"… · Pimp My Kebap Freiberg" am Ende für SEO-Konsistenz.
+### 11. Page-Title je Route + OG-Image für WhatsApp [x]
+Konsistentes Title-Schema umgesetzt: Konfiguratoren tragen
+`<Brand> — Konfigurator · Freiberg`, neutrale Routen
+`<Spezifisch> · Pimp My Kebap Freiberg`. Brand am Ende
+(Browser-Tab + SEO), middle-dot als Trenner, "Freiberg"
+durchgehend für Geo-SEO.
+
+**Bonus / echter Bug**: `Base.astro:25` hat die OG-Image-URL gebaut
+mit `${siteUrl}${withBase(ogImage)}`. Da `siteUrl` bereits den
+Project-Pages-Sub-Path enthält und `withBase()` ihn nochmal
+prependet, ergab sich
+`https://…/pimp-my-kebap/pimp-my-kebap/brand/og-image.jpg` →
+404 → keine WhatsApp-Link-Vorschau. Jetzt
+`${siteUrl}${ogImage}` direkt — verifiziert im Build:
+`og:image` zeigt auf die echte URL und `dist/brand/og-image.jpg`
+existiert.
 
 ### 12. Footer: Links sauber ausrichten [ ]
 Sichtprüfung — Impressum/Datenschutz/Allergene-Liste auf Mobile +

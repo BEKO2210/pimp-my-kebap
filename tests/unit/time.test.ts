@@ -2,6 +2,7 @@ import { describe, it, expect } from 'vitest';
 import {
   getCurrentOpeningStatus,
   isSchoolHoursWindow,
+  isSchoolDay,
   getCurrentWeekday,
   getBerlinNow,
 } from '../../src/lib/time';
@@ -136,6 +137,26 @@ describe('isSchoolHoursWindow', () => {
 
   it('Holidays = false', () => {
     expect(isSchoolHoursWindow(berlinSummer(2026, 5, 1, 12))).toBe(false);
+  });
+});
+
+describe('isSchoolDay', () => {
+  it('Mon-Fri = true regardless of time of day', () => {
+    expect(isSchoolDay(berlinSummer(2026, 7, 6, 9))).toBe(true);
+    expect(isSchoolDay(berlinSummer(2026, 7, 6, 19))).toBe(true);
+  });
+
+  it('Saturday = false', () => {
+    expect(isSchoolDay(berlinSummer(2026, 7, 11, 10))).toBe(false);
+  });
+
+  it('Sunday = false', () => {
+    expect(isSchoolDay(berlinSummer(2026, 7, 12, 10))).toBe(false);
+  });
+
+  it('Holidays on a weekday = false', () => {
+    // 1.5.2026 is a Friday and a public holiday (Tag der Arbeit).
+    expect(isSchoolDay(berlinSummer(2026, 5, 1, 10))).toBe(false);
   });
 });
 

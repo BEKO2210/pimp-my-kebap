@@ -5,11 +5,16 @@ import { ALLERGENS } from '../data/allergens';
 import { DRINKS } from '../data/drinks';
 import MenuSection from './MenuSection/MenuSection.astro';
 import Drinks from './MenuSection/Drinks.astro';
-import { getCurrentWeekday, isSchoolHoursWindow } from '../lib/time';
+import { getCurrentWeekday, isSchoolDay, isSchoolHoursWindow } from '../lib/time';
 import Icon from './Icon.astro';
 
 const weekday = getCurrentWeekday();
 const schoolHours = isSchoolHoursWindow();
+const schoolDay = isSchoolDay();
+// On Sat/Sun and holidays the Schüler section is irrelevant — no special
+// price applies anyway and the kitchen mostly isn't open. Drop it entirely
+// from the rendered list (and the quick-jump nav) instead of dimming it.
+const visibleCategories = ALL_CATEGORIES.filter((c) => c !== 'schueler' || schoolDay);
 const filterableAllergens: Array<keyof typeof ALLERGENS> = ['a', 'c', 'd', 'e', 'f'];
 
 // Pre-compute item counts so each accordion summary can show "(N Speisen)".
@@ -88,7 +93,7 @@ const drinkCount = DRINKS.reduce((sum, d) => sum + d.variants.length, 0);
     <!-- Quick-jump category nav (scrollable on mobile) -->
     <nav aria-label="Speisekarten-Kategorien" class="overflow-x-auto -mx-4 px-4 mb-2">
       <ul class="flex gap-2 pb-2">
-        {ALL_CATEGORIES.map((c) => (
+        {visibleCategories.map((c) => (
           <li>
             <a
               href={`#section-${c}`}
@@ -109,7 +114,7 @@ const drinkCount = DRINKS.reduce((sum, d) => sum + d.variants.length, 0);
   </div>
 </section>
 
-{ALL_CATEGORIES.map((c) => {
+{visibleCategories.map((c) => {
   // Cross-link the matching configurator from the relevant category headers
   // so a customer browsing the menu sees the build-your-own option in context.
   const ctaProps =

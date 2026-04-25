@@ -45,7 +45,12 @@ const sectionDimmed = isSchoolSection && !schoolHoursOpen;
       {items.map((item) => {
         const eff = effectiveMenuPrice(item, weekday);
         const promo = eff !== null && item.priceEur !== null && eff < item.priceEur;
-        return <ItemCard item={item} promo={promo} effectivePrice={eff} />;
+        // Schüler-Items sind nur Mo–Fr bis 16:00 (außerhalb Feiertag) bestellbar.
+        const orderable = item.schoolHoursOnly ? schoolHoursOpen : true;
+        const unavailableReason = item.schoolHoursOnly && !schoolHoursOpen
+          ? 'Nur Mo–Fr bis 16:00 Uhr'
+          : undefined;
+        return <ItemCard item={item} promo={promo} effectivePrice={eff} orderable={orderable} unavailableReason={unavailableReason} />;
       })}
     </div>
   </div>

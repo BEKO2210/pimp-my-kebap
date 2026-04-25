@@ -49,6 +49,7 @@ if (cards.length > 0) {
     const cat = (card.dataset.itemCategory as MenuCategory) ?? 'drehspiess';
     const promo = card.dataset.itemPromo === 'true';
     const price = Number.parseFloat(card.dataset.itemPrice ?? '');
+    const orderable = card.dataset.itemOrderable !== 'false';
 
     const incBtn = card.querySelector<HTMLButtonElement>('[data-item-inc]');
     const decBtn = card.querySelector<HTMLButtonElement>('[data-item-dec]');
@@ -56,6 +57,7 @@ if (cards.length > 0) {
     if (incBtn) {
       incBtn.addEventListener('click', () => {
         if (Number.isNaN(price)) return;
+        if (!orderable) return; // server-rendered as not orderable; ignore stray clicks
         const existing = findFirstLineForItem(id);
         if (existing) {
           setQuantity(existing.id, existing.quantity + 1);

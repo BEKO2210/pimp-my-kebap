@@ -26,6 +26,7 @@ import { TOPPINGS } from '../../data/ingredients';
 import { copyShareCartLink } from '../../lib/share-cart';
 import { recordOrder } from '../../lib/history';
 import { toast } from '../../lib/toast';
+import { getCurrentOpeningStatus } from '../../lib/time';
 
 const root = document.querySelector<HTMLElement>('[data-cart-root]');
 if (root) {
@@ -57,20 +58,36 @@ if (root) {
   const barTotal = document.querySelector<HTMLElement>('[data-cart-bar-total]');
   const openBarBtn = document.querySelector<HTMLButtonElement>('[data-cart-open-bar]');
 
-  // Pickup time options (00:15 increments from now+20m to 21:00)
+  // Pickup time options: 15-min steps starting at max(now+20m, todayOpen),
+  // ending at todayClose. Closed days (Sunday) only show ASAP.
   function buildPickupOptions() {
     pickupSel.replaceChildren();
     const asap = document.createElement('option');
     asap.value = 'asap';
     asap.textContent = 'So schnell wie möglich';
     pickupSel.appendChild(asap);
+
+    const status = getCurrentOpeningStatus();
+    if (!status.todayOpen || !status.todayClose) return; // closed all day
+
     const now = new Date();
+    const [openH, openM] = status.todayOpen.split(':').map((n) => Number.parseInt(n, 10));
+    const [closeH, closeM] = status.todayClose.split(':').map((n) => Number.parseInt(n, 10));
+
+    // Start at max(now+20min, todayOpen)
     const earliest = new Date(now.getTime() + 20 * 60_000);
     earliest.setSeconds(0, 0);
+    const todayOpenDate = new Date(now);
+    todayOpenDate.setHours(openH ?? 10, openM ?? 30, 0, 0);
+    if (earliest < todayOpenDate) earliest.setTime(todayOpenDate.getTime());
+
+    // Round up to next 15-min step
     const minutesPast = earliest.getMinutes() % 15;
     if (minutesPast !== 0) earliest.setMinutes(earliest.getMinutes() + (15 - minutesPast));
+
     const closing = new Date(now);
-    closing.setHours(21, 0, 0, 0);
+    closing.setHours(closeH ?? 21, closeM ?? 0, 0, 0);
+
     while (earliest <= closing) {
       const opt = document.createElement('option');
       opt.value = earliest.toISOString();
@@ -86,6 +103,8 @@ if (root) {
   function lineSummary(line: CartLine): string {
     if (line.kind === 'kebab') {
       const base = BASES.find((b) => b.id === line.config.base)?.shortName ?? line.config.base;
+      // Bread label is only relevant for Kebap Basic (im Brot).
+      if (line.config.base !== 'kebap_basic') return base;
       const bread = BREADS.find((b) => b.id === line.config.bread)?.name ?? '';
       return `${base} (${bread})`;
     }
@@ -200,8 +219,15 @@ if (root) {
     totalsGrand.textContent = formatEUR(t.grandTotalEur);
 
     let warn = '';
-    if ($customer.get().fulfillment === 'lieferung' && t.belowDeliveryMinimum) {
-      warn = `Lieferung erst ab ${formatEUR(20)}. Bitte mehr Artikel hinzufügen.`;
+    const c = $customer.get();
+    if (c.fulfillment === 'lieferung') {
+      if (t.belowDeliveryMinimum) {
+        warn = `Lieferung erst ab ${formatEUR(20)}. Bitte mehr Artikel hinzufügen.`;
+      } else if (!c.delivery?.street?.trim() || !c.delivery?.postalCode?.trim()) {
+        warn = 'Lieferung: PLZ und Straße eingeben.';
+      } else if (!/^\d{5}$/.test(c.delivery.postalCode.trim())) {
+        warn = 'PLZ muss 5 Ziffern haben (z. B. 71691).';
+      }
     }
     warning.hidden = warn === '';
     warning.textContent = warn;
@@ -291,8 +317,19 @@ if (root) {
       warning.textContent = 'Bitte einen Moment warten, bevor du erneut sendest.';
       return;
     }
-    const preview = currentWhatsAppPreview();
-    if (!confirm('Deine Bestellung wird in WhatsApp geöffnet:\n\n' + preview)) return;
+    const status = getCurrentOpeningStatus();
+    const c = $customer.get();
+    let confirmText = 'Deine Bestellung wird in WhatsApp geöffnet:\n\n';
+    // Warn explicitly when the shop is currently closed and the user picked
+    // ASAP — they're effectively asking us to start work the next morning.
+    if (!status.isOpen && c.pickup.kind === 'asap') {
+      const next = status.nextOpenLabel ?? 'morgen';
+      confirmText =
+        `Hinweis: Wir haben gerade geschlossen — wir bearbeiten deine Bestellung ${next}.\n\n` +
+        confirmText;
+    }
+    confirmText += currentWhatsAppPreview();
+    if (!confirm(confirmText)) return;
     const url = currentWhatsAppUrl(checkout.dataset.waNumber);
     recordWhatsAppSend();
     recordOrder($lines.get(), $customer.get());

@@ -11,13 +11,18 @@ interface Props {
   item: MenuItem;
   promo?: boolean;
   effectivePrice: number | null;
+  /** Whether this item can be ordered right now (false e.g. for school items outside school hours). */
+  orderable?: boolean;
+  /** Reason why the item is not orderable, displayed instead of the stepper. */
+  unavailableReason?: string;
 }
 
-const { item, promo, effectivePrice } = Astro.props;
+const { item, promo, effectivePrice, orderable = true, unavailableReason } = Astro.props;
 const slug = CATEGORY_TO_PLACEHOLDER[item.category] ?? 'doener';
 const photoBase = withBase(`/images/meals/${item.id}`);
 const placeholder = withBase(`/images/placeholders/${slug}.svg`);
 const isOnRequest = effectivePrice === null;
+const canOrder = !isOnRequest && orderable;
 ---
 
 <article
@@ -30,6 +35,7 @@ const isOnRequest = effectivePrice === null;
   data-item-tag={item.tag ?? ''}
   data-item-markings={(item.markings ?? []).join(',')}
   data-item-search={`${item.name} ${item.description ?? ''} ${item.tag ?? ''}`.toLowerCase()}
+  data-item-orderable={canOrder ? 'true' : 'false'}
   itemscope
   itemtype="https://schema.org/MenuItem"
 >
@@ -80,7 +86,7 @@ const isOnRequest = effectivePrice === null;
           <span itemprop="price" data-content={String(effectivePrice ?? 0)}>{formatEUR(effectivePrice ?? 0)}</span>
         )}
       </p>
-      {!isOnRequest && (
+      {canOrder && (
         <div class="inline-flex items-center gap-1" role="group" aria-label={`Menge ${item.name}`}>
           <button
             type="button"
@@ -96,6 +102,9 @@ const isOnRequest = effectivePrice === null;
             aria-label={`${item.name} mehr / hinzufügen`}
           >+</button>
         </div>
+      )}
+      {!canOrder && !isOnRequest && unavailableReason && (
+        <span class="text-xs text-brand-cream/55">{unavailableReason}</span>
       )}
     </div>
   </div>

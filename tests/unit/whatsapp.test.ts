@@ -210,6 +210,51 @@ describe('buildWhatsAppMessage', () => {
     expect(msg).toContain('Mehr Fleisch: 2× 50 g');
     expect(msg).not.toContain('Steakfleisch-Upgrade');
   });
+
+  it('omits the bread label for Yufka Basic (no separate bread)', () => {
+    const line: CartLine = {
+      kind: 'kebab',
+      id: 'k3',
+      quantity: 1,
+      unitPriceEur: 7.5,
+      config: {
+        bread: 'klassisch',
+        base: 'yufka_basic',
+        meat: 'haehnchen',
+        extraMeat50g: 0,
+        schmelzkaese: false,
+        sauces: [],
+        toppings: [],
+      },
+    };
+    const msg = buildWhatsAppMessage({ cart: { lines: [line], customer } });
+    expect(msg).toContain('1x Yufka Basic');
+    expect(msg).not.toContain('Klassisches Dönerbrot');
+  });
+
+  it('omits bread + extras for Kebap Box (only Salat + 2 Saucen)', () => {
+    const line: CartLine = {
+      kind: 'kebab',
+      id: 'k4',
+      quantity: 1,
+      unitPriceEur: 6.5,
+      config: {
+        bread: 'klassisch',
+        base: 'kebap_box',
+        meat: 'rinderhack',
+        extraMeat50g: 0,
+        schmelzkaese: false,
+        sauces: [],
+        toppings: [],
+      },
+    };
+    const msg = buildWhatsAppMessage({ cart: { lines: [line], customer } });
+    expect(msg).toContain('1x Kebap Box');
+    expect(msg).not.toContain('Klassisches Dönerbrot');
+    expect(msg).not.toContain('Schmelzkäse');
+    expect(msg).not.toContain('Toppings:');
+    expect(msg).not.toContain('Mehr Fleisch:');
+  });
 });
 
 describe('buildWhatsAppMessage — delivery', () => {

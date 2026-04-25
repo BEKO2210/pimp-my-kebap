@@ -1,5 +1,13 @@
 // Powered by skill: frontend-design, security
-import { addLine, openCart } from '../../lib/cart';
+import { addLine } from '../../lib/cart';
+
+function flashAddedConfirmation(btn: HTMLButtonElement) {
+  // Brief gold pulse on the +-button so the customer sees the click landed.
+  btn.classList.remove('cart-added-pulse');
+  // Force a reflow so the animation re-runs even on rapid repeat clicks.
+  void btn.offsetWidth;
+  btn.classList.add('cart-added-pulse');
+}
 
 document.querySelectorAll<HTMLButtonElement>('[data-drink-add]').forEach((btn) => {
   btn.addEventListener('click', () => {
@@ -19,6 +27,6 @@ document.querySelectorAll<HTMLButtonElement>('[data-drink-add]').forEach((btn) =
       unitDepositEur: Number.isNaN(deposit) ? 0 : deposit,
     });
     if (navigator.vibrate) navigator.vibrate(10);
-    openCart();
+    flashAddedConfirmation(btn);
   });
 });

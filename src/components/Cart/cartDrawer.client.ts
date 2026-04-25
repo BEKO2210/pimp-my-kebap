@@ -36,6 +36,8 @@ if (root) {
   // first open of an empty form.
   let plzTouched = false;
   let streetTouched = false;
+  // Last seen item count so we can pulse the cart bar only when it grows.
+  let previousCount = 0;
 
   const itemsList = root.querySelector<HTMLUListElement>('[data-cart-items]')!;
   const headerCount = root.querySelector<HTMLElement>('[data-cart-header-count]')!;
@@ -275,7 +277,18 @@ if (root) {
     streetInp.toggleAttribute('aria-invalid', showStreetError);
 
     const count = $itemCount.get();
-    if (bar) bar.hidden = count === 0;
+    if (bar) {
+      bar.hidden = count === 0;
+      // Gold pulse on the bar whenever the count rises — visual confirmation
+      // that the click on a Speisekarte/Drink "+" actually reached the cart,
+      // without forcing the drawer open.
+      if (count > previousCount && count > 0) {
+        bar.classList.remove('cart-bar-pulse');
+        void bar.offsetWidth;
+        bar.classList.add('cart-bar-pulse');
+      }
+    }
+    previousCount = count;
     // Body class lets the configurator's sticky footer lift itself above the
     // mobile cart bar so its "In den Warenkorb"-button stays visible.
     document.body.classList.toggle('has-cart-bar', count > 0);

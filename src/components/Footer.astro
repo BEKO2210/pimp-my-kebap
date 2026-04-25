@@ -3,19 +3,21 @@
 import { BRAND } from '../data/brand';
 import { ALLERGENS, ADDITIVES } from '../data/allergens';
 import { withBase } from '../lib/url';
+import Icon from './Icon.astro';
 const year = new Date().getFullYear();
 ---
 <footer class="border-t border-brand-gold/20 bg-brand-charcoal/60 mt-12">
-  <div class="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 py-10 grid lg:grid-cols-3 gap-8">
+  <div class="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 py-10 grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
     <div>
-      <p class="display text-xl text-brand-cream mb-2">{BRAND.marketingName}</p>
+      <p class="eyebrow">Kontakt</p>
+      <p class="display text-xl text-brand-cream mt-1 mb-2">{BRAND.marketingName}</p>
       <address class="not-italic text-sm text-brand-cream/75 leading-relaxed">
         {BRAND.address.street}<br />
         {BRAND.address.postalCode} {BRAND.address.city}<br />
-        <a href={`tel:${BRAND.contact.phoneE164}`} class="underline decoration-brand-gold/40">
+        <a href={`tel:${BRAND.contact.phoneE164}`} class="underline decoration-brand-gold/40 hover:decoration-brand-gold">
           {BRAND.contact.phoneDisplay}
         </a><br />
-        <a href={`mailto:${BRAND.contact.email}`} class="underline decoration-brand-gold/40">
+        <a href={`mailto:${BRAND.contact.email}`} class="underline decoration-brand-gold/40 hover:decoration-brand-gold">
           {BRAND.contact.email}
         </a>
       </address>
@@ -24,28 +26,33 @@ const year = new Date().getFullYear();
       </p>
     </div>
     <nav aria-label="Rechtliches" class="text-sm">
-      <p class="text-brand-gold uppercase text-xs tracking-wider mb-2">Rechtliches</p>
-      <ul class="space-y-1 text-brand-cream/85">
-        <li><a href={withBase('/impressum')} class="hover:text-brand-cream">Impressum</a></li>
-        <li><a href={withBase('/datenschutz')} class="hover:text-brand-cream">Datenschutz</a></li>
+      <p class="eyebrow">Rechtliches</p>
+      <ul class="space-y-1 mt-3 text-brand-cream/85">
+        <li><a href={withBase('/impressum')} class="hover:text-brand-gold transition-colors">Impressum</a></li>
+        <li><a href={withBase('/datenschutz')} class="hover:text-brand-gold transition-colors">Datenschutz</a></li>
       </ul>
     </nav>
-    <details class="text-sm">
-      <summary class="cursor-pointer text-brand-gold uppercase text-xs tracking-wider">Allergene & Zusatzstoffe</summary>
+    <details class="text-sm sm:col-span-2 lg:col-span-1 footer-allergens" data-footer-allergens>
+      <summary class="list-none flex items-center justify-between gap-3 cursor-pointer select-none">
+        <p class="eyebrow !mb-0">Allergene & Zusatzstoffe</p>
+        <span class="footer-allergens-chevron text-brand-gold" aria-hidden="true">
+          <Icon name="chevron-down" size={16} />
+        </span>
+      </summary>
       <div class="mt-3 grid grid-cols-2 gap-3 text-xs text-brand-cream/85">
         <div>
           <p class="font-semibold mb-1">Allergene</p>
-          <ul>
+          <ul class="space-y-0.5">
             {Object.entries(ALLERGENS).map(([k, v]) => (
-              <li><strong>{k})</strong> {v}</li>
+              <li><strong class="text-brand-cream">{k})</strong> {v}</li>
             ))}
           </ul>
         </div>
         <div>
           <p class="font-semibold mb-1">Zusatzstoffe</p>
-          <ul>
+          <ul class="space-y-0.5">
             {Object.entries(ADDITIVES).map(([k, v]) => (
-              <li><strong>{k})</strong> {v}</li>
+              <li><strong class="text-brand-cream">{k})</strong> {v}</li>
             ))}
           </ul>
         </div>
@@ -56,3 +63,17 @@ const year = new Date().getFullYear();
     © {year} {BRAND.legalName} · Inh. {BRAND.ownerName}
   </p>
 </footer>
+
+<style>
+  /* Match the Speisekarte accordion styling: hide the default UA marker
+   * and rotate the Lucide chevron when the panel opens. */
+  details.footer-allergens > summary::-webkit-details-marker { display: none; }
+  details.footer-allergens > summary::marker { content: ''; }
+  details.footer-allergens[open] > summary .footer-allergens-chevron {
+    transform: rotate(180deg);
+  }
+  details.footer-allergens > summary .footer-allergens-chevron {
+    transition: transform 180ms ease;
+    display: inline-flex;
+  }
+</style>

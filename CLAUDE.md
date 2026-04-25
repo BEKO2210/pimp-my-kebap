@@ -125,23 +125,77 @@ prependet, ergab sich
 `og:image` zeigt auf die echte URL und `dist/brand/og-image.jpg`
 existiert.
 
-### 12. Footer: Links sauber ausrichten [ ]
-Sichtprüfung — Impressum/Datenschutz/Allergene-Liste auf Mobile +
-Desktop. Spacing, Tab-Order.
+### 12. Footer: Links sauber ausrichten [x]
+Drei Polishings:
+1. Section-Headers konsistent — alle drei Spalten benutzen jetzt
+   `.eyebrow` (Brand-Spalte mit zusätzlichem display-Headline für
+   den Brand-Namen).
+2. Allergene-Akkordeon: Default-Browser-Triangle entfernt, durch
+   Lucide-Chevron mit 180°-Rotation ersetzt (gleicher Stil wie
+   Speisekarten-Akkordeons).
+3. Mobile-Layout: Grid `sm:grid-cols-2 lg:grid-cols-3` — auf Tablet
+   sind Kontakt + Rechtliches nebeneinander, Allergene voll breit.
+Hover-States der Links auf gold mit Transition für klares Feedback.
 
-### 13. Toast-Stack auf Mobile [ ]
-Mehrere Toasts schnell nacheinander → wie sieht das aus? Position
-und Stacking-Verhalten prüfen.
+### 13. Toast-Stack auf Mobile [x]
+Drei Verbesserungen in `lib/toast.ts` und `global.css`:
+1. **Stack-Limit**: max 3 sichtbare Toasts. Bei viertem Toast wird
+   der älteste sofort dismissed — keine Endlos-Schlange mehr.
+2. **Dedupe-Window**: identische Message innerhalb 600 ms wird
+   verworfen. Rapid + Klicks am gleichen Item spammen den Toast
+   nicht mehr.
+3. **Position folgt Cart-Bar**: ohne Cart-Bar `bottom: 1rem`, mit
+   sichtbarer Cart-Bar `bottom: 5.25rem` (über die ~60 px Bar
+   gehoben). Auf Desktop ist die Bar `lg:hidden`, da bleibt Toast
+   bottom-right `1.5rem` egal welcher Body-State.
 
-### 14. Veraltete E2E-Tests aufräumen [ ]
-`tests/e2e/konfigurator.spec.ts` testet noch alte Routen / alte
-Step-Reihenfolge. Entweder anpassen oder ersetzen, damit niemand
-auf veralteten Code blickt.
+`dismiss()`-Helper extrahiert, double-dismiss durch `data-leaving`
+Guard verhindert.
 
-### 15. CSP/Security-Header Sichtprüfung [ ]
-Nach allen Änderungen einmal `dist/index.html` prüfen: stimmen die
-CSP-Direktiven noch (img-src für tile.openstreetmap.org), keine
-inline-Scripts ohne nonce.
+### 14. Veraltete E2E-Tests aufräumen [x]
+`tests/e2e/konfigurator.spec.ts` komplett neu geschrieben für den
+aktuellen Flow. Alte Tests zielten auf `/` (Konfigurator war dort),
+erwarteten Bread vor Basis und automatisches Cart-Drawer-Auf-Pop —
+alles drei stimmt nicht mehr. Neue Tests:
+- Kebap Basic: Basis → Brot → /weiter (kein Drawer-Pop).
+- Yufka Basic: kein Bread-Step sichtbar.
+- Kebap Box: Bread + Pimp hidden, Box-Hint sichtbar.
+- Speisekarte +: Drawer bleibt zu, Cart-Bar zeigt 1 Item.
+- Hamburger (mobile-only via viewport-Skip): Click öffnet, ESC schließt.
+
+E2E ist nicht in CI (CI macht typecheck/lint/vitest/build), läuft
+aber lokal über `npm run test:e2e`.
+
+### 15. CSP/Security-Header Sichtprüfung [x]
+Sichtprüfung im Build, alles passt:
+
+**Externe Resources im Build:**
+- `tile.openstreetmap.org` (`<img>` in Standort) → `img-src` deckt's ✓
+- `data:`-SVG-Placeholders → `img-src data:` ✓
+- `wa.me/...`, `google.com/maps/...`, `instagram.com/...` →
+  Top-Level-Navigation, nicht CSP-relevant ✓
+
+**Inline-Audit auf jeder gebauten Seite:**
+- Inline-Scripts ohne nonce: **0**
+- 3× `<script type="application/ld+json">` (Restaurant + Menu +
+  Breadcrumb JSON-LD). Per CSP3 Spec sind data-blocks (LD+JSON,
+  application/json) NICHT durch `script-src` reglementiert.
+- 4× `<script type="module" src="/assets/...">` — alle eigener Origin,
+  passt zu `script-src 'self'`.
+- 2× Astro-Component-`<style>`-Blöcke + 3× `style="..."` im
+  `#print-receipt`-Block: erlaubt durch `style-src 'self'
+  'unsafe-inline'`. Inline-Style ist für Print-Engines gerechtfertigt
+  (manche ignorieren externe Stylesheets).
+
+**Deployment-Limit dokumentiert:**
+GitHub Pages ignoriert `public/_headers` (Cloudflare/Netlify-Format).
+In Production kommt nur die Meta-CSP zum Tragen — und Meta-CSP kann
+laut HTML-Spec kein `frame-ancestors` setzen. Folge: kein iframe-
+Click-Jacking-Schutz auf GH-Pages. Beim Wechsel auf Cloudflare Pages
+oder Netlify wird `public/_headers` automatisch HTTP-Header und
+`frame-ancestors 'none'` greift.
+
+Keine Code-Änderung nötig.
 
 ---
 

@@ -82,31 +82,69 @@ void ico16; void ico48;
 // 4. apple-touch-icon (180×180)
 await (await pwaIcon(180)).toFile(resolve(PUBLIC_DIR, 'apple-touch-icon.png'));
 
-// 5. OG image (1200×630)
+// 5. OG image (1200×630) — header-style social card.
+// Logo + brand wordmark on the left, slogan + contact on the right.
+// Two thin gold accent lines top/bottom mirror the header border.
 {
   const W = 1200, H = 630;
-  const logoSize = 360;
-  const inner = await sharp(LOGO_PNG)
+  const logoSize = 380;
+  const innerLogo = await sharp(LOGO_PNG)
     .resize({ width: logoSize, height: logoSize, fit: 'contain', background: { r: 0, g: 0, b: 0, alpha: 0 } })
     .toBuffer();
-  const svgText = Buffer.from(
-    `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}">
-      <text x="50%" y="78%" text-anchor="middle"
-            font-family="serif" font-size="46" fill="#d4af37" font-weight="700">
+
+  const svg = Buffer.from(
+    `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}">
+      <defs>
+        <radialGradient id="glow" cx="78%" cy="22%" r="55%">
+          <stop offset="0%"   stop-color="#d4af37" stop-opacity="0.18"/>
+          <stop offset="100%" stop-color="#d4af37" stop-opacity="0"/>
+        </radialGradient>
+        <linearGradient id="accent" x1="0" x2="1" y1="0" y2="0">
+          <stop offset="0%"   stop-color="#d4af37" stop-opacity="0"/>
+          <stop offset="50%"  stop-color="#d4af37" stop-opacity="0.85"/>
+          <stop offset="100%" stop-color="#d4af37" stop-opacity="0"/>
+        </linearGradient>
+      </defs>
+      <rect width="${W}" height="${H}" fill="url(#glow)"/>
+      <rect x="80" y="56"  width="${W - 160}" height="2" fill="url(#accent)"/>
+      <rect x="80" y="${H - 58}" width="${W - 160}" height="2" fill="url(#accent)"/>
+
+      <!-- Right column: brand text + slogan + contact -->
+      <text x="${W - 80}" y="240" text-anchor="end"
+            font-family="'Playfair Display', Georgia, serif" font-size="84" fill="#f8f3e6" font-weight="800"
+            letter-spacing="-2">
+        Pimp My <tspan fill="#d4af37" font-style="italic">Kebap</tspan>
+      </text>
+      <text x="${W - 80}" y="295" text-anchor="end"
+            font-family="'Space Grotesk', Helvetica, sans-serif" font-size="22" fill="#d4af37"
+            letter-spacing="6" font-weight="700">
+        FREIBERG AM NECKAR
+      </text>
+
+      <text x="${W - 80}" y="395" text-anchor="end"
+            font-family="'Playfair Display', Georgia, serif" font-size="34" fill="#f8f3e6" font-style="italic"
+            opacity="0.92">
         Create Your Kebap. Pay Your Style.
       </text>
-      <text x="50%" y="86%" text-anchor="middle"
-            font-family="sans-serif" font-size="22" fill="#f8f3e6" opacity="0.75">
-        Marktplatz 18 · 71691 Freiberg am Neckar
+
+      <text x="${W - 80}" y="465" text-anchor="end"
+            font-family="'Space Grotesk', Helvetica, sans-serif" font-size="22" fill="#f8f3e6" opacity="0.75">
+        Marktplatz 18  ·  0174 2116095
+      </text>
+      <text x="${W - 80}" y="500" text-anchor="end"
+            font-family="'Space Grotesk', Helvetica, sans-serif" font-size="22" fill="#f8f3e6" opacity="0.75">
+        Bestellung per WhatsApp
       </text>
     </svg>`,
   );
+
   await sharp({ create: { width: W, height: H, channels: 4, background: BRAND_BG } })
     .composite([
-      { input: inner, gravity: 'north', top: 70, left: Math.round((W - logoSize) / 2) },
-      { input: svgText, top: 0, left: 0 },
+      { input: svg, top: 0, left: 0 },
+      // Left column: logo, vertically centered.
+      { input: innerLogo, top: Math.round((H - logoSize) / 2), left: 80 },
     ])
-    .jpeg({ quality: 85 })
+    .jpeg({ quality: 88 })
     .toFile(resolve(BRAND_DIR, 'og-image.jpg'));
 }
 

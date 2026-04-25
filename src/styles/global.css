@@ -79,6 +79,33 @@ input[aria-invalid='true'] {
   .cfg-pulse { animation: none; opacity: .9; }
 }
 
+/* "Item added" feedback — short gold pulse on the +-button right after a
+ * Speisekarten or Drinks add, so the customer sees the click landed without
+ * the cart drawer hijacking the screen. */
+.cart-added-pulse {
+  animation: cart-added 0.55s cubic-bezier(.4, 0, .2, 1) 1;
+}
+@keyframes cart-added {
+  0%   { transform: scale(1);    box-shadow: 0 0 0 0 rgba(212,175,55,.6); }
+  35%  { transform: scale(1.08); box-shadow: 0 0 0 8px rgba(212,175,55,.25); }
+  100% { transform: scale(1);    box-shadow: 0 0 0 0 rgba(212,175,55,0); }
+}
+
+/* Sticky mobile cart bar pulse — fires once whenever the item count grows,
+ * tying the +-click on a card to a visible reaction in the bar at the bottom. */
+.cart-bar-pulse {
+  animation: cart-bar-pulse 0.6s cubic-bezier(.4, 0, .2, 1) 1;
+}
+@keyframes cart-bar-pulse {
+  0%   { box-shadow: 0 0 0 0 rgba(212,175,55,.0); }
+  40%  { box-shadow: 0 -2px 22px rgba(212,175,55,.45); border-top-color: var(--color-brand-gold); }
+  100% { box-shadow: 0 0 0 0 rgba(212,175,55,0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cart-added-pulse, .cart-bar-pulse { animation: none; }
+}
+
 a { color: inherit; text-decoration: none; }
 
 h1, h2, h3, .display { font-family: var(--font-display); letter-spacing: -0.01em; }
@@ -217,12 +244,21 @@ h1, h2, h3, .display { font-family: var(--font-display); letter-spacing: -0.01em
  * ──────────────────────────────────────────────────────────── */
 #toast-region {
   position: fixed; z-index: 60;
-  inset-inline: 0; bottom: 5.5rem;
+  inset-inline: 0; bottom: 1rem;
   display: flex; flex-direction: column; gap: .5rem; align-items: center;
   pointer-events: none;
+  /* On mobile the toast slides up from outside the viewport — cleaner than
+   * fading in. The transition is gated by prefers-reduced-motion below. */
+  transition: bottom 0.18s ease;
 }
+/* Lift the stack above the sticky mobile cart bar when it's visible. */
+body.has-cart-bar #toast-region { bottom: 5.25rem; }
 @media (min-width: 1024px) {
-  #toast-region { inset-inline: auto 1.5rem; bottom: 1.5rem; align-items: flex-end; }
+  /* Cart bar hides ≥lg, and we anchor toasts to the bottom-right instead. */
+  #toast-region,
+  body.has-cart-bar #toast-region {
+    inset-inline: auto 1.5rem; bottom: 1.5rem; align-items: flex-end;
+  }
 }
 .toast {
   pointer-events: auto;

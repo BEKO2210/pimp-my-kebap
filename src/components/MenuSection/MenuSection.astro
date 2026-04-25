@@ -5,6 +5,7 @@ import { itemsByCategory, CATEGORY_LABEL } from '../../data/menu';
 import { effectiveMenuPrice } from '../../lib/pricing';
 import ItemCard from '../ItemCard/ItemCard.astro';
 import Icon from '../Icon.astro';
+import { withBase } from '../../lib/url';
 
 interface Props {
   category: MenuCategory;
@@ -14,9 +15,24 @@ interface Props {
   blurb?: string;
   /** Pre-computed item count for the summary line. */
   itemCount?: number;
+  /** Optional CTA card rendered before the items grid (e.g. "Konfigurator"). */
+  ctaHref?: string;
+  ctaLabel?: string;
+  ctaDescription?: string;
+  ctaIcon?: 'kebap' | 'pizza';
 }
 
-const { category, weekday, schoolHoursOpen = true, blurb, itemCount } = Astro.props;
+const {
+  category,
+  weekday,
+  schoolHoursOpen = true,
+  blurb,
+  itemCount,
+  ctaHref,
+  ctaLabel,
+  ctaDescription,
+  ctaIcon,
+} = Astro.props;
 const items = itemsByCategory(category);
 const isSchoolSection = category === 'schueler';
 const sectionDimmed = isSchoolSection && !schoolHoursOpen;
@@ -53,6 +69,34 @@ const count = itemCount ?? items.length;
         </span>
       </summary>
       {blurb && <p class="text-sm text-brand-cream/65 mt-2 max-w-2xl">{blurb}</p>}
+
+      {ctaHref && ctaLabel && (
+        <a
+          href={withBase(ctaHref)}
+          class="block mt-4 rounded-xl border border-brand-gold/40 bg-gradient-to-br from-brand-gold/10 via-transparent to-brand-orange/10 p-4 sm:p-5 hover:border-brand-gold transition-colors group"
+          data-cfg-cta
+        >
+          <div class="flex items-start gap-3 sm:gap-4">
+            {ctaIcon && (
+              <span class="text-brand-gold shrink-0 mt-0.5">
+                <Icon name={ctaIcon} size={28} />
+              </span>
+            )}
+            <div class="min-w-0 flex-1">
+              <p class="display text-lg text-brand-cream group-hover:text-brand-gold transition-colors">
+                {ctaLabel}
+              </p>
+              {ctaDescription && (
+                <p class="text-sm text-brand-cream/70 mt-1">{ctaDescription}</p>
+              )}
+            </div>
+            <span class="text-brand-gold shrink-0 self-center group-hover:translate-x-1 transition-transform">
+              <Icon name="arrow-right" size={20} />
+            </span>
+          </div>
+        </a>
+      )}
+
       <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-5">
         {items.map((item) => {
           const eff = effectiveMenuPrice(item, weekday);

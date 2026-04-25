@@ -76,6 +76,71 @@ describe('computeTotals', () => {
     expect(totals.grandTotalEur).toBe(5.5);
   });
 
+  it('mixes lines from all four sources (Kebap-Konfigurator + Pizza-Konfigurator + Speisekarte + Drink)', () => {
+    // Simulates exactly the user flow: build a kebap, build a pizza, add a
+    // ready-made menu item from the Speisekarte, plus a drink. Every entry
+    // funnels through addLine() with the same shape, so computeTotals must
+    // sum them cleanly.
+    const fromKebapConfig: CartLine = {
+      kind: 'kebab',
+      id: 'k-1',
+      quantity: 1,
+      unitPriceEur: 8.5, // Kebap Basic 6.50 + Schmelzkäse 1.00 + 1 paid sauce 0.50 + 1 topping 0.50 (computed elsewhere)
+      config: {
+        bread: 'klassisch',
+        base: 'kebap_basic',
+        meat: 'rinderhack',
+        extraMeat50g: 0,
+        schmelzkaese: true,
+        sauces: ['bbq', 'cocktail', 'mango_avocado'],
+        toppings: ['rucola'],
+      },
+    };
+    const fromPizzaConfig: CartLine = {
+      kind: 'menu',
+      id: 'p-1',
+      quantity: 1,
+      itemId: 'pimp-pizza-salami-mais',
+      itemName: 'Pimp my Pizza · Salami, Mais',
+      category: 'pizza',
+      unitPriceEur: 10.0, // 8.00 base + 2 standard toppings
+    };
+    const fromSpeisekarte: CartLine = {
+      kind: 'menu',
+      id: 'm-1',
+      quantity: 1,
+      itemId: 'pizza-margherita',
+      itemName: 'Margherita',
+      category: 'pizza',
+      unitPriceEur: 8.0,
+    };
+    const fromDrinks: CartLine = {
+      kind: 'drink',
+      id: 'd-1',
+      quantity: 2,
+      drinkId: 'cola',
+      drinkName: 'Cola',
+      variantLabel: 'Dose',
+      unitPriceEur: 2.5,
+      unitDepositEur: 0.25,
+    };
+
+    const all = [fromKebapConfig, fromPizzaConfig, fromSpeisekarte, fromDrinks];
+    const totals = computeTotals(all);
+    expect(totals.itemCount).toBe(5); // 1 + 1 + 1 + 2
+    expect(totals.itemsSubtotalEur).toBe(8.5 + 10 + 8 + 5); // 31.50
+    expect(totals.depositSubtotalEur).toBe(0.5); // 2 × 0.25
+    expect(totals.grandTotalEur).toBe(32);
+
+    // The WhatsApp message must list every source exactly once.
+    const msg = buildWhatsAppMessage({ cart: { lines: all, customer } });
+    expect(msg).toContain('Kebap Basic'); // kebab line
+    expect(msg).toContain('Pimp my Pizza · Salami, Mais'); // pizza-configurator line
+    expect(msg).toContain('Margherita'); // speisekarte line
+    expect(msg).toContain('Cola'); // drink line
+    expect(msg).toContain('GESAMT:');
+  });
+
   it('applies Freiberg delivery fee 3 € when fulfillment=lieferung', () => {
     const totals = computeTotals([kebab(1), pizza(2)], {
       fulfillment: 'lieferung',

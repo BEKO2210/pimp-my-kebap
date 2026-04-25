@@ -244,6 +244,16 @@ if (root) {
     firstName.value = c.firstName;
     notes.value = c.notes ?? '';
     deliveryBlock.hidden = c.fulfillment !== 'lieferung';
+    // Time-picker label adapts to fulfillment mode (Abholzeit/Lieferzeit/Wunsch-Uhrzeit).
+    const pickupLabelEl = root!.querySelector<HTMLElement>('[data-cart-pickup-label]');
+    if (pickupLabelEl) {
+      pickupLabelEl.textContent =
+        c.fulfillment === 'lieferung'
+          ? 'Lieferzeit'
+          : c.fulfillment === 'vor-ort'
+            ? 'Wunsch-Uhrzeit'
+            : 'Abholzeit';
+    }
     if (c.delivery) {
       zoneSel.value = c.delivery.zoneId;
       plzInp.value = c.delivery.postalCode;

@@ -13,10 +13,11 @@
   --color-brand-green-leaf: #2e7d32;
   --color-brand-red-fire: #d32f2f;
 
-  --font-ui: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
-  --font-display: 'Playfair Display', 'Times New Roman', Georgia, serif;
+  --font-ui: 'Space Grotesk', ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --font-display: 'Playfair Display', ui-serif, 'Times New Roman', Georgia, serif;
 
-  --radius-card: 0.75rem;
+  --radius-card: 14px;
+  --radius-cta: 8px;
 }
 
 /* @font-face rules are emitted by Base.astro using withBase() so the URLs
@@ -65,34 +66,53 @@ h1, h2, h3, .display { font-family: var(--font-display); letter-spacing: -0.01em
 .skip-link:focus { top: 0; }
 
 /* Reusable component utilities */
+/* CTA buttons get a *different* radius than cards (anti-AI-slop) and a thin
+ * gold rule along the top edge for character. */
 .btn-primary {
+  position: relative;
   display: inline-flex; align-items: center; justify-content: center; gap: .5rem;
   background: linear-gradient(135deg, var(--color-brand-gold), var(--color-brand-orange));
-  color: #000; font-weight: 700;
-  padding: 0.875rem 1.25rem; border-radius: var(--radius-card);
+  color: #000; font-weight: 700; letter-spacing: 0.01em;
+  padding: 0.875rem 1.25rem; border-radius: var(--radius-cta);
   min-height: 44px; min-width: 44px;
-  transition: filter .15s ease, transform .15s ease;
+  border: 1px solid rgba(0,0,0,.2);
+  box-shadow: 0 1px 0 rgba(255,255,255,.35) inset, 0 6px 20px rgba(255,107,26,.18);
+  transition: filter .15s ease, transform .15s ease, box-shadow .15s ease;
 }
-.btn-primary:hover { filter: brightness(1.06); }
+.btn-primary:hover { filter: brightness(1.06); box-shadow: 0 1px 0 rgba(255,255,255,.45) inset, 0 10px 28px rgba(255,107,26,.32); }
 .btn-primary:active { transform: translateY(1px); }
-.btn-primary[disabled] { opacity: .5; cursor: not-allowed; }
+.btn-primary[disabled] { opacity: .5; cursor: not-allowed; box-shadow: none; }
 
 .btn-secondary {
   display: inline-flex; align-items: center; justify-content: center; gap: .5rem;
   background: transparent;
   color: var(--color-brand-cream);
-  border: 1px solid var(--color-brand-gold-dim, rgba(212,175,55,.3));
-  padding: 0.75rem 1.125rem; border-radius: var(--radius-card);
+  border: 1px solid rgba(212,175,55,.3);
+  padding: 0.75rem 1.125rem; border-radius: var(--radius-cta);
   min-height: 44px;
-  transition: background-color .15s ease, border-color .15s ease;
+  transition: background-color .15s ease, border-color .15s ease, color .15s ease;
 }
-.btn-secondary:hover { background-color: rgba(212,175,55,.08); border-color: var(--color-brand-gold); }
+.btn-secondary:hover { background-color: rgba(212,175,55,.08); border-color: var(--color-brand-gold); color: var(--color-brand-gold-light); }
+.btn-secondary[aria-pressed="true"], .btn-secondary[data-active="true"] {
+  background-color: rgba(212,175,55,.14);
+  border-color: var(--color-brand-gold);
+  color: var(--color-brand-gold-light);
+}
 
+/* Cards: subtle gold thread at the top, sharper than the body radius for
+ * intentional asymmetry. */
 .card {
+  position: relative;
   background-color: var(--color-brand-charcoal);
   border: 1px solid rgba(212,175,55,.18);
   border-radius: var(--radius-card);
   box-shadow: var(--shadow-card);
+}
+.card::before {
+  content: "";
+  position: absolute; left: 18px; right: 18px; top: 0; height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(212,175,55,.6), transparent);
+  pointer-events: none;
 }
 
 .card-selectable {
@@ -102,6 +122,33 @@ h1, h2, h3, .display { font-family: var(--font-display); letter-spacing: -0.01em
 .card-selectable[aria-pressed="true"], .card-selectable[data-active="true"] {
   border-color: var(--color-brand-gold);
   box-shadow: var(--shadow-gold-glow);
+  transform: translateY(-1px);
+}
+
+/* Numbers (prices, quantities) get tabular figures + slightly tightened spacing */
+.num, output, [data-num] {
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum";
+  letter-spacing: -0.01em;
+}
+
+/* Section eyebrow — used by every section for an asymmetric, off-center label */
+.eyebrow {
+  display: inline-flex; align-items: center; gap: .55rem;
+  font-size: .68rem; font-weight: 600;
+  letter-spacing: 0.18em; text-transform: uppercase;
+  color: var(--color-brand-gold);
+}
+.eyebrow::before {
+  content: ""; width: 28px; height: 1px;
+  background: linear-gradient(90deg, var(--color-brand-gold), transparent);
+}
+
+/* Decorative section divider with a single asymmetric notch */
+.section-divider {
+  height: 1px;
+  background: linear-gradient(90deg, transparent 0%, rgba(212,175,55,.35) 30%, transparent 100%);
+  margin: 0;
 }
 
 .badge {
@@ -121,4 +168,70 @@ h1, h2, h3, .display { font-family: var(--font-display); letter-spacing: -0.01em
     transition-duration: 0.001ms !important;
     scroll-behavior: auto !important;
   }
+}
+
+/* ────────────────────────────────────────────────────────────
+ * Toast container (no backend, no library — see src/lib/toast.ts)
+ * ──────────────────────────────────────────────────────────── */
+#toast-region {
+  position: fixed; z-index: 60;
+  inset-inline: 0; bottom: 5.5rem;
+  display: flex; flex-direction: column; gap: .5rem; align-items: center;
+  pointer-events: none;
+}
+@media (min-width: 1024px) {
+  #toast-region { inset-inline: auto 1.5rem; bottom: 1.5rem; align-items: flex-end; }
+}
+.toast {
+  pointer-events: auto;
+  max-width: min(92vw, 24rem);
+  background: var(--color-brand-charcoal);
+  color: var(--color-brand-cream);
+  border: 1px solid rgba(212,175,55,.4);
+  border-left: 3px solid var(--color-brand-gold);
+  border-radius: var(--radius-cta);
+  padding: .65rem .9rem;
+  box-shadow: 0 10px 30px rgba(0,0,0,.5);
+  font-size: .9rem;
+  display: flex; align-items: center; gap: .5rem;
+  animation: toast-in .25s ease both;
+}
+.toast[data-tone="error"] { border-left-color: var(--color-brand-red-fire); }
+.toast[data-tone="success"] { border-left-color: var(--color-brand-green-leaf); }
+.toast[data-leaving="true"] { animation: toast-out .2s ease both; }
+@keyframes toast-in {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes toast-out {
+  to { opacity: 0; transform: translateY(8px); }
+}
+
+/* ────────────────────────────────────────────────────────────
+ * View Transitions — Astro 5 native API
+ * ──────────────────────────────────────────────────────────── */
+@view-transition { navigation: auto; }
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: 0.25s;
+}
+
+/* ────────────────────────────────────────────────────────────
+ * Print stylesheet — used for the cart receipt
+ * ──────────────────────────────────────────────────────────── */
+@media print {
+  body { background: white !important; color: black !important; padding: 0 !important; }
+  body > *:not(#cart-drawer):not(#print-receipt) { display: none !important; }
+  #print-receipt {
+    display: block !important;
+    background: white;
+    color: black;
+    padding: 2rem;
+    font-family: ui-monospace, 'SF Mono', monospace;
+  }
+  #print-receipt h1 { font-family: 'Playfair Display', serif; }
+  #cart-drawer { display: none !important; }
+}
+@media not print {
+  #print-receipt { display: none; }
 }

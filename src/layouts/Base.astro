@@ -54,15 +54,15 @@ const csp =
     <link rel="apple-touch-icon" href={withBase('/apple-touch-icon.png')} />
     <link rel="manifest" href={withBase('/manifest.webmanifest')} />
 
-    <link rel="preload" href={withBase('/fonts/inter-variable.woff2')} as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href={withBase('/fonts/space-grotesk-variable.woff2')} as="font" type="font/woff2" crossorigin />
     <link rel="preload" href={withBase('/fonts/playfair-display-variable.woff2')} as="font" type="font/woff2" crossorigin />
 
     <style is:inline set:html={`
       @font-face {
-        font-family: 'Inter';
-        src: url('${withBase('/fonts/inter-variable.woff2')}') format('woff2-variations'),
-             url('${withBase('/fonts/inter-variable.woff2')}') format('woff2');
-        font-weight: 100 900;
+        font-family: 'Space Grotesk';
+        src: url('${withBase('/fonts/space-grotesk-variable.woff2')}') format('woff2-variations'),
+             url('${withBase('/fonts/space-grotesk-variable.woff2')}') format('woff2');
+        font-weight: 300 700;
         font-style: normal;
         font-display: swap;
       }

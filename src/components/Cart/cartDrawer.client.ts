@@ -23,6 +23,9 @@ import { BREADS } from '../../data/breads';
 import { BASES, MEATS } from '../../data/configurator';
 import { SAUCES } from '../../data/sauces';
 import { TOPPINGS } from '../../data/ingredients';
+import { copyShareCartLink } from '../../lib/share-cart';
+import { recordOrder } from '../../lib/history';
+import { toast } from '../../lib/toast';
 
 const root = document.querySelector<HTMLElement>('[data-cart-root]');
 if (root) {
@@ -39,6 +42,8 @@ if (root) {
   const close = root.querySelector<HTMLButtonElement>('[data-cart-close]')!;
   const backdrop = root.querySelector<HTMLElement>('[data-cart-backdrop]')!;
   const clearBtn = root.querySelector<HTMLButtonElement>('[data-cart-clear]')!;
+  const shareBtn = root.querySelector<HTMLButtonElement>('[data-cart-share]')!;
+  const printBtn = root.querySelector<HTMLButtonElement>('[data-cart-print]')!;
   const firstName = root.querySelector<HTMLInputElement>('[data-cart-firstname]')!;
   const pickupSel = root.querySelector<HTMLSelectElement>('[data-cart-pickup]')!;
   const notes = root.querySelector<HTMLTextAreaElement>('[data-cart-notes]')!;
@@ -291,7 +296,27 @@ if (root) {
     if (!confirm('Deine Bestellung wird in WhatsApp geöffnet:\n\n' + preview)) return;
     const url = currentWhatsAppUrl(checkout.dataset.waNumber);
     recordWhatsAppSend();
+    recordOrder($lines.get(), $customer.get());
     window.open(url, '_blank', 'noopener,noreferrer');
+    toast('Bestellung gesendet — bitte WhatsApp prüfen', { tone: 'success', ms: 5000 });
+  });
+
+  shareBtn.addEventListener('click', () => {
+    if ($lines.get().length === 0) {
+      toast('Erst Artikel in den Warenkorb, dann teilen.', { tone: 'info' });
+      return;
+    }
+    void copyShareCartLink();
+  });
+
+  printBtn.addEventListener('click', () => {
+    if ($lines.get().length === 0) {
+      toast('Warenkorb ist leer — nichts zu drucken.', { tone: 'info' });
+      return;
+    }
+    const body = document.getElementById('print-receipt-body');
+    if (body) body.textContent = currentWhatsAppPreview();
+    window.print();
   });
 
   // Initial render

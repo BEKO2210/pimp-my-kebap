@@ -5,6 +5,8 @@
 import { priceKebab, type KebabConfig } from '../../lib/pricing';
 import { formatEUR } from '../../lib/format';
 import { addLine, openCart } from '../../lib/cart';
+import { randomKebab } from '../../lib/random-kebab';
+import { toast } from '../../lib/toast';
 import type { BreadId } from '../../data/breads';
 import type { BaseId, MeatId } from '../../data/configurator';
 import type { SauceId } from '../../data/sauces';
@@ -146,6 +148,52 @@ if (root) {
     });
     if (navigator.vibrate) navigator.vibrate(10);
     openCart();
+  });
+
+  // ── Surprise Me — re-applies a random valid config and scrolls into view
+  function applyConfig(cfg: KebabConfig) {
+    state.bread = cfg.bread;
+    state.base = cfg.base;
+    state.meat = cfg.meat;
+    state.meatUpgradeSteak = cfg.meatUpgradeSteak;
+    state.extraMeat50g = cfg.extraMeat50g;
+    state.schmelzkaese = cfg.schmelzkaese;
+    state.sauces = [...cfg.sauces];
+    state.toppings = [...cfg.toppings];
+    breadChosen = true;
+    baseChosen = true;
+    setActive('bread', state.bread);
+    setActive('base', state.base);
+    setActive('meat', state.meat);
+    // sauces & toppings: tick checkboxes + visual cards
+    root!.querySelectorAll<HTMLInputElement>('[data-cfg-sauce]').forEach((cb) => {
+      const id = cb.getAttribute('data-cfg-sauce') as SauceId;
+      cb.checked = state.sauces.includes(id);
+      cb.closest<HTMLElement>('[data-cfg-sauce-card]')?.setAttribute('data-active', String(cb.checked));
+    });
+    root!.querySelectorAll<HTMLInputElement>('[data-cfg-topping]').forEach((cb) => {
+      const id = cb.getAttribute('data-cfg-topping') as ToppingId;
+      cb.checked = state.toppings.includes(id);
+      cb.closest<HTMLElement>('[data-cfg-topping-card]')?.setAttribute('data-active', String(cb.checked));
+    });
+    root!.querySelectorAll<HTMLInputElement>('[data-cfg-flag]').forEach((cb) => {
+      const flag = cb.getAttribute('data-cfg-flag');
+      if (flag === 'schmelzkaese') cb.checked = state.schmelzkaese;
+      if (flag === 'meatUpgradeSteak') cb.checked = state.meatUpgradeSteak;
+    });
+    extraMeatVal.textContent = String(state.extraMeat50g);
+    recompute();
+  }
+
+  document.querySelectorAll<HTMLButtonElement>('[data-surprise-me]').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const cfg = randomKebab();
+      applyConfig(cfg);
+      const target = document.getElementById('konfigurator');
+      if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      if (navigator.vibrate) navigator.vibrate([5, 30, 5]);
+      toast('Zufalls-Kebap konfiguriert. Schmeckt sicher!', { tone: 'success' });
+    });
   });
 
   recompute();

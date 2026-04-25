@@ -134,19 +134,28 @@ const wa = import.meta.env.PUBLIC_RESTAURANT_WHATSAPP ?? '491742116095';
 
       <p data-cart-warning hidden class="text-xs text-brand-red-fire bg-brand-red-fire/10 border border-brand-red-fire/30 rounded-md p-2"></p>
 
-      <div class="grid grid-cols-2 gap-2">
-        <button type="button" class="btn-secondary text-sm" data-cart-clear>Leeren</button>
-        <button
-          type="button"
-          class="btn-primary text-sm"
-          data-cart-checkout
-          data-wa-number={wa}
-          disabled
-        >Per WhatsApp senden →</button>
+      <div class="grid grid-cols-3 gap-2">
+        <button type="button" class="btn-secondary text-xs !px-2" data-cart-clear>Leeren</button>
+        <button type="button" class="btn-secondary text-xs !px-2" data-cart-share aria-label="Warenkorb-Link kopieren">🔗 Teilen</button>
+        <button type="button" class="btn-secondary text-xs !px-2" data-cart-print aria-label="Bon drucken">🖨 Bon</button>
       </div>
+      <button
+        type="button"
+        class="btn-primary text-sm w-full"
+        data-cart-checkout
+        data-wa-number={wa}
+        disabled
+      >Per WhatsApp senden →</button>
     </div>
   </div>
 </aside>
+
+<!-- Receipt-only block — visible exclusively when window.print() runs. -->
+<section id="print-receipt" aria-hidden="true">
+  <h1 style="font-size:24pt;margin:0 0 0.5em;">Pimp My Kebap</h1>
+  <p style="margin:0 0 1em;color:#444;">Marktplatz 18 · 71691 Freiberg am Neckar · 0174 2116095</p>
+  <pre id="print-receipt-body" style="white-space:pre-wrap;font-size:11pt;line-height:1.5;"></pre>
+</section>
 
 <!-- Sticky mobile bottom bar (hidden when drawer is open) -->
 <div

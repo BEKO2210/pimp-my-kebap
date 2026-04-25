@@ -26,6 +26,9 @@ const isOnRequest = effectivePrice === null;
   data-item-category={item.category}
   data-item-price={effectivePrice ?? ''}
   data-item-promo={promo ? 'true' : 'false'}
+  data-item-tag={item.tag ?? ''}
+  data-item-markings={(item.markings ?? []).join(',')}
+  data-item-search={`${item.name} ${item.description ?? ''} ${item.tag ?? ''}`.toLowerCase()}
   itemscope
   itemtype="https://schema.org/MenuItem"
 >

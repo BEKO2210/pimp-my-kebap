@@ -7,6 +7,8 @@ if (searchInput) {
   const status = root.querySelector<HTMLElement>('[data-filter-status]')!;
   const cards = Array.from(root.querySelectorAll<HTMLElement>('[data-item-id]'));
   const sections = Array.from(root.querySelectorAll<HTMLElement>('[data-menu-section]'));
+  const filterDropdown = root.querySelector<HTMLDetailsElement>('[data-menu-filter-dropdown]');
+  const filterCountBadge = root.querySelector<HTMLElement>('[data-filter-active-count]');
 
   const state = {
     search: '',
@@ -14,6 +16,26 @@ if (searchInput) {
     spicy: false,
     excludeAllergens: new Set<string>(),
   };
+
+  function activeFilterCount(): number {
+    let n = 0;
+    if (state.veg) n++;
+    if (state.spicy) n++;
+    n += state.excludeAllergens.size;
+    return n;
+  }
+
+  function updateFilterBadge() {
+    if (!filterCountBadge) return;
+    const n = activeFilterCount();
+    if (n === 0) {
+      filterCountBadge.classList.add('hidden');
+      filterCountBadge.textContent = '0';
+    } else {
+      filterCountBadge.classList.remove('hidden');
+      filterCountBadge.textContent = String(n);
+    }
+  }
 
   function apply() {
     const q = state.search.trim();
@@ -33,11 +55,17 @@ if (searchInput) {
       card.toggleAttribute('hidden', !show);
       if (show) visible++;
     }
-    // Hide entire sections that have zero visible cards
+    // Hide entire sections that have zero visible cards; auto-open accordions
+    // that have at least one match while filters/search are active so the user
+    // sees results without manual expansion. When filters are off, leave the
+    // open/closed state alone so the user keeps their manual choice.
+    const filtersActive = q !== '' || state.veg || state.spicy || state.excludeAllergens.size > 0;
     for (const section of sections) {
       const localCards = section.querySelectorAll<HTMLElement>('[data-item-id]');
       const someVisible = Array.from(localCards).some((c) => !c.hasAttribute('hidden'));
       section.toggleAttribute('hidden', !someVisible);
+      const acc = section.querySelector<HTMLDetailsElement>('details[data-menu-accordion]');
+      if (acc && filtersActive) acc.open = someVisible;
     }
     const total = cards.length;
     if (visible === total && q === '' && !state.veg && !state.spicy && state.excludeAllergens.size === 0) {
@@ -47,6 +75,7 @@ if (searchInput) {
     } else {
       status.textContent = `${visible} von ${total} Speisen sichtbar`;
     }
+    updateFilterBadge();
   }
 
   searchInput.addEventListener('input', () => {
@@ -92,4 +121,29 @@ if (searchInput) {
     });
     apply();
   });
+
+  // Filter dropdown: close on outside click + ESC
+  if (filterDropdown) {
+    document.addEventListener('click', (e) => {
+      if (!filterDropdown.open) return;
+      if (filterDropdown.contains(e.target as Node)) return;
+      filterDropdown.open = false;
+    });
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && filterDropdown.open) filterDropdown.open = false;
+    });
+  }
+
+  // Quick-jump links: open the target accordion before scrolling.
+  root.querySelectorAll<HTMLAnchorElement>('[data-cat-jump]').forEach((a) => {
+    a.addEventListener('click', () => {
+      const cat = a.dataset.catJump;
+      if (!cat) return;
+      const target = document.getElementById(`section-${cat}`);
+      const acc = target?.querySelector<HTMLDetailsElement>('details[data-menu-accordion]');
+      if (acc) acc.open = true;
+    });
+  });
+
+  apply();
 }

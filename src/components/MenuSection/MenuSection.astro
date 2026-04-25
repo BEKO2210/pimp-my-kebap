@@ -4,6 +4,7 @@ import type { MenuCategory } from '../../data/menu';
 import { itemsByCategory, CATEGORY_LABEL } from '../../data/menu';
 import { effectiveMenuPrice } from '../../lib/pricing';
 import ItemCard from '../ItemCard/ItemCard.astro';
+import Icon from '../Icon.astro';
 
 interface Props {
   category: MenuCategory;
@@ -11,47 +12,73 @@ interface Props {
   schoolHoursOpen?: boolean;
   /** When set, descriptive blurb under heading. */
   blurb?: string;
+  /** Pre-computed item count for the summary line. */
+  itemCount?: number;
 }
 
-const { category, weekday, schoolHoursOpen = true, blurb } = Astro.props;
+const { category, weekday, schoolHoursOpen = true, blurb, itemCount } = Astro.props;
 const items = itemsByCategory(category);
 const isSchoolSection = category === 'schueler';
 const sectionDimmed = isSchoolSection && !schoolHoursOpen;
+const count = itemCount ?? items.length;
 ---
 
 <section
   id={`section-${category}`}
-  class={`px-4 sm:px-6 lg:px-8 py-10 ${sectionDimmed ? 'opacity-60' : ''}`}
+  class={`px-4 sm:px-6 lg:px-8 ${sectionDimmed ? 'opacity-60' : ''}`}
   data-menu-section={category}
   aria-labelledby={`heading-${category}`}
 >
   <div class="mx-auto max-w-6xl">
-    <div class="flex items-end justify-between gap-4 mb-6 flex-wrap">
-      <div>
-        <h2 id={`heading-${category}`} class="display text-2xl sm:text-3xl text-brand-cream">
-          {CATEGORY_LABEL[category]}
-        </h2>
-        {blurb && <p class="text-sm text-brand-cream/65 mt-1 max-w-xl">{blurb}</p>}
+    <details class="menu-accordion border-t border-brand-gold/15 py-4" data-menu-accordion>
+      <summary
+        class="list-none flex items-center justify-between gap-4 cursor-pointer py-2 select-none"
+        id={`heading-${category}`}
+      >
+        <div class="flex items-center gap-3 min-w-0">
+          <h2 class="display text-2xl sm:text-3xl text-brand-cream truncate">
+            {CATEGORY_LABEL[category]}
+          </h2>
+          <span class="text-xs text-brand-cream/50 num shrink-0">
+            ({count} {count === 1 ? 'Speise' : 'Speisen'})
+          </span>
+          {isSchoolSection && (
+            <span class={`badge ${schoolHoursOpen ? 'badge-veg' : 'badge-spicy'} hidden sm:inline-flex shrink-0`}>
+              {schoolHoursOpen ? 'Mo–Fr ≤16:00' : 'außerhalb Schulzeit'}
+            </span>
+          )}
+        </div>
+        <span class="menu-accordion-chevron text-brand-gold shrink-0" aria-hidden="true">
+          <Icon name="chevron-down" size={20} />
+        </span>
+      </summary>
+      {blurb && <p class="text-sm text-brand-cream/65 mt-2 max-w-2xl">{blurb}</p>}
+      <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-5">
+        {items.map((item) => {
+          const eff = effectiveMenuPrice(item, weekday);
+          const promo = eff !== null && item.priceEur !== null && eff < item.priceEur;
+          // Schüler-Items sind nur Mo–Fr bis 16:00 (außerhalb Feiertag) bestellbar.
+          const orderable = item.schoolHoursOnly ? schoolHoursOpen : true;
+          const unavailableReason = item.schoolHoursOnly && !schoolHoursOpen
+            ? 'Nur Mo–Fr bis 16:00 Uhr'
+            : undefined;
+          return <ItemCard item={item} promo={promo} effectivePrice={eff} orderable={orderable} unavailableReason={unavailableReason} />;
+        })}
       </div>
-      {isSchoolSection && (
-        <p class={`badge ${schoolHoursOpen ? 'badge-veg' : 'badge-spicy'}`}>
-          {schoolHoursOpen
-            ? 'Heute aktiv (Mo–Fr bis 16:00)'
-            : 'Aktuell außerhalb der Schulzeit'}
-        </p>
-      )}
-    </div>
-    <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-      {items.map((item) => {
-        const eff = effectiveMenuPrice(item, weekday);
-        const promo = eff !== null && item.priceEur !== null && eff < item.priceEur;
-        // Schüler-Items sind nur Mo–Fr bis 16:00 (außerhalb Feiertag) bestellbar.
-        const orderable = item.schoolHoursOnly ? schoolHoursOpen : true;
-        const unavailableReason = item.schoolHoursOnly && !schoolHoursOpen
-          ? 'Nur Mo–Fr bis 16:00 Uhr'
-          : undefined;
-        return <ItemCard item={item} promo={promo} effectivePrice={eff} orderable={orderable} unavailableReason={unavailableReason} />;
-      })}
-    </div>
+    </details>
   </div>
 </section>
+
+<style>
+  /* Hide the default <summary> marker (Safari/Firefox/Chrome). */
+  details[data-menu-accordion] > summary::-webkit-details-marker { display: none; }
+  details[data-menu-accordion] > summary::marker { content: ''; }
+  /* Rotate the chevron when open. */
+  details[data-menu-accordion][open] > summary .menu-accordion-chevron {
+    transform: rotate(180deg);
+  }
+  details[data-menu-accordion] > summary .menu-accordion-chevron {
+    transition: transform 180ms ease;
+    display: inline-flex;
+  }
+</style>

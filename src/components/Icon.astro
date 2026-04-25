@@ -23,7 +23,9 @@ type IconName =
   | 'dice'
   | 'mail'
   | 'map-pin'
-  | 'instagram';
+  | 'instagram'
+  | 'chevron-down'
+  | 'sliders';
 
 interface ShapeNode {
   tag: 'path' | 'circle' | 'rect' | 'line' | 'polyline';
@@ -165,6 +167,20 @@ const ICONS: Record<IconName, ShapeNode[]> = {
     { tag: 'rect', attrs: { x: '3', y: '3', width: '18', height: '18', rx: '5' } },
     { tag: 'circle', attrs: { cx: '12', cy: '12', r: '4' } },
     { tag: 'circle', attrs: { cx: '17.5', cy: '6.5', r: '1', fill: 'currentColor', stroke: 'none' } },
+  ],
+  // lucide: chevron-down
+  'chevron-down': [{ tag: 'path', attrs: { d: 'm6 9 6 6 6-6' } }],
+  // lucide: sliders-horizontal
+  sliders: [
+    { tag: 'path', attrs: { d: 'M10 5H3' } },
+    { tag: 'path', attrs: { d: 'M12 19H3' } },
+    { tag: 'path', attrs: { d: 'M14 3v4' } },
+    { tag: 'path', attrs: { d: 'M16 17v4' } },
+    { tag: 'path', attrs: { d: 'M21 12h-9' } },
+    { tag: 'path', attrs: { d: 'M21 19h-5' } },
+    { tag: 'path', attrs: { d: 'M21 5h-7' } },
+    { tag: 'path', attrs: { d: 'M8 10v4' } },
+    { tag: 'path', attrs: { d: 'M8 12H3' } },
   ],
 };
 

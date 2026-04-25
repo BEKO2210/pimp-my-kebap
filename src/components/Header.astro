@@ -25,13 +25,13 @@ if (status.isOpen && status.reason === 'regular') {
   shortLabel = `bis ${status.todayClose}`;
   fullLabel = `Heute Feiertag — bis ${status.todayClose} Uhr`;
 } else if (status.reason === 'closed_sunday') {
-  shortLabel = 'Mo wieder offen';
+  shortLabel = status.nextOpenShortLabel ?? 'Mo wieder';
   fullLabel = `Heute geschlossen (So) — ${status.nextOpenLabel ?? ''}`;
 } else if (status.reason === 'before_opening') {
-  shortLabel = `ab ${status.todayOpen}`;
+  shortLabel = status.nextOpenShortLabel ?? `ab ${status.todayOpen}`;
   fullLabel = `Geschlossen — ${status.nextOpenLabel ?? ''}`;
 } else if (status.reason === 'after_closing') {
-  shortLabel = 'morgen wieder';
+  shortLabel = status.nextOpenShortLabel ?? 'morgen wieder';
   fullLabel = `Geschlossen — ${status.nextOpenLabel ?? ''}`;
 }
 ---

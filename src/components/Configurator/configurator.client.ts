@@ -12,6 +12,13 @@ import type { BreadId } from '../../data/breads';
 import type { BaseId, MeatId } from '../../data/configurator';
 import type { SauceId } from '../../data/sauces';
 import type { ToppingId } from '../../data/ingredients';
+import { TOPPINGS } from '../../data/ingredients';
+
+// Salat-Zutaten (Kraut, Zwiebel, Tomaten) sind Basis-inklusiv und damit
+// von Anfang an im state — der User sieht sie als bereits gewählt.
+const BASE_INCLUDED_TOPPINGS: readonly ToppingId[] = TOPPINGS
+  .filter((t) => t.baseIncluded)
+  .map((t) => t.id);
 
 const root = document.querySelector<HTMLElement>('[data-cfg-root]');
 if (root) {
@@ -22,7 +29,7 @@ if (root) {
     extraMeat50g: 0,
     schmelzkaese: false,
     sauces: [],
-    toppings: [],
+    toppings: [...BASE_INCLUDED_TOPPINGS],
   };
   // Track if user explicitly picked a bread/base (gate "Add to cart" button).
   let breadChosen = false;

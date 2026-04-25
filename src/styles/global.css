@@ -65,9 +65,10 @@ h1, h2, h3, .display { font-family: var(--font-display); letter-spacing: -0.01em
 }
 .skip-link:focus { top: 0; }
 
-/* Reusable component utilities */
-/* CTA buttons get a *different* radius than cards (anti-AI-slop) and a thin
- * gold rule along the top edge for character. */
+/* Reusable component utilities — wrapped in @layer components so plain
+ * Tailwind utilities (e.g. `hidden`, `block`) win over the component defaults. */
+@layer components {
+
 .btn-primary {
   position: relative;
   display: inline-flex; align-items: center; justify-content: center; gap: .5rem;
@@ -161,6 +162,8 @@ h1, h2, h3, .display { font-family: var(--font-display); letter-spacing: -0.01em
 .badge-spicy { background: rgba(211,47,47,.18); color: #ff7b7b; }
 .badge-new { background: var(--color-brand-orange); color: #000; }
 .badge-gold { background: rgba(212,175,55,.18); color: var(--color-brand-gold-light); }
+
+} /* end @layer components */
 
 @media (prefers-reduced-motion: reduce) {
   *, ::before, ::after {

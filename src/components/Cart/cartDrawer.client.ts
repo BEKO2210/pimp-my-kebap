@@ -19,6 +19,7 @@ import {
 import type { CartLine, FulfillmentMode } from '../../lib/cart-types';
 import { sanitizeNotes } from '../../lib/validation';
 import { formatEUR } from '../../lib/format';
+import { BRAND } from '../../data/brand';
 import { BREADS } from '../../data/breads';
 import { BASES, MEATS } from '../../data/configurator';
 import { SAUCES } from '../../data/sauces';
@@ -375,26 +376,41 @@ if (root) {
     syncDeliveryAddress();
   });
 
+  // Practical ceiling for wa.me URLs. WhatsApp, the OS share-sheet and some
+  // Android WebViews start truncating long prefilled messages around 7-8 KB.
+  // Below this we let the order through; above we tell the customer to call.
+  const WHATSAPP_URL_SAFE_LIMIT = 6500;
+
   checkout.addEventListener('click', () => {
     if (!canSendWhatsApp()) {
       warning.hidden = false;
       warning.textContent = 'Bitte einen Moment warten, bevor du erneut sendest.';
       return;
     }
+    const url = currentWhatsAppUrl(checkout.dataset.waNumber);
     const status = getCurrentOpeningStatus();
     const c = $customer.get();
-    let confirmText = 'Deine Bestellung wird in WhatsApp geöffnet:\n\n';
-    // Warn explicitly when the shop is currently closed and the user picked
-    // ASAP — they're effectively asking us to start work the next morning.
+
+    const hints: string[] = [];
     if (!status.isOpen && c.pickup.kind === 'asap') {
       const next = status.nextOpenLabel ?? 'morgen';
-      confirmText =
-        `Hinweis: Wir haben gerade geschlossen — wir bearbeiten deine Bestellung ${next}.\n\n` +
-        confirmText;
+      hints.push(`Wir haben gerade geschlossen — wir bearbeiten deine Bestellung ${next}.`);
     }
-    confirmText += currentWhatsAppPreview();
+    if (url.length > WHATSAPP_URL_SAFE_LIMIT) {
+      const sizeKb = Math.round((url.length / 1024) * 10) / 10;
+      hints.push(
+        `Deine Bestellung ist sehr lang (${sizeKb.toString().replace('.', ',')} KB). ` +
+        `WhatsApp könnte die Nachricht abschneiden. ` +
+        `Sicher geht's per Telefon: ${BRAND.contact.phoneDisplay}.`,
+      );
+    }
+
+    const confirmText =
+      (hints.length > 0 ? hints.map((h) => 'Hinweis: ' + h).join('\n\n') + '\n\n' : '') +
+      'Deine Bestellung wird in WhatsApp geöffnet:\n\n' +
+      currentWhatsAppPreview();
+
     if (!confirm(confirmText)) return;
-    const url = currentWhatsAppUrl(checkout.dataset.waNumber);
     recordWhatsAppSend();
     recordOrder($lines.get(), $customer.get());
     window.open(url, '_blank', 'noopener,noreferrer');

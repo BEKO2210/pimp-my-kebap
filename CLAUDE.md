@@ -61,12 +61,15 @@ grüne Bestätigung, drei große CTA-Karten ("Noch einen Kebap pimpen" /
 "Bestellung abschließen"-Button, der den Drawer öffnet. So kann der
 User beliebig kombinieren, ohne in den Drawer gezwungen zu werden.
 
-### 6. WhatsApp-URL-Längenlimit absichern [ ]
-Eine sehr lange Bestellung kann den `wa.me`-Link über das praktische
-Limit (~6 KB) hinaus aufblähen — WhatsApp bricht dann stillschweigend
-oder gar nicht. Lösung: Vor dem `window.open` Länge prüfen, bei
-Überschreitung den User warnen und Fallback (z.B. "Per Telefon
-bestellen, Liste zu lang").
+### 6. WhatsApp-URL-Längenlimit absichern [x]
+Im Checkout-Click wird die wa.me-URL jetzt VOR dem Confirm-Dialog
+gebaut. Schwelle `WHATSAPP_URL_SAFE_LIMIT = 6500` (Zeichen, encoded).
+Bei Überschreitung erscheint ein "Hinweis"-Block oberhalb der
+Vorschau im selben Dialog, der die ungefähre Größe in KB nennt und
+die Restaurant-Telefonnummer als sicheren Alternativweg anbietet.
+Mehrere Hinweise (geschlossener Laden + langer Link) werden in einen
+einzigen Confirm-Dialog konsolidiert, statt den User durch zwei
+hintereinander zu schicken.
 
 ### 7. Konfigurator: Default-Spieß deutlicher hervorheben [ ]
 `rinderhack` ist `aria-checked=true` aber visuell ähnlich zu

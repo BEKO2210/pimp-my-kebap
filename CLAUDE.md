@@ -108,9 +108,22 @@ aber breadOk=false, sonst `null` (alle Hints aus). Sanfte
 `cfg-pulse` Animation bewegt den Pfeil 2 px hin- und her, damit das
 Auge ihn findet — abgeschaltet bei `prefers-reduced-motion`.
 
-### 11. Page-Title je Route [ ]
-Aktuell hat jede Seite ihren `<title>` (gut), aber Wording prüfen:
-"… · Pimp My Kebap Freiberg" am Ende für SEO-Konsistenz.
+### 11. Page-Title je Route + OG-Image für WhatsApp [x]
+Konsistentes Title-Schema umgesetzt: Konfiguratoren tragen
+`<Brand> — Konfigurator · Freiberg`, neutrale Routen
+`<Spezifisch> · Pimp My Kebap Freiberg`. Brand am Ende
+(Browser-Tab + SEO), middle-dot als Trenner, "Freiberg"
+durchgehend für Geo-SEO.
+
+**Bonus / echter Bug**: `Base.astro:25` hat die OG-Image-URL gebaut
+mit `${siteUrl}${withBase(ogImage)}`. Da `siteUrl` bereits den
+Project-Pages-Sub-Path enthält und `withBase()` ihn nochmal
+prependet, ergab sich
+`https://…/pimp-my-kebap/pimp-my-kebap/brand/og-image.jpg` →
+404 → keine WhatsApp-Link-Vorschau. Jetzt
+`${siteUrl}${ogImage}` direkt — verifiziert im Build:
+`og:image` zeigt auf die echte URL und `dist/brand/og-image.jpg`
+existiert.
 
 ### 12. Footer: Links sauber ausrichten [ ]
 Sichtprüfung — Impressum/Datenschutz/Allergene-Liste auf Mobile +

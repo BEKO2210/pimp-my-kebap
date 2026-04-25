@@ -32,10 +32,18 @@ neu erzeugt. Vorherige Auswahl wird übernommen, falls sie noch in der
 Liste steht — sonst Reset auf ASAP und Store-Sync, damit die
 WhatsApp-Nachricht keinen veralteten ISO trägt.
 
-### 4. PLZ visuell als invalid markieren [ ]
-Bei Lieferung mit leerer / falscher PLZ steht der rote Hinweis-Text,
-das Input-Feld selbst sieht aber unverändert aus. `aria-invalid="true"`
-+ roter Border bei Fehler, sonst neutral.
+### 4. PLZ visuell als invalid markieren [x]
+PLZ + Straße bekommen jetzt `aria-invalid="true"` sobald Lieferung
+gewählt ist UND der User das Feld bereits berührt hat (Input-Event)
+UND der Wert nicht passt (leer / nicht 5 Ziffern). CSS-Regel auf
+`input[aria-invalid='true']` setzt dann roten Border + roten
+Box-Shadow-Ring. Auf der ersten Anzeige der leeren Form bleibt alles
+neutral, damit niemand angeschrien wird, der gerade erst öffnet.
+
+**Bonus**: Die Google-Maps-Vorschau zeigt jetzt unter dem Karten-Bild
+die volle Anschrift (Marktplatz 18 · 71691 Freiberg am Neckar) plus
+"Route in Google Maps öffnen →". Klick irgendwo in die Karte oder
+Adresse öffnet Google Maps.
 
 ### 5. "Auf Anfrage"-Items: Telefon-Action [x]
 Erübrigt sich — die zwei betroffenen Pommes haben jetzt feste Preise:

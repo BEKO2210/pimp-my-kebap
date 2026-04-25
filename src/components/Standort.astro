@@ -57,12 +57,25 @@ const directionsUrl = `https://www.google.com/maps/dir/?api=1&destination=${dest
       )}
     </div>
     <div class="card overflow-hidden">
-      <a href={directionsUrl} target="_blank" rel="noopener noreferrer" aria-label={`Route zu ${BRAND.marketingName} in Google Maps`}>
+      <a
+        href={directionsUrl}
+        target="_blank"
+        rel="noopener noreferrer"
+        aria-label={`Route zu ${BRAND.marketingName} in Google Maps`}
+        class="block group"
+      >
         <img src={mapImg} alt={`Karte ${BRAND.address.street}`} width="600" height="400" loading="lazy" decoding="async" class="w-full h-auto block" />
-        <span class="flex items-center gap-2 px-4 py-3 text-sm text-brand-cream/80 hover:text-brand-cream">
-          <Icon name="map-pin" size={14} />
-          <span>Route in Google Maps öffnen →</span>
-        </span>
+        <div class="flex items-start gap-3 px-4 py-3 group-hover:bg-brand-charcoal-soft/40 transition-colors">
+          <Icon name="map-pin" size={18} class="text-brand-gold shrink-0 mt-0.5" />
+          <div class="text-sm flex-1 min-w-0">
+            <p class="text-brand-cream font-semibold">{BRAND.marketingName}</p>
+            <p class="text-brand-cream/80">{BRAND.address.street}</p>
+            <p class="text-brand-cream/80">{BRAND.address.postalCode} {BRAND.address.city}</p>
+            <p class="text-brand-gold mt-1 group-hover:translate-x-1 transition-transform inline-flex items-center gap-1">
+              <span>Route in Google Maps öffnen →</span>
+            </p>
+          </div>
+        </div>
       </a>
     </div>
   </div>

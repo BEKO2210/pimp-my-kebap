@@ -4,11 +4,11 @@ import Base from '../layouts/Base.astro';
 import Header from '../components/Header.astro';
 import WeeklyBanner from '../components/WeeklyBanner.astro';
 import Hero from '../components/Hero.astro';
-import Configurator from '../components/Configurator/Configurator.astro';
-import Speisekarte from '../components/Speisekarte.astro';
+import HomeNav from '../components/HomeNav.astro';
 import IngredientsGallery from '../components/IngredientsGallery.astro';
 import Warum from '../components/Warum.astro';
 import DeliveryArea from '../components/DeliveryArea.astro';
+import OrderHistory from '../components/OrderHistory.astro';
 import Standort from '../components/Standort.astro';
 import Footer from '../components/Footer.astro';
 import CartDrawer from '../components/Cart/CartDrawer.astro';
@@ -18,8 +18,7 @@ import {
   buildBreadcrumbJsonLd,
 } from '../lib/jsonld';
 
-const siteUrl = (import.meta.env.PUBLIC_SITE_URL ?? 'https://pimp-my-kebap.de').replace(/\/$/, '');
-
+const siteUrl = (import.meta.env.PUBLIC_SITE_URL ?? 'https://beko2210.github.io/pimp-my-kebap').replace(/\/$/, '');
 const jsonLd = [
   buildRestaurantJsonLd(siteUrl),
   buildMenuJsonLd(siteUrl),
@@ -31,8 +30,8 @@ const waMissing = !wa || wa.length === 0;
 ---
 
 <Base
-  title="Pimp My Kebap Freiberg am Neckar — Döner konfigurieren & per WhatsApp bestellen"
-  description="18 frische Zutaten, 4 Brote, 6 Soßen — konfiguriere deinen Kebap und sende die Bestellung in 30 Sekunden per WhatsApp an Pimp My Kebap, Marktplatz 18, Freiberg am Neckar."
+  title="Pimp My Kebap Freiberg am Neckar — Döner & Pizza konfigurieren · per WhatsApp bestellen"
+  description="Pimp my Kebap und Pimp my Pizza: 18 frische Zutaten, 4 Brote, 6 Soßen. Stell dir Kebap oder Pizza zusammen, blättere durch die Speisekarte, bestelle per WhatsApp."
   pathname="/"
   jsonLd={jsonLd}
 >
@@ -42,15 +41,15 @@ const waMissing = !wa || wa.length === 0;
   <WeeklyBanner />
   {waMissing && (
     <p class="bg-brand-red-fire/15 border-y border-brand-red-fire/40 text-brand-cream text-sm px-4 py-2 text-center">
-      ⚠️ Bestellung deaktiviert: WhatsApp-Nummer fehlt in der Konfiguration. (Setze <code>PUBLIC_RESTAURANT_WHATSAPP</code>.)
+      ⚠️ Bestellung deaktiviert: WhatsApp-Nummer fehlt in der Konfiguration.
     </p>
   )}
   <Hero />
-  <Configurator />
-  <Speisekarte />
+  <HomeNav />
   <IngredientsGallery />
   <Warum />
   <DeliveryArea />
+  <OrderHistory />
   <Standort />
   <CartDrawer />
 </Base>

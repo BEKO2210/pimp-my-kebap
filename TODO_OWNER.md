@@ -1,16 +1,26 @@
 # TODO für die Übergabe an die Inhaberin
 
-## Pflicht vor Live-Schaltung
+## ⚡ Einmaliges GitHub-Setup (genau **1** Klick)
 
-- [ ] **Echte Schriftarten** in `public/fonts/` ablegen (siehe `public/fonts/README.md`):
-  - `inter-variable.woff2` (SIL OFL 1.1)
-  - `playfair-display-variable.woff2` (SIL OFL 1.1)
-  → kostenlos von [fonts.google.com](https://fonts.google.com).
-- [ ] **`.env` setzen** mit:
-  ```
-  PUBLIC_RESTAURANT_WHATSAPP=491742116095
-  PUBLIC_SITE_URL=https://<eure-domain>
-  ```
+Damit die Site automatisch deployed wird, einmalig in GitHub:
+
+1. Repo öffnen: https://github.com/BEKO2210/pimp-my-kebap
+2. **Settings → Pages**
+3. Unter **Build and deployment → Source** auf **„GitHub Actions"** stellen
+4. Speichern. Fertig.
+
+Nach diesem Setup wird die Site bei jedem Push (oder per **Actions → Deploy →
+Run workflow**) auf `https://beko2210.github.io/pimp-my-kebap/` veröffentlicht.
+
+> Falls eine eigene Domain gewünscht ist (z. B. `pimp-my-kebap.de`):
+> einfach in `.github/workflows/deploy.yml` und `.github/workflows/ci.yml`
+> `PUBLIC_SITE_URL` auf die neue Domain ändern und CNAME in `public/CNAME` ablegen.
+
+## Vor Live-Schaltung (sonstiges)
+
+- [x] ~~Echte Schriftarten in `public/fonts/`~~ — bereits eingecheckt
+  (Inter + Playfair Display variable WOFF2, beide SIL OFL 1.1).
+- [x] ~~`.env` setzen~~ — bereits enthalten und in den GitHub-Actions-Workflows hardcoded.
 - [ ] **WhatsApp-Test-Bestellung** ausführen: 1 Item zum Cart hinzufügen, „Per
   WhatsApp senden" klicken, prüfen ob Nachricht in der WhatsApp-App vom
   Restaurant ankommt.

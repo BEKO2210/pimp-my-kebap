@@ -55,7 +55,6 @@ describe('PersistedCartSchema', () => {
             bread: 'klassisch',
             base: 'kebap_basic',
             meat: 'rinderhack',
-            meatUpgradeSteak: false,
             extraMeat50g: 0,
             schmelzkaese: false,
             sauces: [],
@@ -82,7 +81,6 @@ describe('PersistedCartSchema', () => {
             bread: 'tortilla',
             base: 'kebap_basic',
             meat: 'rinderhack',
-            meatUpgradeSteak: false,
             extraMeat50g: 0,
             schmelzkaese: false,
             sauces: [],
@@ -114,6 +112,33 @@ describe('PersistedCartSchema', () => {
       expiresAtMs: 0,
     };
     expect(() => PersistedCartSchema.parse(payload)).toThrow();
+  });
+
+  it('hydrates legacy carts with the removed meatUpgradeSteak field (passthrough)', () => {
+    const payload = {
+      version: 1,
+      lines: [
+        {
+          kind: 'kebab',
+          id: 'k1',
+          quantity: 1,
+          unitPriceEur: 11,
+          config: {
+            bread: 'klassisch',
+            base: 'kebap_basic',
+            meat: 'rinderhack',
+            meatUpgradeSteak: true, // legacy field — should be silently ignored
+            extraMeat50g: 0,
+            schmelzkaese: false,
+            sauces: [],
+            toppings: [],
+          },
+        },
+      ],
+      customer: { firstName: 'Max', fulfillment: 'abholung', pickup: { kind: 'asap' } },
+      expiresAtMs: Date.now() + 3600_000,
+    };
+    expect(() => PersistedCartSchema.parse(payload)).not.toThrow();
   });
 
   it('rejects wrong version', () => {

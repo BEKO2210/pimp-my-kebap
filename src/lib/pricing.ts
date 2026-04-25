@@ -1,7 +1,7 @@
 // Powered by skill: frontend-design
 // Pricing engine. Pure functions, fully unit-tested.
 
-import { BASES, MEATS, EXTRA_MEAT_50G_PRICE_EUR, SCHMELZKAESE_PRICE_EUR, STEAK_UPGRADE_PRICE_EUR } from '../data/configurator';
+import { BASES, MEATS, EXTRA_MEAT_50G_PRICE_EUR, SCHMELZKAESE_PRICE_EUR } from '../data/configurator';
 import type { BaseId, MeatId } from '../data/configurator';
 import { FREE_SAUCE_COUNT, EXTRA_SAUCE_PRICE_EUR } from '../data/sauces';
 import type { SauceId } from '../data/sauces';
@@ -14,9 +14,10 @@ import { round2 } from './format';
 export interface KebabConfig {
   bread: BreadId;
   base: BaseId;
+  /** Choosing 'rindersteak' adds +1.00 € to the base price (handled via MEATS). */
   meat: MeatId;
-  meatUpgradeSteak: boolean; // +1.00 € flag
-  extraMeat50g: number; // 0..3
+  /** +50 g extra meat, 1.50 € each, regardless of meat choice. 0..3 stacks. */
+  extraMeat50g: number;
   schmelzkaese: boolean; // +1.00 €
   sauces: SauceId[]; // first 2 free
   toppings: ToppingId[]; // each +0.50 €
@@ -25,7 +26,6 @@ export interface KebabConfig {
 export interface KebabPriceBreakdown {
   basePrice: number;
   meatUpcharge: number;
-  steakUpgrade: number;
   extraMeat: number;
   schmelzkaese: number;
   extraSauces: number;
@@ -46,7 +46,6 @@ export function priceKebab(cfg: KebabConfig): KebabPriceBreakdown {
   const meat = MEATS.find((m) => m.id === cfg.meat)!;
 
   const meatUpcharge = meat.upchargeEur;
-  const steakUpgrade = cfg.meatUpgradeSteak ? STEAK_UPGRADE_PRICE_EUR : 0;
   const extraMeatCount = Math.max(0, Math.min(3, cfg.extraMeat50g | 0));
   const extraMeat = extraMeatCount * EXTRA_MEAT_50G_PRICE_EUR;
   const schmelz = cfg.schmelzkaese ? SCHMELZKAESE_PRICE_EUR : 0;
@@ -55,12 +54,11 @@ export function priceKebab(cfg: KebabConfig): KebabPriceBreakdown {
   const toppings = cfg.toppings.length * TOPPING_PRICE_EUR;
 
   const unitTotal = round2(
-    base.basePriceEur + meatUpcharge + steakUpgrade + extraMeat + schmelz + extraSauces + toppings,
+    base.basePriceEur + meatUpcharge + extraMeat + schmelz + extraSauces + toppings,
   );
   return {
     basePrice: base.basePriceEur,
     meatUpcharge,
-    steakUpgrade,
     extraMeat,
     schmelzkaese: schmelz,
     extraSauces,

@@ -2,6 +2,7 @@
 // Powered by skill: accessibility, seo-local
 import { BRAND } from '../data/brand';
 import { ALLERGENS, ADDITIVES } from '../data/allergens';
+import { withBase } from '../lib/url';
 const year = new Date().getFullYear();
 ---
 <footer class="border-t border-brand-gold/20 bg-brand-charcoal/60 mt-12">
@@ -25,8 +26,8 @@ const year = new Date().getFullYear();
     <nav aria-label="Rechtliches" class="text-sm">
       <p class="text-brand-gold uppercase text-xs tracking-wider mb-2">Rechtliches</p>
       <ul class="space-y-1 text-brand-cream/85">
-        <li><a href="/impressum" class="hover:text-brand-cream">Impressum</a></li>
-        <li><a href="/datenschutz" class="hover:text-brand-cream">Datenschutz</a></li>
+        <li><a href={withBase('/impressum')} class="hover:text-brand-cream">Impressum</a></li>
+        <li><a href={withBase('/datenschutz')} class="hover:text-brand-cream">Datenschutz</a></li>
       </ul>
     </nav>
     <details class="text-sm">

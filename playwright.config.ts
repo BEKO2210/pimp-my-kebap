@@ -9,7 +9,8 @@ export default defineConfig({
   retries: process.env.CI ? 2 : 0,
   reporter: [['list'], ['html', { open: 'never' }]],
   use: {
-    baseURL: 'http://localhost:4321',
+    // The build deploys under a project-pages sub-path; preview server mirrors that.
+    baseURL: 'http://localhost:4321/pimp-my-kebap',
     trace: 'retain-on-failure',
   },
   projects: [

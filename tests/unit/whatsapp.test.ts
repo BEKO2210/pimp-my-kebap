@@ -21,7 +21,6 @@ const kebab = (q: number): CartLine => ({
     bread: 'vital',
     base: 'kebap_basic',
     meat: 'rindersteak',
-    meatUpgradeSteak: false,
     extraMeat50g: 0,
     schmelzkaese: true,
     sauces: ['kraeuter_knoblauch', 'bbq'],
@@ -190,7 +189,7 @@ describe('buildWhatsAppMessage', () => {
     expect(msg).not.toMatch(/Pfand:/);
   });
 
-  it('combines steak meat choice + extra meat correctly in description', () => {
+  it('renders steak meat upcharge + extra meat correctly in description', () => {
     const line: CartLine = {
       kind: 'kebab',
       id: 'k2',
@@ -200,7 +199,6 @@ describe('buildWhatsAppMessage', () => {
         bread: 'klassisch',
         base: 'kebap_basic',
         meat: 'rindersteak',
-        meatUpgradeSteak: true,
         extraMeat50g: 2,
         schmelzkaese: false,
         sauces: ['bbq', 'cocktail'],
@@ -208,8 +206,9 @@ describe('buildWhatsAppMessage', () => {
       },
     };
     const msg = buildWhatsAppMessage({ cart: { lines: [line], customer } });
-    expect(msg).toContain('Steakfleisch-Upgrade');
+    expect(msg).toContain('Fleisch: Steak Döner (+1,00');
     expect(msg).toContain('Mehr Fleisch: 2× 50 g');
+    expect(msg).not.toContain('Steakfleisch-Upgrade');
   });
 });
 

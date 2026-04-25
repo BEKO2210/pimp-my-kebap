@@ -32,9 +32,6 @@ function describeKebab(line: Extract<CartLine, { kind: 'kebab' }>): string[] {
   } else {
     out.push(`   • Fleisch: ${meat.name}`);
   }
-  if (config.meatUpgradeSteak) {
-    out.push(`   • Steakfleisch-Upgrade (+${formatEUR(1.0)})`);
-  }
   if (config.extraMeat50g > 0) {
     out.push(
       `   • Mehr Fleisch: ${config.extraMeat50g}× 50 g (+${formatEUR(config.extraMeat50g * 1.5)})`,

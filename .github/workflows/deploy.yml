@@ -2,7 +2,9 @@ name: Deploy
 
 on:
   push:
-    branches: [main]
+    branches:
+      - main
+      - 'claude/**'
   workflow_dispatch:
 
 permissions:
@@ -19,16 +21,16 @@ jobs:
     runs-on: ubuntu-latest
     env:
       PUBLIC_RESTAURANT_WHATSAPP: '491742116095'
-      PUBLIC_SITE_URL: 'https://pimp-my-kebap.de'
+      PUBLIC_SITE_URL: 'https://beko2210.github.io/pimp-my-kebap'
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
         with:
           node-version: '22'
           cache: 'npm'
       - run: npm ci
       - run: npm run build
-      - uses: actions/upload-pages-artifact@v3
+      - uses: actions/upload-pages-artifact@v5
         with:
           path: dist
 
@@ -40,7 +42,7 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - id: deployment
-        uses: actions/deploy-pages@v4
+        uses: actions/deploy-pages@v5
 
   # Optional Cloudflare Pages target — uncomment after secrets are added
   # deploy-cloudflare:

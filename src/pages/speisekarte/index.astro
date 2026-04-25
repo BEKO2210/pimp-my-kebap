@@ -1,0 +1,31 @@
+---
+// Powered by skill: frontend-design, seo-local
+import Base from '../../layouts/Base.astro';
+import Header from '../../components/Header.astro';
+import Footer from '../../components/Footer.astro';
+import WeeklyBanner from '../../components/WeeklyBanner.astro';
+import Speisekarte from '../../components/Speisekarte.astro';
+import CartDrawer from '../../components/Cart/CartDrawer.astro';
+import { withBase } from '../../lib/url';
+---
+
+<Base
+  title="Speisekarte — Pimp My Kebap · Pide, Pizza, Seele, Burger Kebap, Salate, Getränke"
+  description="Komplette Speisekarte mit Suche, Filter (Vegetarisch, Scharf, Allergene). Mengen direkt am Gericht ändern, dann per WhatsApp bestellen."
+  pathname="/speisekarte"
+>
+  <Header slot="header" />
+  <Footer slot="footer" />
+
+  <WeeklyBanner />
+
+  <nav aria-label="Brotkrumen" class="px-4 sm:px-6 lg:px-8 pt-4">
+    <p class="text-xs text-brand-cream/55">
+      <a href={withBase('/')} class="hover:text-brand-cream">Start</a> ·
+      <span class="text-brand-cream/85">Speisekarte</span>
+    </p>
+  </nav>
+
+  <Speisekarte />
+  <CartDrawer />
+</Base>

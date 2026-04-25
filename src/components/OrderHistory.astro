@@ -1,0 +1,35 @@
+---
+// Powered by skill: frontend-design, accessibility
+// Renders an empty section that the client script populates from localStorage.
+// No-op if the user has never placed an order.
+---
+
+<section
+  id="bestellverlauf"
+  class="px-4 sm:px-6 lg:px-8 py-10"
+  data-history-root
+  hidden
+  aria-labelledby="history-heading"
+>
+  <div class="mx-auto max-w-6xl">
+    <p class="eyebrow">Verlauf</p>
+    <h2 id="history-heading" class="display text-2xl sm:text-3xl text-brand-cream mt-2 mb-4">
+      Deine letzten Bestellungen
+    </h2>
+    <p class="text-xs text-brand-cream/55 mb-4">
+      Nur lokal auf diesem Gerät gespeichert. Wir sehen davon nichts.
+    </p>
+    <ul data-history-list class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4"></ul>
+    <p class="mt-4">
+      <button
+        type="button"
+        data-history-clear
+        class="text-xs text-brand-cream/55 hover:text-brand-cream underline"
+      >Verlauf löschen</button>
+    </p>
+  </div>
+</section>
+
+<script>
+  import './OrderHistory.client.ts';
+</script>

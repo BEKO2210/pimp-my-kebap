@@ -18,12 +18,13 @@ const KebabConfigSchema = z.object({
   bread: z.enum(['klassisch', 'sesam', 'knoblauch', 'vital']),
   base: z.enum(['kebap_basic', 'yufka_basic', 'kebap_box']),
   meat: z.enum(['rinderhack', 'haehnchen', 'rindersteak']),
-  meatUpgradeSteak: z.boolean(),
   extraMeat50g: z.number().int().min(0).max(3),
   schmelzkaese: z.boolean(),
   sauces: z.array(z.string()).max(6),
   toppings: z.array(z.string()).max(18),
-});
+}).passthrough();
+// .passthrough() lets old persisted carts (with a stale `meatUpgradeSteak`
+// field) hydrate without erroring. The field is then ignored.
 
 const KebabLineSchema = z.object({
   kind: z.literal('kebab'),

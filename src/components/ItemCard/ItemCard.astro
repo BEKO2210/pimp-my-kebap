@@ -4,6 +4,7 @@ import type { MenuItem } from '../../data/menu';
 import AllergenBadge from '../AllergenBadge.astro';
 import { CATEGORY_TO_PLACEHOLDER } from '../../data/menu';
 import { formatEUR } from '../../lib/format';
+import { withBase } from '../../lib/url';
 
 interface Props {
   item: MenuItem;
@@ -13,8 +14,8 @@ interface Props {
 
 const { item, promo, effectivePrice } = Astro.props;
 const slug = CATEGORY_TO_PLACEHOLDER[item.category] ?? 'doener';
-const photoBase = `/images/meals/${item.id}`;
-const placeholder = `/images/placeholders/${slug}.svg`;
+const photoBase = withBase(`/images/meals/${item.id}`);
+const placeholder = withBase(`/images/placeholders/${slug}.svg`);
 const isOnRequest = effectivePrice === null;
 ---
 
@@ -25,11 +26,14 @@ const isOnRequest = effectivePrice === null;
   data-item-category={item.category}
   data-item-price={effectivePrice ?? ''}
   data-item-promo={promo ? 'true' : 'false'}
+  data-item-tag={item.tag ?? ''}
+  data-item-markings={(item.markings ?? []).join(',')}
+  data-item-search={`${item.name} ${item.description ?? ''} ${item.tag ?? ''}`.toLowerCase()}
   itemscope
   itemtype="https://schema.org/MenuItem"
 >
-  <div class="relative aspect-[4/3] bg-brand-charcoal-soft">
-    <picture>
+  <div class="relative aspect-[4/3] bg-brand-charcoal-soft overflow-hidden">
+    <picture class="absolute inset-0 block w-full h-full">
       <source srcset={`${photoBase}.avif`} type="image/avif" />
       <source srcset={`${photoBase}.webp`} type="image/webp" />
       <img
@@ -38,8 +42,8 @@ const isOnRequest = effectivePrice === null;
         loading="lazy"
         decoding="async"
         width="640" height="480"
-        class="w-full h-full object-cover"
-        onerror={`this.onerror=null;this.src='${placeholder}'`}
+        class="absolute inset-0 w-full h-full object-cover"
+        data-fallback={placeholder}
       />
     </picture>
     {item.tag === 'neu' && (
@@ -64,7 +68,7 @@ const isOnRequest = effectivePrice === null;
       <p class="text-xs text-brand-cream/65" itemprop="description">{item.description}</p>
     )}
     <div class="mt-auto flex items-center justify-between gap-2">
-      <p class="text-brand-gold display text-xl" itemprop="offers" itemscope itemtype="https://schema.org/Offer">
+      <p class="text-brand-gold display text-xl num" itemprop="offers" itemscope itemtype="https://schema.org/Offer">
         <span itemprop="priceCurrency" hidden>EUR</span>
         {isOnRequest ? (
           <span class="text-sm text-brand-cream/60">Auf Anfrage</span>
@@ -73,14 +77,21 @@ const isOnRequest = effectivePrice === null;
         )}
       </p>
       {!isOnRequest && (
-        <button
-          type="button"
-          data-item-add
-          class="btn-primary text-sm !px-3 !py-2"
-          aria-label={`${item.name} in den Warenkorb`}
-        >
-          + Hinzufügen
-        </button>
+        <div class="inline-flex items-center gap-1" role="group" aria-label={`Menge ${item.name}`}>
+          <button
+            type="button"
+            data-item-dec
+            class="btn-secondary !px-3 !py-2 text-base disabled:opacity-30"
+            aria-label={`${item.name} weniger`}
+          >−</button>
+          <span data-item-qty class="num min-w-[2ch] text-center font-semibold text-brand-cream">0</span>
+          <button
+            type="button"
+            data-item-inc
+            class="btn-primary text-sm !px-3 !py-2"
+            aria-label={`${item.name} mehr / hinzufügen`}
+          >+</button>
+        </div>
       )}
     </div>
   </div>

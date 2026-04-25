@@ -6,7 +6,6 @@ const baseCfg = (over: Partial<KebabConfig> = {}): KebabConfig => ({
   bread: 'klassisch',
   base: 'kebap_basic',
   meat: 'rinderhack',
-  meatUpgradeSteak: false,
   extraMeat50g: 0,
   schmelzkaese: false,
   sauces: [],
@@ -27,22 +26,14 @@ describe('priceKebab', () => {
     expect(priceKebab(baseCfg({ base: 'kebap_box' })).unitTotal).toBe(6.5);
   });
 
-  it('adds 1.00 € for Rindersteak meat choice', () => {
+  it('adds 1.00 € for Rindersteak meat choice (only via meat type, no separate flag)', () => {
     expect(priceKebab(baseCfg({ meat: 'rindersteak' })).unitTotal).toBe(7.5);
   });
 
-  it('adds 1.00 € for Steak upgrade flag', () => {
-    expect(priceKebab(baseCfg({ meatUpgradeSteak: true })).unitTotal).toBe(7.5);
-  });
-
-  it('combines Rindersteak choice + Steak upgrade flag (both apply)', () => {
-    expect(
-      priceKebab(baseCfg({ meat: 'rindersteak', meatUpgradeSteak: true })).unitTotal,
-    ).toBe(8.5);
-  });
-
-  it('adds 1.50 € per 50g extra meat (max 3 stacks = 4.50 €)', () => {
+  it('adds 1.50 € per 50g extra meat regardless of meat choice', () => {
     expect(priceKebab(baseCfg({ extraMeat50g: 1 })).unitTotal).toBe(8.0);
+    expect(priceKebab(baseCfg({ meat: 'haehnchen', extraMeat50g: 1 })).unitTotal).toBe(8.0);
+    expect(priceKebab(baseCfg({ meat: 'rindersteak', extraMeat50g: 1 })).unitTotal).toBe(9.0);
     expect(priceKebab(baseCfg({ extraMeat50g: 3 })).unitTotal).toBe(11.0);
   });
 
@@ -71,14 +62,13 @@ describe('priceKebab', () => {
   it('combines all upgrades correctly', () => {
     const cfg = baseCfg({
       base: 'yufka_basic', // 7.50
-      meat: 'rindersteak', // +1.00
-      meatUpgradeSteak: true, // +1.00
+      meat: 'rindersteak', // +1.00 (steak base upcharge)
       extraMeat50g: 2, // +3.00
       schmelzkaese: true, // +1.00
       sauces: ['bbq', 'cocktail', 'mango_avocado'], // 1 paid sauce → +0.50
       toppings: ['granatapfel', 'rucola'], // +1.00
     });
-    expect(priceKebab(cfg).unitTotal).toBe(15.0);
+    expect(priceKebab(cfg).unitTotal).toBe(14.0);
   });
 
   it('throws on invalid base or meat', () => {

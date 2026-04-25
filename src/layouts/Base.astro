@@ -2,6 +2,7 @@
 // Powered by skill: frontend-design, security, seo-local, accessibility, pwa
 import '../styles/global.css';
 import { BRAND } from '../data/brand';
+import { withBase } from '../lib/url';
 
 interface Props {
   title?: string;
@@ -19,18 +20,20 @@ const {
   jsonLd,
 } = Astro.props;
 
-const siteUrl = (import.meta.env.PUBLIC_SITE_URL ?? 'https://pimp-my-kebap.de').replace(/\/$/, '');
-const canonical = `${siteUrl}${pathname === '/' ? '' : pathname}`;
-const ogImageUrl = ogImage.startsWith('http') ? ogImage : `${siteUrl}${ogImage}`;
+const siteUrl = (import.meta.env.PUBLIC_SITE_URL ?? 'https://beko2210.github.io/pimp-my-kebap').replace(/\/$/, '');
+const canonical = pathname === '/' ? siteUrl : `${siteUrl}${pathname}`;
+const ogImageUrl = ogImage.startsWith('http') ? ogImage : `${siteUrl}${withBase(ogImage)}`;
 
 const jsonLdItems = jsonLd ? (Array.isArray(jsonLd) ? jsonLd : [jsonLd]) : [];
 
-// CSP delivered as a meta http-equiv fallback (Cloudflare _headers is the
-// authoritative source). Same policy as public/_headers.
+// CSP delivered as a meta http-equiv fallback. The HTTP-header version in
+// public/_headers is the authoritative source on Cloudflare Pages and adds
+// `frame-ancestors 'none'` — that directive is silently ignored when delivered
+// via <meta> (HTML standard), so we omit it here to avoid a console error.
 const csp =
   "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; " +
   "img-src 'self' data: https://tile.openstreetmap.org; font-src 'self'; " +
-  "connect-src 'self'; frame-ancestors 'none'; form-action 'self'; " +
+  "connect-src 'self'; form-action 'self'; " +
   "base-uri 'self'; object-src 'none'; upgrade-insecure-requests";
 ---
 
@@ -48,13 +51,32 @@ const csp =
     <meta name="description" content={description} />
     <link rel="canonical" href={canonical} />
 
-    <link rel="icon" href="/favicon.ico" sizes="any" />
-    <link rel="icon" href="/favicon-32.png" type="image/png" sizes="32x32" />
-    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
-    <link rel="manifest" href="/manifest.webmanifest" />
+    <link rel="icon" href={withBase('/favicon.ico')} sizes="any" />
+    <link rel="icon" href={withBase('/favicon-32.png')} type="image/png" sizes="32x32" />
+    <link rel="apple-touch-icon" href={withBase('/apple-touch-icon.png')} />
+    <link rel="manifest" href={withBase('/manifest.webmanifest')} />
 
-    <link rel="preload" href="/fonts/inter-variable.woff2" as="font" type="font/woff2" crossorigin />
-    <link rel="preload" href="/fonts/playfair-display-variable.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href={withBase('/fonts/space-grotesk-variable.woff2')} as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href={withBase('/fonts/playfair-display-variable.woff2')} as="font" type="font/woff2" crossorigin />
+
+    <style is:inline set:html={`
+      @font-face {
+        font-family: 'Space Grotesk';
+        src: url('${withBase('/fonts/space-grotesk-variable.woff2')}') format('woff2-variations'),
+             url('${withBase('/fonts/space-grotesk-variable.woff2')}') format('woff2');
+        font-weight: 300 700;
+        font-style: normal;
+        font-display: swap;
+      }
+      @font-face {
+        font-family: 'Playfair Display';
+        src: url('${withBase('/fonts/playfair-display-variable.woff2')}') format('woff2-variations'),
+             url('${withBase('/fonts/playfair-display-variable.woff2')}') format('woff2');
+        font-weight: 400 900;
+        font-style: normal;
+        font-display: swap;
+      }
+    `} />
 
     <meta property="og:type" content="website" />
     <meta property="og:locale" content="de_DE" />

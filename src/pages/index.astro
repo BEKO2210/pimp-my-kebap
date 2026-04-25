@@ -12,6 +12,7 @@ import DeliveryArea from '../components/DeliveryArea.astro';
 import Standort from '../components/Standort.astro';
 import Footer from '../components/Footer.astro';
 import CartDrawer from '../components/Cart/CartDrawer.astro';
+import OrderHistory from '../components/OrderHistory.astro';
 import {
   buildRestaurantJsonLd,
   buildMenuJsonLd,
@@ -51,6 +52,7 @@ const waMissing = !wa || wa.length === 0;
   <IngredientsGallery />
   <Warum />
   <DeliveryArea />
+  <OrderHistory />
   <Standort />
   <CartDrawer />
 </Base>

@@ -11,6 +11,7 @@ import { CART_TTL_MS } from './cart-types';
 import { computeTotals, buildWhatsAppMessage, buildWhatsAppUrl } from './whatsapp';
 import { PersistedCartSchema } from './validation';
 import { uid } from './format';
+import { toast } from './toast';
 
 const STORAGE_KEY = 'pmk-cart-v1';
 
@@ -93,7 +94,14 @@ type CartLineDraft =
 export function addLine(line: CartLineDraft): CartLine {
   const newLine = { ...line, id: uid() } as CartLine;
   $lines.set([...$lines.get(), newLine]);
+  toast(addedToastMessage(newLine), { tone: 'success' });
   return newLine;
+}
+
+function addedToastMessage(line: CartLine): string {
+  if (line.kind === 'kebab') return 'Dein Kebap ist im Warenkorb';
+  if (line.kind === 'drink') return `${line.drinkName} (${line.variantLabel}) hinzugefügt`;
+  return `${line.itemName} hinzugefügt`;
 }
 
 export function setQuantity(lineId: string, quantity: number): void {
@@ -113,6 +121,7 @@ export function removeLine(lineId: string): void {
 
 export function clearCart(): void {
   $lines.set([]);
+  toast('Warenkorb geleert', { tone: 'info' });
 }
 
 export function patchCustomer(patch: Partial<CustomerInfo>): void {

@@ -2,6 +2,7 @@
 // Powered by skill: frontend-design, accessibility
 import { BRAND } from '../data/brand';
 import { getCurrentOpeningStatus } from '../lib/time';
+import { withBase } from '../lib/url';
 
 const status = getCurrentOpeningStatus();
 let pillClass = 'badge-spicy';
@@ -23,11 +24,11 @@ if (status.isOpen && status.reason === 'regular') {
 
 <header class="sticky top-0 z-30 border-b border-brand-gold/20 bg-brand-black/85 backdrop-blur">
   <div class="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 py-3 flex items-center justify-between gap-3">
-    <a href="/" class="flex items-center gap-3" aria-label={`${BRAND.marketingName} Startseite`}>
+    <a href={withBase('/')} class="flex items-center gap-3" aria-label={`${BRAND.marketingName} Startseite`}>
       <picture>
-        <source srcset="/brand/logo.avif" type="image/avif" />
-        <source srcset="/brand/logo.webp" type="image/webp" />
-        <img src="/brand/logo.png" alt="" width="48" height="48" class="h-10 w-10 object-contain" decoding="async" />
+        <source srcset={withBase('/brand/logo.avif')} type="image/avif" />
+        <source srcset={withBase('/brand/logo.webp')} type="image/webp" />
+        <img src={withBase('/brand/logo.png')} alt="" width="48" height="48" class="h-10 w-10 object-contain" decoding="async" />
       </picture>
       <span class="display text-brand-cream text-base sm:text-lg leading-tight">
         Pimp My <span class="text-brand-gold">Kebap</span>

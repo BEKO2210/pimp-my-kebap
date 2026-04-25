@@ -1,18 +1,54 @@
 ---
 // Powered by skill: frontend-design, accessibility
 import { ALL_CATEGORIES, CATEGORY_LABEL } from '../data/menu';
+import { ALLERGENS } from '../data/allergens';
 import MenuSection from './MenuSection/MenuSection.astro';
 import Drinks from './MenuSection/Drinks.astro';
 import { getCurrentWeekday, isSchoolHoursWindow } from '../lib/time';
 
 const weekday = getCurrentWeekday();
 const schoolHours = isSchoolHoursWindow();
+const filterableAllergens: Array<keyof typeof ALLERGENS> = ['a', 'c', 'd', 'e', 'f'];
 ---
 
 <section id="speisekarte" class="px-4 sm:px-6 lg:px-8 pt-12">
   <div class="mx-auto max-w-6xl">
-    <p class="text-brand-gold uppercase tracking-widest text-xs font-bold mb-2">Vollständige Karte</p>
-    <h2 class="display text-3xl sm:text-4xl text-brand-cream mb-4">Speisekarte</h2>
+    <p class="eyebrow">Vollständige Karte</p>
+    <h2 class="display text-3xl sm:text-5xl text-brand-cream mt-2 mb-6">Speisekarte</h2>
+
+    <div class="flex flex-col gap-3 mb-4">
+      <label class="block">
+        <span class="sr-only">Speisen suchen</span>
+        <input
+          type="search"
+          data-menu-search
+          placeholder="🔍 Suche: Pizza, Vegetarisch, Sucuk…"
+          autocomplete="off"
+          class="w-full bg-brand-charcoal border border-brand-gold/30 focus:border-brand-gold rounded-md px-4 py-3 text-brand-cream placeholder:text-brand-cream/40"
+          aria-label="Speisen durchsuchen"
+        />
+      </label>
+      <div class="flex flex-wrap items-center gap-2 text-xs">
+        <span class="text-brand-cream/55 mr-1">Filter:</span>
+        <button type="button" class="btn-secondary !px-3 !py-1 text-xs" data-filter-veg aria-pressed="false">🌱 Vegetarisch</button>
+        <button type="button" class="btn-secondary !px-3 !py-1 text-xs" data-filter-spicy aria-pressed="false">🌶️ Scharf</button>
+        <span class="text-brand-cream/55 ml-2">Allergen ausschließen:</span>
+        {filterableAllergens.map((code) => (
+          <button
+            type="button"
+            class="btn-secondary !px-3 !py-1 text-xs"
+            data-filter-allergen={code}
+            aria-pressed="false"
+            aria-label={`Ohne ${ALLERGENS[code]}`}
+          >
+            ohne {code}) {ALLERGENS[code].split(' ')[0]}
+          </button>
+        ))}
+        <button type="button" class="text-xs text-brand-cream/55 hover:text-brand-cream underline" data-filter-reset>zurücksetzen</button>
+      </div>
+      <p class="text-xs text-brand-cream/50" data-filter-status></p>
+    </div>
+
     <nav aria-label="Speisekarten-Kategorien" class="overflow-x-auto -mx-4 px-4">
       <ul class="flex gap-2 pb-2">
         {ALL_CATEGORIES.map((c) => (
@@ -37,4 +73,5 @@ const schoolHours = isSchoolHoursWindow();
 
 <script>
   import './MenuSection/menuSection.client.ts';
+  import './MenuSection/menuFilter.client.ts';
 </script>

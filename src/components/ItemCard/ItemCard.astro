@@ -4,6 +4,7 @@ import type { MenuItem } from '../../data/menu';
 import AllergenBadge from '../AllergenBadge.astro';
 import { CATEGORY_TO_PLACEHOLDER } from '../../data/menu';
 import { formatEUR } from '../../lib/format';
+import { withBase } from '../../lib/url';
 
 interface Props {
   item: MenuItem;
@@ -13,8 +14,8 @@ interface Props {
 
 const { item, promo, effectivePrice } = Astro.props;
 const slug = CATEGORY_TO_PLACEHOLDER[item.category] ?? 'doener';
-const photoBase = `/images/meals/${item.id}`;
-const placeholder = `/images/placeholders/${slug}.svg`;
+const photoBase = withBase(`/images/meals/${item.id}`);
+const placeholder = withBase(`/images/placeholders/${slug}.svg`);
 const isOnRequest = effectivePrice === null;
 ---
 
@@ -25,6 +26,9 @@ const isOnRequest = effectivePrice === null;
   data-item-category={item.category}
   data-item-price={effectivePrice ?? ''}
   data-item-promo={promo ? 'true' : 'false'}
+  data-item-tag={item.tag ?? ''}
+  data-item-markings={(item.markings ?? []).join(',')}
+  data-item-search={`${item.name} ${item.description ?? ''} ${item.tag ?? ''}`.toLowerCase()}
   itemscope
   itemtype="https://schema.org/MenuItem"
 >

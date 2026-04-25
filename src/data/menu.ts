@@ -194,8 +194,8 @@ const burger_kebap: MenuItem[] = [
 
 /* ─────────── Pommes Highlights ─────────── */
 const pommes: MenuItem[] = [
-  { id: 'chili-cheese-pommes', category: 'pommes', name: 'Chili Cheese Pommes', priceEur: null, tag: 'scharf' },
-  { id: 'chili-cheese-pommes-sucuk', category: 'pommes', name: 'Chili Cheese Pommes Sucuk', priceEur: null, tag: 'neu' },
+  { id: 'chili-cheese-pommes', category: 'pommes', name: 'Chili Cheese Pommes', priceEur: 6.5, markings: ['a', 'b', 'd'], tag: 'scharf' },
+  { id: 'chili-cheese-pommes-sucuk', category: 'pommes', name: 'Chili Cheese Pommes Sucuk', priceEur: 8.0, markings: ['3', '6', 'a', 'b', 'd'], tag: 'scharf' },
 ];
 
 export const MENU: readonly MenuItem[] = [

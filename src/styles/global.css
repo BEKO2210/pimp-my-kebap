@@ -49,6 +49,23 @@ body.mobile-nav-open { overflow: hidden; touch-action: none; }
   body.mobile-nav-open { overflow: auto; touch-action: auto; }
 }
 
+/* When the mobile cart bar is showing, lift the configurator's sticky footer
+ * above it so the "In den Warenkorb"-button isn't covered. The cart bar is
+ * fixed at bottom-0 and ~60px tall on mobile; we leave a small breathing gap. */
+body.has-cart-bar .cfg-sticky-footer { bottom: 5.25rem; }
+@media (min-width: 1024px) {
+  /* Cart bar is hidden ≥lg, so reset to the original 1rem offset. */
+  body.has-cart-bar .cfg-sticky-footer { bottom: 1rem; }
+}
+
+/* Invalid form field — driven by aria-invalid="true" so screen readers and
+ * the visual cue stay in sync. Wraps the existing gold border with a fire-red
+ * one + a subtle ring to draw the eye when the warning text appears. */
+input[aria-invalid='true'] {
+  border-color: var(--color-brand-red-fire);
+  box-shadow: 0 0 0 1px var(--color-brand-red-fire);
+}
+
 a { color: inherit; text-decoration: none; }
 
 h1, h2, h3, .display { font-family: var(--font-display); letter-spacing: -0.01em; }

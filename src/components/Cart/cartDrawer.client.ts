@@ -30,6 +30,12 @@ import { getCurrentOpeningStatus } from '../../lib/time';
 
 const root = document.querySelector<HTMLElement>('[data-cart-root]');
 if (root) {
+  // Track which delivery fields the user has interacted with — we only paint
+  // the red invalid border after they've actually touched the field, never on
+  // first open of an empty form.
+  let plzTouched = false;
+  let streetTouched = false;
+
   const itemsList = root.querySelector<HTMLUListElement>('[data-cart-items]')!;
   const empty = root.querySelector<HTMLElement>('[data-cart-empty]')!;
   const totalsItems = root.querySelector<HTMLElement>('[data-totals-items]')!;
@@ -99,6 +105,25 @@ if (root) {
     }
   }
   buildPickupOptions();
+
+  /**
+   * Rebuild the pickup-time options and preserve the user's selection if it's
+   * still in the future. Called every time the drawer opens, otherwise a slot
+   * picked many minutes ago could already be in the past.
+   */
+  function rebuildPickupOptions() {
+    const previous = pickupSel.value;
+    buildPickupOptions();
+    const stillValid = Array.from(pickupSel.options).some((o) => o.value === previous);
+    if (stillValid) {
+      pickupSel.value = previous;
+    } else if (previous !== 'asap') {
+      // Previously chosen ISO is no longer offered (now in the past). Reset
+      // to ASAP and sync the store so the WhatsApp message doesn't carry it.
+      pickupSel.value = 'asap';
+      patchCustomer({ pickup: { kind: 'asap' } });
+    }
+  }
 
   function lineSummary(line: CartLine): string {
     if (line.kind === 'kebab') {
@@ -219,13 +244,20 @@ if (root) {
     totalsGrand.textContent = formatEUR(t.grandTotalEur);
 
     let warn = '';
+    let plzInvalid = false;
+    let streetInvalid = false;
     const c = $customer.get();
     if (c.fulfillment === 'lieferung') {
+      const plzMissing = !c.delivery?.postalCode?.trim();
+      const plzBadFormat = !plzMissing && !/^\d{5}$/.test(c.delivery!.postalCode.trim());
+      const streetMissing = !c.delivery?.street?.trim();
+      plzInvalid = plzMissing || plzBadFormat;
+      streetInvalid = streetMissing;
       if (t.belowDeliveryMinimum) {
         warn = `Lieferung erst ab ${formatEUR(20)}. Bitte mehr Artikel hinzufügen.`;
-      } else if (!c.delivery?.street?.trim() || !c.delivery?.postalCode?.trim()) {
+      } else if (plzMissing || streetMissing) {
         warn = 'Lieferung: PLZ und Straße eingeben.';
-      } else if (!/^\d{5}$/.test(c.delivery.postalCode.trim())) {
+      } else if (plzBadFormat) {
         warn = 'PLZ muss 5 Ziffern haben (z. B. 71691).';
       }
     }
@@ -233,8 +265,18 @@ if (root) {
     warning.textContent = warn;
     checkout.disabled = $lines.get().length === 0 || !!warn;
 
+    // Visual invalid state — only after the user has actually touched the
+    // field. We don't want the form to scream red on first open.
+    const showPlzError = plzInvalid && plzTouched && c.fulfillment === 'lieferung';
+    const showStreetError = streetInvalid && streetTouched && c.fulfillment === 'lieferung';
+    plzInp.toggleAttribute('aria-invalid', showPlzError);
+    streetInp.toggleAttribute('aria-invalid', showStreetError);
+
     const count = $itemCount.get();
     if (bar) bar.hidden = count === 0;
+    // Body class lets the configurator's sticky footer lift itself above the
+    // mobile cart bar so its "In den Warenkorb"-button stays visible.
+    document.body.classList.toggle('has-cart-bar', count > 0);
     if (barCount) barCount.textContent = String(count);
     if (barTotal) barTotal.textContent = formatEUR(t.grandTotalEur);
   }
@@ -267,6 +309,7 @@ if (root) {
   }
 
   function setOpen(open: boolean) {
+    if (open) rebuildPickupOptions();
     root!.classList.toggle('hidden', !open);
     root!.setAttribute('aria-hidden', String(!open));
     document.body.style.overflow = open ? 'hidden' : '';
@@ -318,8 +361,14 @@ if (root) {
     });
   }
   zoneSel.addEventListener('change', syncDeliveryAddress);
-  plzInp.addEventListener('input', syncDeliveryAddress);
-  streetInp.addEventListener('input', syncDeliveryAddress);
+  plzInp.addEventListener('input', () => {
+    plzTouched = true;
+    syncDeliveryAddress();
+  });
+  streetInp.addEventListener('input', () => {
+    streetTouched = true;
+    syncDeliveryAddress();
+  });
 
   checkout.addEventListener('click', () => {
     if (!canSendWhatsApp()) {

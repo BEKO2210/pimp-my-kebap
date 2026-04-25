@@ -15,7 +15,7 @@ jobs:
       PUBLIC_RESTAURANT_WHATSAPP: '491742116095'
       PUBLIC_SITE_URL: 'https://beko2210.github.io/pimp-my-kebap'
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - uses: actions/setup-node@v4
         with:
           node-version: '22'

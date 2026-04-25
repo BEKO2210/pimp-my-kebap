@@ -93,6 +93,15 @@ describe('getCurrentOpeningStatus', () => {
     expect(status.isOpen).toBe(false);
     expect(status.reason).toBe('after_closing');
     expect(status.nextOpenLabel).toMatch(/Sa/);
+    expect(status.nextOpenShortLabel).toBe('morgen wieder');
+  });
+
+  it('Saturday after closing skips Sunday — short label says "Mo wieder"', () => {
+    // Saturday 11.7.2026 22:30 — next open is Monday 13.7.
+    const status = getCurrentOpeningStatus(berlinSummer(2026, 7, 11, 22, 30));
+    expect(status.reason).toBe('after_closing');
+    expect(status.nextOpenLabel).toMatch(/Mo/);
+    expect(status.nextOpenShortLabel).toBe('Mo wieder');
   });
 
   it('public holiday during opening hours = open/holiday', () => {

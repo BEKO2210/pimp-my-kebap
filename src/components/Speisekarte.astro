@@ -1,7 +1,8 @@
 ---
 // Powered by skill: frontend-design, accessibility
-import { ALL_CATEGORIES, CATEGORY_LABEL } from '../data/menu';
+import { ALL_CATEGORIES, CATEGORY_LABEL, itemsByCategory } from '../data/menu';
 import { ALLERGENS } from '../data/allergens';
+import { DRINKS } from '../data/drinks';
 import MenuSection from './MenuSection/MenuSection.astro';
 import Drinks from './MenuSection/Drinks.astro';
 import { getCurrentWeekday, isSchoolHoursWindow } from '../lib/time';
@@ -10,6 +11,9 @@ import Icon from './Icon.astro';
 const weekday = getCurrentWeekday();
 const schoolHours = isSchoolHoursWindow();
 const filterableAllergens: Array<keyof typeof ALLERGENS> = ['a', 'c', 'd', 'e', 'f'];
+
+// Pre-compute item counts so each accordion summary can show "(N Speisen)".
+const drinkCount = DRINKS.reduce((sum, d) => sum + d.variants.length, 0);
 ---
 
 <section id="speisekarte" class="px-4 sm:px-6 lg:px-8 pt-12">
@@ -17,59 +21,88 @@ const filterableAllergens: Array<keyof typeof ALLERGENS> = ['a', 'c', 'd', 'e', 
     <p class="eyebrow">Vollständige Karte</p>
     <h2 class="display text-3xl sm:text-5xl text-brand-cream mt-2 mb-6">Speisekarte</h2>
 
-    <div class="flex flex-col gap-3 mb-4">
-      <label class="relative block">
-        <span class="sr-only">Speisen suchen</span>
-        <span class="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-brand-cream/40">
-          <Icon name="search" size={18} />
-        </span>
-        <input
-          type="search"
-          data-menu-search
-          placeholder="Suche: Pizza, Vegetarisch, Sucuk…"
-          autocomplete="off"
-          class="w-full bg-brand-charcoal border border-brand-gold/30 focus:border-brand-gold rounded-md pl-10 pr-4 py-3 text-brand-cream placeholder:text-brand-cream/40"
-          aria-label="Speisen durchsuchen"
-        />
-      </label>
-      <div class="flex flex-wrap items-center gap-2 text-xs">
-        <span class="text-brand-cream/55 mr-1">Filter:</span>
-        <button type="button" class="btn-secondary !px-3 !py-1 text-xs inline-flex items-center gap-1.5" data-filter-veg aria-pressed="false">
-          <Icon name="leaf" size={14} class="text-brand-green-leaf" />
-          <span>Vegetarisch</span>
-        </button>
-        <button type="button" class="btn-secondary !px-3 !py-1 text-xs inline-flex items-center gap-1.5" data-filter-spicy aria-pressed="false">
-          <Icon name="flame" size={14} class="text-brand-red-fire" />
-          <span>Scharf</span>
-        </button>
-        <span class="text-brand-cream/55 ml-2">Allergen ausschließen:</span>
-        {filterableAllergens.map((code) => (
-          <button
-            type="button"
-            class="btn-secondary !px-3 !py-1 text-xs"
-            data-filter-allergen={code}
-            aria-pressed="false"
-            aria-label={`Ohne ${ALLERGENS[code]}`}
+    <div class="flex flex-col gap-3 mb-6">
+      <!-- Search + Filter trigger row -->
+      <div class="flex gap-2 items-stretch">
+        <label class="relative block flex-1">
+          <span class="sr-only">Speisen suchen</span>
+          <span class="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-brand-cream/40">
+            <Icon name="search" size={18} />
+          </span>
+          <input
+            type="search"
+            data-menu-search
+            placeholder="Suche: Pizza, Vegetarisch, Sucuk…"
+            autocomplete="off"
+            class="w-full bg-brand-charcoal border border-brand-gold/30 focus:border-brand-gold rounded-md pl-10 pr-4 py-3 text-brand-cream placeholder:text-brand-cream/40"
+            aria-label="Speisen durchsuchen"
+          />
+        </label>
+        <details class="relative" data-menu-filter-dropdown>
+          <summary
+            class="list-none inline-flex items-center gap-2 px-4 py-3 rounded-md border border-brand-gold/30 bg-brand-charcoal text-brand-cream text-sm cursor-pointer hover:border-brand-gold transition-colors"
+            aria-label="Filter öffnen"
           >
-            ohne {code}) {ALLERGENS[code].split(' ')[0]}
-          </button>
-        ))}
-        <button type="button" class="text-xs text-brand-cream/55 hover:text-brand-cream underline" data-filter-reset>zurücksetzen</button>
+            <Icon name="sliders" size={16} />
+            <span>Filter</span>
+            <span data-filter-active-count class="hidden text-brand-gold text-xs num">0</span>
+            <Icon name="chevron-down" size={14} class="opacity-70" />
+          </summary>
+          <div class="absolute right-0 mt-2 z-20 w-72 sm:w-80 rounded-md border border-brand-gold/30 bg-brand-charcoal shadow-2xl p-4 space-y-4">
+            <fieldset class="space-y-2">
+              <legend class="text-xs uppercase tracking-wider text-brand-cream/55">Eigenschaften</legend>
+              <button type="button" class="w-full btn-secondary !px-3 !py-2 text-xs inline-flex items-center justify-start gap-2" data-filter-veg aria-pressed="false">
+                <Icon name="leaf" size={14} class="text-brand-green-leaf" />
+                <span>Nur Vegetarisch</span>
+              </button>
+              <button type="button" class="w-full btn-secondary !px-3 !py-2 text-xs inline-flex items-center justify-start gap-2" data-filter-spicy aria-pressed="false">
+                <Icon name="flame" size={14} class="text-brand-red-fire" />
+                <span>Nur Scharf</span>
+              </button>
+            </fieldset>
+            <fieldset class="space-y-2">
+              <legend class="text-xs uppercase tracking-wider text-brand-cream/55">Allergen ausschließen</legend>
+              <div class="grid grid-cols-2 gap-2">
+                {filterableAllergens.map((code) => (
+                  <button
+                    type="button"
+                    class="btn-secondary !px-2 !py-1.5 text-xs"
+                    data-filter-allergen={code}
+                    aria-pressed="false"
+                    aria-label={`Ohne ${ALLERGENS[code]}`}
+                  >
+                    ohne {code}) {ALLERGENS[code].split(' ')[0]}
+                  </button>
+                ))}
+              </div>
+            </fieldset>
+            <button type="button" class="w-full text-xs text-brand-cream/60 hover:text-brand-cream underline pt-1" data-filter-reset>
+              Alle Filter zurücksetzen
+            </button>
+          </div>
+        </details>
       </div>
       <p class="text-xs text-brand-cream/50" data-filter-status></p>
     </div>
 
-    <nav aria-label="Speisekarten-Kategorien" class="overflow-x-auto -mx-4 px-4">
+    <!-- Quick-jump category nav (scrollable on mobile) -->
+    <nav aria-label="Speisekarten-Kategorien" class="overflow-x-auto -mx-4 px-4 mb-2">
       <ul class="flex gap-2 pb-2">
         {ALL_CATEGORIES.map((c) => (
           <li>
-            <a href={`#section-${c}`} class="btn-secondary text-xs whitespace-nowrap">
+            <a
+              href={`#section-${c}`}
+              data-cat-jump={c}
+              class="btn-secondary text-xs whitespace-nowrap"
+            >
               {CATEGORY_LABEL[c]}
             </a>
           </li>
         ))}
         <li>
-          <a href="#section-getraenke" class="btn-secondary text-xs whitespace-nowrap">Getränke</a>
+          <a href="#section-getraenke" data-cat-jump="getraenke" class="btn-secondary text-xs whitespace-nowrap">
+            Getränke
+          </a>
         </li>
       </ul>
     </nav>
@@ -77,9 +110,14 @@ const filterableAllergens: Array<keyof typeof ALLERGENS> = ['a', 'c', 'd', 'e', 
 </section>
 
 {ALL_CATEGORIES.map((c) => (
-  <MenuSection category={c} weekday={weekday} schoolHoursOpen={schoolHours} />
+  <MenuSection
+    category={c}
+    weekday={weekday}
+    schoolHoursOpen={schoolHours}
+    itemCount={itemsByCategory(c).length}
+  />
 ))}
-<Drinks />
+<Drinks itemCount={drinkCount} />
 
 <script>
   import './MenuSection/menuSection.client.ts';

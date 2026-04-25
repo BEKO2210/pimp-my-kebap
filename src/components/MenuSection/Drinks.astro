@@ -3,57 +3,78 @@
 import { DRINKS } from '../../data/drinks';
 import { formatEUR } from '../../lib/format';
 import AllergenBadge from '../AllergenBadge.astro';
+import Icon from '../Icon.astro';
+
+interface Props {
+  itemCount?: number;
+}
+const { itemCount } = Astro.props;
+const count = itemCount ?? DRINKS.reduce((sum, d) => sum + d.variants.length, 0);
 ---
 
 <section
   id="section-getraenke"
-  class="px-4 sm:px-6 lg:px-8 py-10"
+  class="px-4 sm:px-6 lg:px-8"
+  data-menu-section="getraenke"
   aria-labelledby="heading-getraenke"
 >
   <div class="mx-auto max-w-6xl">
-    <h2 id="heading-getraenke" class="display text-2xl sm:text-3xl text-brand-cream mb-6">
-      Getränke
-    </h2>
-    <p class="text-xs text-brand-cream/55 mb-4">
-      Pfand wird im Warenkorb separat ausgewiesen.
-    </p>
-    <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-      {DRINKS.map((drink) => (
-        <article class="card p-4 flex flex-col gap-3">
-          <header class="flex items-start justify-between gap-3">
-            <h3 class="display text-lg text-brand-cream">{drink.name}</h3>
-            <AllergenBadge markings={drink.markings} itemName={drink.name} />
-          </header>
-          <ul class="space-y-2">
-            {drink.variants.map((v) => (
-              <li class="flex items-center justify-between gap-3 text-sm">
-                <span class="text-brand-cream/85">
-                  {v.label}
-                  {v.depositEur > 0 && (
-                    <span class="text-brand-cream/45 text-xs"> (+{formatEUR(v.depositEur)} Pfand)</span>
-                  )}
-                </span>
-                <span class="flex items-center gap-3">
-                  <span class="text-brand-gold font-semibold">{formatEUR(v.priceEur)}</span>
-                  <button
-                    type="button"
-                    class="btn-primary text-sm !px-3 !py-1"
-                    data-drink-add
-                    data-drink-id={drink.id}
-                    data-drink-name={drink.name}
-                    data-variant-label={v.label}
-                    data-price={v.priceEur}
-                    data-deposit={v.depositEur}
-                    aria-label={`${drink.name} ${v.label} hinzufügen`}
-                  >+
-                  </button>
-                </span>
-              </li>
-            ))}
-          </ul>
-        </article>
-      ))}
-    </div>
+    <details class="menu-accordion border-t border-brand-gold/15 py-4" data-menu-accordion>
+      <summary
+        class="list-none flex items-center justify-between gap-4 cursor-pointer py-2 select-none"
+        id="heading-getraenke"
+      >
+        <div class="flex items-center gap-3 min-w-0">
+          <h2 class="display text-2xl sm:text-3xl text-brand-cream truncate">Getränke</h2>
+          <span class="text-xs text-brand-cream/50 num shrink-0">
+            ({count} Varianten)
+          </span>
+        </div>
+        <span class="menu-accordion-chevron text-brand-gold shrink-0" aria-hidden="true">
+          <Icon name="chevron-down" size={20} />
+        </span>
+      </summary>
+      <p class="text-xs text-brand-cream/55 mt-2 mb-4">
+        Pfand wird im Warenkorb separat ausgewiesen.
+      </p>
+      <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        {DRINKS.map((drink) => (
+          <article class="card p-4 flex flex-col gap-3">
+            <header class="flex items-start justify-between gap-3">
+              <h3 class="display text-lg text-brand-cream">{drink.name}</h3>
+              <AllergenBadge markings={drink.markings} itemName={drink.name} />
+            </header>
+            <ul class="space-y-2">
+              {drink.variants.map((v) => (
+                <li class="flex items-center justify-between gap-3 text-sm">
+                  <span class="text-brand-cream/85">
+                    {v.label}
+                    {v.depositEur > 0 && (
+                      <span class="text-brand-cream/45 text-xs"> (+{formatEUR(v.depositEur)} Pfand)</span>
+                    )}
+                  </span>
+                  <span class="flex items-center gap-3">
+                    <span class="text-brand-gold font-semibold">{formatEUR(v.priceEur)}</span>
+                    <button
+                      type="button"
+                      class="btn-primary text-sm !px-3 !py-1"
+                      data-drink-add
+                      data-drink-id={drink.id}
+                      data-drink-name={drink.name}
+                      data-variant-label={v.label}
+                      data-price={v.priceEur}
+                      data-deposit={v.depositEur}
+                      aria-label={`${drink.name} ${v.label} hinzufügen`}
+                    >+
+                    </button>
+                  </span>
+                </li>
+              ))}
+            </ul>
+          </article>
+        ))}
+      </div>
+    </details>
   </div>
 </section>
 

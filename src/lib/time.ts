@@ -55,6 +55,8 @@ export interface OpeningStatus {
   todayClose: string | null;
   /** Next time the shop opens (best-effort label). */
   nextOpenLabel: string | null;
+  /** Compact label for the header pill, e.g. "morgen wieder" / "Mo wieder". */
+  nextOpenShortLabel: string | null;
 }
 
 function parseHHMM(s: string): { h: number; m: number } {
@@ -83,6 +85,7 @@ export function getCurrentOpeningStatus(date: Date = new Date()): OpeningStatus 
       todayOpen: null,
       todayClose: null,
       nextOpenLabel: 'Mo wieder ab 10:30 Uhr',
+      nextOpenShortLabel: 'Mo wieder',
     };
   }
 
@@ -103,18 +106,23 @@ export function getCurrentOpeningStatus(date: Date = new Date()): OpeningStatus 
       todayOpen: hours.open,
       todayClose: hours.close,
       nextOpenLabel: `heute ab ${hours.open} Uhr`,
+      nextOpenShortLabel: `ab ${hours.open}`,
     };
   }
   if (nowMin >= closeMin) {
-    const nextDay = ((now.weekday % 7) + 1) as BerlinNow['weekday'];
-    const nextLabel =
-      nextDay === 7 ? 'Mo ab 10:30 Uhr' : `${WEEKDAY_LABELS[nextDay]} ab 10:30 Uhr`;
+    // Calendar-next day, then skip Sunday (shop is closed).
+    let nextDay = ((now.weekday % 7) + 1) as BerlinNow['weekday'];
+    if (nextDay === 7) nextDay = 1; // Sunday → Monday
+    const nextLabel = `${WEEKDAY_LABELS[nextDay]} ab 10:30 Uhr`;
+    // Saturday closes → next open is Monday, so "morgen" would be wrong.
+    const shortLabel = now.weekday === 6 ? 'Mo wieder' : 'morgen wieder';
     return {
       isOpen: false,
       reason: 'after_closing',
       todayOpen: hours.open,
       todayClose: hours.close,
       nextOpenLabel: nextLabel,
+      nextOpenShortLabel: shortLabel,
     };
   }
 
@@ -124,6 +132,7 @@ export function getCurrentOpeningStatus(date: Date = new Date()): OpeningStatus 
     todayOpen: hours.open,
     todayClose: hours.close,
     nextOpenLabel: null,
+    nextOpenShortLabel: null,
   };
 }
 

@@ -166,10 +166,36 @@ alles drei stimmt nicht mehr. Neue Tests:
 E2E ist nicht in CI (CI macht typecheck/lint/vitest/build), läuft
 aber lokal über `npm run test:e2e`.
 
-### 15. CSP/Security-Header Sichtprüfung [ ]
-Nach allen Änderungen einmal `dist/index.html` prüfen: stimmen die
-CSP-Direktiven noch (img-src für tile.openstreetmap.org), keine
-inline-Scripts ohne nonce.
+### 15. CSP/Security-Header Sichtprüfung [x]
+Sichtprüfung im Build, alles passt:
+
+**Externe Resources im Build:**
+- `tile.openstreetmap.org` (`<img>` in Standort) → `img-src` deckt's ✓
+- `data:`-SVG-Placeholders → `img-src data:` ✓
+- `wa.me/...`, `google.com/maps/...`, `instagram.com/...` →
+  Top-Level-Navigation, nicht CSP-relevant ✓
+
+**Inline-Audit auf jeder gebauten Seite:**
+- Inline-Scripts ohne nonce: **0**
+- 3× `<script type="application/ld+json">` (Restaurant + Menu +
+  Breadcrumb JSON-LD). Per CSP3 Spec sind data-blocks (LD+JSON,
+  application/json) NICHT durch `script-src` reglementiert.
+- 4× `<script type="module" src="/assets/...">` — alle eigener Origin,
+  passt zu `script-src 'self'`.
+- 2× Astro-Component-`<style>`-Blöcke + 3× `style="..."` im
+  `#print-receipt`-Block: erlaubt durch `style-src 'self'
+  'unsafe-inline'`. Inline-Style ist für Print-Engines gerechtfertigt
+  (manche ignorieren externe Stylesheets).
+
+**Deployment-Limit dokumentiert:**
+GitHub Pages ignoriert `public/_headers` (Cloudflare/Netlify-Format).
+In Production kommt nur die Meta-CSP zum Tragen — und Meta-CSP kann
+laut HTML-Spec kein `frame-ancestors` setzen. Folge: kein iframe-
+Click-Jacking-Schutz auf GH-Pages. Beim Wechsel auf Cloudflare Pages
+oder Netlify wird `public/_headers` automatisch HTTP-Header und
+`frame-ancestors 'none'` greift.
+
+Keine Code-Änderung nötig.
 
 ---
 

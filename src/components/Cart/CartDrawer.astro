@@ -2,6 +2,7 @@
 // Powered by skill: frontend-design, accessibility, security
 import { DELIVERY_ZONES, DELIVERY_ZONE_OTHER, MIN_DELIVERY_ORDER_EUR } from '../../data/delivery';
 import { formatEUR } from '../../lib/format';
+import Icon from '../Icon.astro';
 
 const wa = import.meta.env.PUBLIC_RESTAURANT_WHATSAPP ?? '491742116095';
 ---
@@ -25,9 +26,11 @@ const wa = import.meta.env.PUBLIC_RESTAURANT_WHATSAPP ?? '491742116095';
       <button
         type="button"
         data-cart-close
-        class="text-brand-cream/70 hover:text-brand-cream text-2xl leading-none"
+        class="text-brand-cream/70 hover:text-brand-cream p-1 -m-1 rounded-md"
         aria-label="Warenkorb schließen"
-      >×</button>
+      >
+        <Icon name="close" size={22} />
+      </button>
     </header>
 
     <div class="flex-1 overflow-y-auto p-4" data-cart-list aria-live="polite">
@@ -136,8 +139,14 @@ const wa = import.meta.env.PUBLIC_RESTAURANT_WHATSAPP ?? '491742116095';
 
       <div class="grid grid-cols-3 gap-2">
         <button type="button" class="btn-secondary text-xs !px-2" data-cart-clear>Leeren</button>
-        <button type="button" class="btn-secondary text-xs !px-2" data-cart-share aria-label="Warenkorb-Link kopieren">🔗 Teilen</button>
-        <button type="button" class="btn-secondary text-xs !px-2" data-cart-print aria-label="Bon drucken">🖨 Bon</button>
+        <button type="button" class="btn-secondary text-xs !px-2 inline-flex items-center justify-center gap-1.5" data-cart-share aria-label="Warenkorb-Link kopieren">
+          <Icon name="share" size={14} />
+          <span>Teilen</span>
+        </button>
+        <button type="button" class="btn-secondary text-xs !px-2 inline-flex items-center justify-center gap-1.5" data-cart-print aria-label="Bon drucken">
+          <Icon name="printer" size={14} />
+          <span>Bon</span>
+        </button>
       </div>
       <button
         type="button"

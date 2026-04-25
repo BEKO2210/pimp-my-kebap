@@ -43,6 +43,12 @@ body {
   body { padding-bottom: 0; }
 }
 
+/* Body scroll-lock while the mobile nav panel is open. */
+body.mobile-nav-open { overflow: hidden; touch-action: none; }
+@media (min-width: 768px) {
+  body.mobile-nav-open { overflow: auto; touch-action: auto; }
+}
+
 a { color: inherit; text-decoration: none; }
 
 h1, h2, h3, .display { font-family: var(--font-display); letter-spacing: -0.01em; }

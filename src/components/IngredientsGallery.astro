@@ -1,6 +1,7 @@
 ---
 // Powered by skill: frontend-design
 import { TOPPINGS } from '../data/ingredients';
+import Icon from './Icon.astro';
 ---
 
 <section id="zutaten" class="px-4 sm:px-6 lg:px-8 py-12" aria-labelledby="zutaten-heading">
@@ -14,7 +15,7 @@ import { TOPPINGS } from '../data/ingredients';
       {TOPPINGS.map((t) => (
         <li class="card p-3 flex flex-col items-center justify-center gap-1 text-center min-h-[5rem]">
           <span class="text-brand-cream text-sm">{t.name}</span>
-          {t.spicy && <span class="text-brand-red-fire text-xs" aria-label="scharf">🌶️</span>}
+          {t.spicy && <Icon name="flame" size={14} class="text-brand-red-fire" ariaLabel="scharf" />}
         </li>
       ))}
     </ul>

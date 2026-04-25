@@ -5,6 +5,7 @@ import AllergenBadge from '../AllergenBadge.astro';
 import { CATEGORY_TO_PLACEHOLDER } from '../../data/menu';
 import { formatEUR } from '../../lib/format';
 import { withBase } from '../../lib/url';
+import Icon from '../Icon.astro';
 
 interface Props {
   item: MenuItem;
@@ -50,7 +51,10 @@ const isOnRequest = effectivePrice === null;
       <span class="absolute top-2 left-2 badge badge-new">NEU</span>
     )}
     {item.tag === 'scharf' && (
-      <span class="absolute top-2 left-2 badge badge-spicy">🌶️ Scharf</span>
+      <span class="absolute top-2 left-2 badge badge-spicy inline-flex items-center gap-1">
+        <Icon name="flame" size={12} />
+        <span>Scharf</span>
+      </span>
     )}
     {item.tag === 'vegetarisch' && (
       <span class="absolute top-2 left-2 badge badge-veg">Vegetarisch</span>

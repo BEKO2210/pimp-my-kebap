@@ -8,6 +8,7 @@ import {
   pizzaToppingPrice,
 } from '../../data/pizza';
 import { formatEUR } from '../../lib/format';
+import Icon from '../Icon.astro';
 ---
 
 <section
@@ -46,8 +47,8 @@ import { formatEUR } from '../../lib/format';
                 <input type="checkbox" class="sr-only" data-pizza-topping={t.id} aria-label={t.name} />
                 <span class="text-brand-cream flex items-center gap-1">
                   {t.name}
-                  {t.spicy && <span aria-label="scharf" class="text-brand-red-fire">🌶️</span>}
-                  {t.veg && <span aria-label="vegetarisch" class="text-brand-green-leaf">🌱</span>}
+                  {t.spicy && <Icon name="flame" size={12} class="text-brand-red-fire" ariaLabel="scharf" />}
+                  {t.veg && <Icon name="leaf" size={12} class="text-brand-green-leaf" ariaLabel="vegetarisch" />}
                 </span>
                 <span class={`text-xs num ${isPremium ? 'text-brand-orange' : 'text-brand-gold'}`}>
                   +{formatEUR(price)}

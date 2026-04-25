@@ -2,6 +2,7 @@
 // Powered by skill: frontend-design, accessibility
 // Three giant CTA cards under the hero — one per main path.
 import { withBase } from '../lib/url';
+import Icon from './Icon.astro';
 ---
 
 <section
@@ -20,7 +21,7 @@ import { withBase } from '../lib/url';
         href={withBase('/konfigurator')}
         class="card card-selectable group p-5 flex flex-col gap-3 min-h-[14rem]"
       >
-        <span class="text-3xl" aria-hidden="true">🥙</span>
+        <Icon name="kebap" size={36} class="text-brand-gold" />
         <span class="display text-xl text-brand-cream group-hover:text-brand-gold transition-colors">
           Pimp my Kebap
         </span>
@@ -35,7 +36,7 @@ import { withBase } from '../lib/url';
         href={withBase('/pimp-my-pizza')}
         class="card card-selectable group p-5 flex flex-col gap-3 min-h-[14rem]"
       >
-        <span class="text-3xl" aria-hidden="true">🍕</span>
+        <Icon name="pizza" size={36} class="text-brand-gold" />
         <span class="display text-xl text-brand-cream group-hover:text-brand-gold transition-colors">
           Pimp my Pizza
         </span>
@@ -49,7 +50,7 @@ import { withBase } from '../lib/url';
         href={withBase('/speisekarte')}
         class="card card-selectable group p-5 flex flex-col gap-3 min-h-[14rem]"
       >
-        <span class="text-3xl" aria-hidden="true">📋</span>
+        <Icon name="menu-list" size={36} class="text-brand-gold" />
         <span class="display text-xl text-brand-cream group-hover:text-brand-gold transition-colors">
           Speisekarte
         </span>

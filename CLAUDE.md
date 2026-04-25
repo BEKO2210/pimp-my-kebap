@@ -84,9 +84,11 @@ sofort sichtbar — auch ohne JS-Hydrate. Nebeneffekt: Filter-Buttons
 in der Speisekarte und der Bestellart-Toggle im Cart bekommen den
 gleichen klaren Active-Look — konsistent durch die App.
 
-### 8. Filter-Dropdown: Auto-Close bei Allergen-Reset [ ]
-Aktuell bleibt der Dropdown nach "Alle Filter zurücksetzen" offen.
-Reset sollte auch zumachen, weil Action abgeschlossen.
+### 8. Filter-Dropdown: Auto-Close bei Allergen-Reset [x]
+Reset-Handler in `menuFilter.client.ts` schließt den
+`data-menu-filter-dropdown` (`<details>`) jetzt zusätzlich nach dem
+`apply()`. Action abgeschlossen → Panel zu, User sieht direkt die
+ungefilterte Liste.
 
 ### 9. Schüler-Section am Sonntag/Feiertag verstecken [ ]
 Aktuell bleibt die Sektion sichtbar (gedimmt + "außerhalb Schulzeit"-

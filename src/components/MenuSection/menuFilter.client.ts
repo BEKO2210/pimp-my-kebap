@@ -123,6 +123,9 @@ if (searchInput) {
       b.removeAttribute('data-active');
     });
     apply();
+    // Reset is a final action — close the dropdown so the user sees their
+    // unfiltered list without an open panel still hanging over it.
+    if (filterDropdown) filterDropdown.open = false;
   });
 
   // Filter dropdown: close on outside click + ESC

@@ -19,24 +19,8 @@
   --radius-card: 0.75rem;
 }
 
-@font-face {
-  font-family: 'Inter';
-  src:
-    url('/fonts/inter-variable.woff2') format('woff2-variations'),
-    url('/fonts/inter-variable.woff2') format('woff2');
-  font-weight: 100 900;
-  font-style: normal;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: 'Playfair Display';
-  src: url('/fonts/playfair-display-variable.woff2') format('woff2-variations'),
-    url('/fonts/playfair-display-variable.woff2') format('woff2');
-  font-weight: 400 900;
-  font-style: normal;
-  font-display: swap;
-}
+/* @font-face rules are emitted by Base.astro using withBase() so the URLs
+   work under any deployment base path (root vs project-pages sub-path). */
 
 html {
   background-color: var(--color-brand-black);

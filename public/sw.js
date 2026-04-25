@@ -1,14 +1,21 @@
 // Powered by skill: pwa
 // Minimal Workbox-free service worker. Cache-first for static assets,
 // network-first for HTML, custom offline fallback.
+// Scope-aware: works under both root (/) and project-pages sub-path
+// (e.g. /pimp-my-kebap/).
 
 const CACHE_VERSION = 'pmk-v1';
 const STATIC_PATTERNS = [/\/assets\//, /\/fonts\//, /\/images\//, /\/icons\//, /\/brand\//];
-const OFFLINE_URL = '/offline.html';
+const SCOPE = new URL('./', self.location).pathname.replace(/\/$/, '');
+const OFFLINE_URL = `${SCOPE}/offline.html`;
+const HOME_URL = `${SCOPE}/`;
 
 self.addEventListener('install', (event) => {
   event.waitUntil(
-    caches.open(CACHE_VERSION).then((cache) => cache.addAll(['/', OFFLINE_URL])).catch(() => undefined),
+    caches
+      .open(CACHE_VERSION)
+      .then((cache) => cache.addAll([HOME_URL, OFFLINE_URL]))
+      .catch(() => undefined),
   );
   self.skipWaiting();
 });

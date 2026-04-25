@@ -1,6 +1,7 @@
 ---
 // Powered by skill: frontend-design, accessibility
 import { BRAND } from '../data/brand';
+import { withBase } from '../lib/url';
 ---
 
 <section
@@ -15,10 +16,10 @@ import { BRAND } from '../data/brand';
   </div>
   <div class="mx-auto max-w-4xl text-center">
     <picture>
-      <source srcset="/brand/logo.avif" type="image/avif" />
-      <source srcset="/brand/logo.webp" type="image/webp" />
+      <source srcset={withBase('/brand/logo.avif')} type="image/avif" />
+      <source srcset={withBase('/brand/logo.webp')} type="image/webp" />
       <img
-        src="/brand/logo.png"
+        src={withBase('/brand/logo.png')}
         alt="Pimp My Kebap Logo"
         width="200" height="200"
         class="mx-auto h-32 sm:h-40 w-auto"
@@ -38,8 +39,8 @@ import { BRAND } from '../data/brand';
       und sende deine Bestellung in 30 Sekunden per WhatsApp.
     </p>
     <div class="mt-8 flex flex-wrap items-center justify-center gap-3">
-      <a href="#konfigurator" class="btn-primary">Jetzt konfigurieren →</a>
-      <a href="#speisekarte" class="btn-secondary">Speisekarte ansehen</a>
+      <a href={withBase('/') + '#konfigurator'} class="btn-primary">Jetzt konfigurieren →</a>
+      <a href={withBase('/') + '#speisekarte'} class="btn-secondary">Speisekarte ansehen</a>
     </div>
   </div>
 </section>

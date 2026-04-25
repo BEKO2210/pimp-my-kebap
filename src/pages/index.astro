@@ -12,6 +12,7 @@ import OrderHistory from '../components/OrderHistory.astro';
 import Standort from '../components/Standort.astro';
 import Footer from '../components/Footer.astro';
 import CartDrawer from '../components/Cart/CartDrawer.astro';
+import Icon from '../components/Icon.astro';
 import {
   buildRestaurantJsonLd,
   buildMenuJsonLd,
@@ -40,8 +41,9 @@ const waMissing = !wa || wa.length === 0;
 
   <WeeklyBanner />
   {waMissing && (
-    <p class="bg-brand-red-fire/15 border-y border-brand-red-fire/40 text-brand-cream text-sm px-4 py-2 text-center">
-      ⚠️ Bestellung deaktiviert: WhatsApp-Nummer fehlt in der Konfiguration.
+    <p class="bg-brand-red-fire/15 border-y border-brand-red-fire/40 text-brand-cream text-sm px-4 py-2 text-center inline-flex items-center justify-center gap-2 w-full">
+      <Icon name="alert" size={16} class="text-brand-red-fire" />
+      <span>Bestellung deaktiviert: WhatsApp-Nummer fehlt in der Konfiguration.</span>
     </p>
   )}
   <Hero />

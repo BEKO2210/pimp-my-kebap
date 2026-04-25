@@ -6,6 +6,7 @@ import { BRAND } from '../data/brand';
 import { withBase } from '../lib/url';
 import { offerForDay } from '../data/weeklyOffers';
 import { getCurrentWeekday } from '../lib/time';
+import Icon from './Icon.astro';
 
 const offer = offerForDay(getCurrentWeekday());
 ---
@@ -41,8 +42,14 @@ const offer = offerForDay(getCurrentWeekday());
       </p>
       <div class="mt-8 flex flex-wrap items-center gap-3">
         <a href={withBase('/konfigurator')} class="btn-primary">Kebap konfigurieren →</a>
-        <a href={withBase('/pimp-my-pizza')} class="btn-secondary">🍕 Pizza bauen</a>
-        <a href={withBase('/speisekarte')} class="btn-secondary">📋 Speisekarte</a>
+        <a href={withBase('/pimp-my-pizza')} class="btn-secondary inline-flex items-center gap-2">
+          <Icon name="pizza" size={16} class="text-brand-gold" />
+          <span>Pizza bauen</span>
+        </a>
+        <a href={withBase('/speisekarte')} class="btn-secondary inline-flex items-center gap-2">
+          <Icon name="menu-list" size={16} class="text-brand-gold" />
+          <span>Speisekarte</span>
+        </a>
       </div>
       <dl class="mt-10 grid grid-cols-3 gap-4 max-w-md">
         <div>

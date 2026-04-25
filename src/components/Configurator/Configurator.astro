@@ -5,6 +5,7 @@ import { BASES, MEATS } from '../../data/configurator';
 import { SAUCES, FREE_SAUCE_COUNT } from '../../data/sauces';
 import { TOPPINGS } from '../../data/ingredients';
 import { formatEUR } from '../../lib/format';
+import Icon from '../Icon.astro';
 ---
 
 <section
@@ -119,7 +120,7 @@ import { formatEUR } from '../../lib/format';
                   />
                   <span class="text-brand-cream text-sm flex items-center gap-1">
                     {s.name}
-                    {s.spicy && <span aria-label="scharf" class="text-brand-red-fire">🌶️</span>}
+                    {s.spicy && <Icon name="flame" size={12} class="text-brand-red-fire" ariaLabel="scharf" />}
                   </span>
                 </label>
               ))}
@@ -160,10 +161,10 @@ import { formatEUR } from '../../lib/format';
             {TOPPINGS.map((t) => (
               <label class="card card-selectable p-2 flex items-center justify-center gap-1 text-center cursor-pointer min-h-[3rem]" data-cfg-topping-card={t.id}>
                 <input type="checkbox" class="sr-only" data-cfg-topping={t.id} aria-label={t.name} />
-                <span class="text-brand-cream text-xs">
-                  {t.name}
-                  {t.spicy && <span aria-hidden="true"> 🌶️</span>}
-                  {t.baseIncluded && <span class="text-brand-cream/40 block text-[10px]">(im Salat enthalten)</span>}
+                <span class="text-brand-cream text-xs inline-flex items-center justify-center gap-1 flex-wrap">
+                  <span>{t.name}</span>
+                  {t.spicy && <Icon name="flame" size={10} class="text-brand-red-fire" ariaLabel="scharf" />}
+                  {t.baseIncluded && <span class="text-brand-cream/40 block text-[10px] basis-full">(im Salat enthalten)</span>}
                 </span>
               </label>
             ))}

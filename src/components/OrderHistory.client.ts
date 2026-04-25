@@ -1,6 +1,6 @@
 // Powered by skill: frontend-design, security
 import { listOrders, clearHistory } from '../lib/history';
-import { $lines, $customer, openCart } from '../lib/cart';
+import { $lines, openCart } from '../lib/cart';
 import { computeTotals } from '../lib/whatsapp';
 import { formatEUR } from '../lib/format';
 import { toast } from '../lib/toast';

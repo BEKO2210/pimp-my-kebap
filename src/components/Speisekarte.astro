@@ -5,6 +5,7 @@ import { ALLERGENS } from '../data/allergens';
 import MenuSection from './MenuSection/MenuSection.astro';
 import Drinks from './MenuSection/Drinks.astro';
 import { getCurrentWeekday, isSchoolHoursWindow } from '../lib/time';
+import Icon from './Icon.astro';
 
 const weekday = getCurrentWeekday();
 const schoolHours = isSchoolHoursWindow();
@@ -17,21 +18,30 @@ const filterableAllergens: Array<keyof typeof ALLERGENS> = ['a', 'c', 'd', 'e', 
     <h2 class="display text-3xl sm:text-5xl text-brand-cream mt-2 mb-6">Speisekarte</h2>
 
     <div class="flex flex-col gap-3 mb-4">
-      <label class="block">
+      <label class="relative block">
         <span class="sr-only">Speisen suchen</span>
+        <span class="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-brand-cream/40">
+          <Icon name="search" size={18} />
+        </span>
         <input
           type="search"
           data-menu-search
-          placeholder="🔍 Suche: Pizza, Vegetarisch, Sucuk…"
+          placeholder="Suche: Pizza, Vegetarisch, Sucuk…"
           autocomplete="off"
-          class="w-full bg-brand-charcoal border border-brand-gold/30 focus:border-brand-gold rounded-md px-4 py-3 text-brand-cream placeholder:text-brand-cream/40"
+          class="w-full bg-brand-charcoal border border-brand-gold/30 focus:border-brand-gold rounded-md pl-10 pr-4 py-3 text-brand-cream placeholder:text-brand-cream/40"
           aria-label="Speisen durchsuchen"
         />
       </label>
       <div class="flex flex-wrap items-center gap-2 text-xs">
         <span class="text-brand-cream/55 mr-1">Filter:</span>
-        <button type="button" class="btn-secondary !px-3 !py-1 text-xs" data-filter-veg aria-pressed="false">🌱 Vegetarisch</button>
-        <button type="button" class="btn-secondary !px-3 !py-1 text-xs" data-filter-spicy aria-pressed="false">🌶️ Scharf</button>
+        <button type="button" class="btn-secondary !px-3 !py-1 text-xs inline-flex items-center gap-1.5" data-filter-veg aria-pressed="false">
+          <Icon name="leaf" size={14} class="text-brand-green-leaf" />
+          <span>Vegetarisch</span>
+        </button>
+        <button type="button" class="btn-secondary !px-3 !py-1 text-xs inline-flex items-center gap-1.5" data-filter-spicy aria-pressed="false">
+          <Icon name="flame" size={14} class="text-brand-red-fire" />
+          <span>Scharf</span>
+        </button>
         <span class="text-brand-cream/55 ml-2">Allergen ausschließen:</span>
         {filterableAllergens.map((code) => (
           <button

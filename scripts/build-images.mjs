@@ -4,8 +4,8 @@
 //
 // Skips silently if `sharp` is not installed (lets `npm install` succeed
 // before native deps are present).
-import { existsSync, mkdirSync, writeFileSync, readFileSync } from 'node:fs';
-import { resolve, dirname } from 'node:path';
+import { existsSync, mkdirSync, writeFileSync } from 'node:fs';
+import { resolve } from 'node:path';
 
 const ROOT = resolve(process.cwd());
 const LOGO_PNG = resolve(ROOT, 'public/brand/logo.png');

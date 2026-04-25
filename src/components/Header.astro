@@ -5,6 +5,7 @@
 import { BRAND } from '../data/brand';
 import { getCurrentOpeningStatus } from '../lib/time';
 import { withBase } from '../lib/url';
+import Icon from './Icon.astro';
 
 const status = getCurrentOpeningStatus();
 
@@ -89,33 +90,33 @@ if (status.isOpen && status.reason === 'regular') {
       class="text-brand-cream/85 hover:text-brand-gold transition-colors p-2 -mr-1 sm:hidden"
       aria-label={`Anrufen ${BRAND.contact.phoneDisplay}`}
     >
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-        <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
-      </svg>
+      <Icon name="phone" size={22} />
     </a>
 
     <!-- Mobile burger menu (hidden ≥md, since nav is shown directly) -->
     <button
       type="button"
       data-mobile-nav-toggle
-      class="text-brand-cream/85 hover:text-brand-gold transition-colors p-2 md:hidden"
+      class="relative text-brand-cream/85 hover:text-brand-gold transition-colors p-2 md:hidden"
       aria-label="Menü öffnen"
       aria-expanded="false"
       aria-controls="mobile-nav-panel"
     >
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-        <line x1="4" y1="7" x2="20" y2="7"></line>
-        <line x1="4" y1="12" x2="20" y2="12"></line>
-        <line x1="4" y1="17" x2="20" y2="17"></line>
-      </svg>
+      <span class="block" data-icon-menu>
+        <Icon name="menu" size={22} />
+      </span>
+      <span class="hidden" data-icon-close>
+        <Icon name="close" size={22} />
+      </span>
     </button>
 
     <a
       href={`tel:${BRAND.contact.phoneE164}`}
-      class="btn-secondary text-xs !py-2 hidden sm:inline-flex md:hidden"
+      class="btn-secondary text-xs !py-2 hidden sm:inline-flex md:hidden items-center gap-1.5"
       aria-label={`Anrufen ${BRAND.contact.phoneDisplay}`}
     >
-      ☎ Anrufen
+      <Icon name="phone" size={14} />
+      <span>Anrufen</span>
     </a>
   </div>
 
@@ -128,36 +129,97 @@ if (status.isOpen && status.reason === 'regular') {
     aria-label="Hauptnavigation (Mobile)"
   >
     <ul class="px-4 py-3 space-y-1">
-      <li><a href={withBase('/konfigurator')} class="block px-3 py-3 rounded-md text-brand-cream hover:bg-brand-charcoal/70">🥙 Pimp my Kebap</a></li>
-      <li><a href={withBase('/pimp-my-pizza')} class="block px-3 py-3 rounded-md text-brand-cream hover:bg-brand-charcoal/70">🍕 Pimp my Pizza</a></li>
-      <li><a href={withBase('/speisekarte')} class="block px-3 py-3 rounded-md text-brand-cream hover:bg-brand-charcoal/70">📋 Speisekarte</a></li>
+      <li>
+        <a href={withBase('/konfigurator')} class="flex items-center gap-3 px-3 py-3 rounded-md text-brand-cream hover:bg-brand-charcoal/70 hover:text-brand-gold transition-colors">
+          <Icon name="kebap" size={20} class="text-brand-gold shrink-0" />
+          <span>Pimp my Kebap</span>
+        </a>
+      </li>
+      <li>
+        <a href={withBase('/pimp-my-pizza')} class="flex items-center gap-3 px-3 py-3 rounded-md text-brand-cream hover:bg-brand-charcoal/70 hover:text-brand-gold transition-colors">
+          <Icon name="pizza" size={20} class="text-brand-gold shrink-0" />
+          <span>Pimp my Pizza</span>
+        </a>
+      </li>
+      <li>
+        <a href={withBase('/speisekarte')} class="flex items-center gap-3 px-3 py-3 rounded-md text-brand-cream hover:bg-brand-charcoal/70 hover:text-brand-gold transition-colors">
+          <Icon name="menu-list" size={20} class="text-brand-gold shrink-0" />
+          <span>Speisekarte</span>
+        </a>
+      </li>
       <li class="border-t border-brand-gold/15 mt-2 pt-2">
-        <a href={`tel:${BRAND.contact.phoneE164}`} class="block px-3 py-3 rounded-md text-brand-cream hover:bg-brand-charcoal/70">☎ Anrufen · {BRAND.contact.phoneDisplay}</a>
+        <a href={`tel:${BRAND.contact.phoneE164}`} class="flex items-center gap-3 px-3 py-3 rounded-md text-brand-cream hover:bg-brand-charcoal/70 hover:text-brand-gold transition-colors">
+          <Icon name="phone" size={20} class="text-brand-gold shrink-0" />
+          <span>Anrufen · {BRAND.contact.phoneDisplay}</span>
+        </a>
       </li>
     </ul>
   </nav>
 </header>
 
 <script>
-  const toggle = document.querySelector<HTMLButtonElement>('[data-mobile-nav-toggle]');
-  const panel = document.querySelector<HTMLElement>('[data-mobile-nav-panel]');
-  if (toggle && panel) {
-    toggle.addEventListener('click', () => {
-      const open = panel.hasAttribute('hidden');
+  (function () {
+    const toggle = document.querySelector<HTMLButtonElement>('[data-mobile-nav-toggle]');
+    const panel = document.querySelector<HTMLElement>('[data-mobile-nav-panel]');
+    if (!toggle || !panel) return;
+
+    const iconMenu = toggle.querySelector<HTMLElement>('[data-icon-menu]');
+    const iconClose = toggle.querySelector<HTMLElement>('[data-icon-close]');
+
+    const setOpen = (open: boolean) => {
       if (open) {
         panel.removeAttribute('hidden');
         toggle.setAttribute('aria-expanded', 'true');
+        toggle.setAttribute('aria-label', 'Menü schließen');
+        document.body.classList.add('mobile-nav-open');
+        iconMenu?.classList.add('hidden');
+        iconMenu?.classList.remove('block');
+        iconClose?.classList.remove('hidden');
+        iconClose?.classList.add('block');
       } else {
         panel.setAttribute('hidden', '');
         toggle.setAttribute('aria-expanded', 'false');
+        toggle.setAttribute('aria-label', 'Menü öffnen');
+        document.body.classList.remove('mobile-nav-open');
+        iconMenu?.classList.remove('hidden');
+        iconMenu?.classList.add('block');
+        iconClose?.classList.add('hidden');
+        iconClose?.classList.remove('block');
+      }
+    };
+
+    const isOpen = () => !panel.hasAttribute('hidden');
+
+    toggle.addEventListener('click', (e) => {
+      e.stopPropagation();
+      setOpen(!isOpen());
+    });
+
+    // ESC closes
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && isOpen()) {
+        setOpen(false);
+        toggle.focus();
       }
     });
+
+    // Outside click closes
+    document.addEventListener('click', (e) => {
+      if (!isOpen()) return;
+      const target = e.target as Node;
+      if (panel.contains(target) || toggle.contains(target)) return;
+      setOpen(false);
+    });
+
     // Close panel when a link inside is clicked
     panel.querySelectorAll('a').forEach((a) =>
-      a.addEventListener('click', () => {
-        panel.setAttribute('hidden', '');
-        toggle.setAttribute('aria-expanded', 'false');
-      }),
+      a.addEventListener('click', () => setOpen(false)),
     );
-  }
+
+    // Close on resize to ≥md (panel only relevant <md)
+    const mq = window.matchMedia('(min-width: 768px)');
+    mq.addEventListener('change', (ev) => {
+      if (ev.matches && isOpen()) setOpen(false);
+    });
+  })();
 </script>

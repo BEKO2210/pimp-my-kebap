@@ -20,7 +20,10 @@ type IconName =
   | 'share'
   | 'printer'
   | 'repeat'
-  | 'dice';
+  | 'dice'
+  | 'mail'
+  | 'map-pin'
+  | 'instagram';
 
 interface ShapeNode {
   tag: 'path' | 'circle' | 'rect' | 'line' | 'polyline';
@@ -140,6 +143,28 @@ const ICONS: Record<IconName, ShapeNode[]> = {
     { tag: 'path', attrs: { d: 'M10 14h.01' } },
     { tag: 'path', attrs: { d: 'M15 6h.01' } },
     { tag: 'path', attrs: { d: 'M18 9h.01' } },
+  ],
+  // lucide: mail
+  mail: [
+    { tag: 'path', attrs: { d: 'm22 7-8.991 5.727a2 2 0 0 1-2.009 0L2 7' } },
+    { tag: 'rect', attrs: { x: '2', y: '4', width: '20', height: '16', rx: '2' } },
+  ],
+  // lucide: map-pin
+  'map-pin': [
+    {
+      tag: 'path',
+      attrs: {
+        d: 'M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0',
+      },
+    },
+    { tag: 'circle', attrs: { cx: '12', cy: '10', r: '3' } },
+  ],
+  // Instagram glyph (Lucide dropped brand logos in v1, this is the standard
+  // camera-lens + frame + flash dot composition, drawn in the Lucide stroke style).
+  instagram: [
+    { tag: 'rect', attrs: { x: '3', y: '3', width: '18', height: '18', rx: '5' } },
+    { tag: 'circle', attrs: { cx: '12', cy: '12', r: '4' } },
+    { tag: 'circle', attrs: { cx: '17.5', cy: '6.5', r: '1', fill: 'currentColor', stroke: 'none' } },
   ],
 };
 

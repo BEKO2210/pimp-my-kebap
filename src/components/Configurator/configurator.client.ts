@@ -4,9 +4,10 @@
 
 import { priceKebab, type KebabConfig } from '../../lib/pricing';
 import { formatEUR } from '../../lib/format';
-import { addLine, openCart } from '../../lib/cart';
+import { addLine } from '../../lib/cart';
 import { randomKebab } from '../../lib/random-kebab';
 import { toast } from '../../lib/toast';
+import { withBase } from '../../lib/url';
 import type { BreadId } from '../../data/breads';
 import type { BaseId, MeatId } from '../../data/configurator';
 import type { SauceId } from '../../data/sauces';
@@ -204,6 +205,8 @@ if (root) {
   });
 
   // Add to cart — sanitises state for bases that don't carry extras / bread.
+  // After adding we redirect to /weiter so the customer can pile on more items
+  // (another kebap, a pizza, or pick from the Speisekarte) before checkout.
   addBtn.addEventListener('click', () => {
     if (addBtn.disabled) return;
     const cleaned: KebabConfig = {
@@ -221,7 +224,7 @@ if (root) {
       unitPriceEur: breakdown.unitTotal,
     });
     if (navigator.vibrate) navigator.vibrate(10);
-    openCart();
+    window.location.href = withBase('/weiter') + '?added=kebap';
   });
 
   // ── Surprise Me — re-applies a random valid config and scrolls into view

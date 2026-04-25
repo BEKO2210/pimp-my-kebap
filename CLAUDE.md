@@ -52,6 +52,15 @@ wie gehabt mit 5,00 € in der Nuggets-Kategorie). Damit gibt es im
 ganzen Menü kein `priceEur: null` mehr und der Stepper ist überall
 nutzbar. Markings ergänzt (a/b/d Boden, plus 3/6 für Sucuk).
 
+### 5b. Konfigurator-Flow: keine Auto-Cart-Öffnung mehr [x]
+Bisher haben beide Konfiguratoren am Ende `openCart()` aufgerufen, was
+den User aus seinem Bestellprozess riss. Jetzt: Add → Redirect auf
+`/weiter?added=kebap` (bzw. `?added=pizza`). Die neue Seite zeigt eine
+grüne Bestätigung, drei große CTA-Karten ("Noch einen Kebap pimpen" /
+"Pizza pimpen" / "Speisekarte") und unten einen Cart-Status mit
+"Bestellung abschließen"-Button, der den Drawer öffnet. So kann der
+User beliebig kombinieren, ohne in den Drawer gezwungen zu werden.
+
 ### 6. WhatsApp-URL-Längenlimit absichern [ ]
 Eine sehr lange Bestellung kann den `wa.me`-Link über das praktische
 Limit (~6 KB) hinaus aufblähen — WhatsApp bricht dann stillschweigend

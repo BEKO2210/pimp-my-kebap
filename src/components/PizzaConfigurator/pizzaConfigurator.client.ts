@@ -1,7 +1,8 @@
 // Powered by skill: frontend-design, security
-import { addLine, openCart } from '../../lib/cart';
+import { addLine } from '../../lib/cart';
 import { formatEUR } from '../../lib/format';
 import { toast } from '../../lib/toast';
+import { withBase } from '../../lib/url';
 import {
   pricePizza,
   describePizza,
@@ -45,6 +46,7 @@ if (root) {
     });
   });
 
+  // Add then redirect to /weiter so the customer can keep building the order.
   addBtn.addEventListener('click', () => {
     const breakdown = pricePizza(state);
     const name = describePizza(state);
@@ -58,7 +60,7 @@ if (root) {
     });
     if (navigator.vibrate) navigator.vibrate(10);
     toast('Pizza im Warenkorb', { tone: 'success' });
-    openCart();
+    window.location.href = withBase('/weiter') + '?added=pizza';
   });
 
   // Force initial render

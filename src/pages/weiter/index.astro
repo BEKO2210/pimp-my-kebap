@@ -1,0 +1,153 @@
+---
+// Powered by skill: frontend-design, accessibility
+// "Was darf's noch sein?" — landing page after each configurator add. Lets the
+// customer pile more items into the same cart instead of being shoved into the
+// drawer and forced to either send or quit.
+import Base from '../../layouts/Base.astro';
+import Header from '../../components/Header.astro';
+import Footer from '../../components/Footer.astro';
+import CartDrawer from '../../components/Cart/CartDrawer.astro';
+import Icon from '../../components/Icon.astro';
+import { withBase } from '../../lib/url';
+---
+
+<Base
+  title="Was darf's noch sein? · Pimp My Kebap"
+  description="Noch ein Kebap, eine Pizza oder etwas aus der Speisekarte — alles landet im selben Warenkorb."
+  pathname="/weiter/"
+>
+  <Header slot="header" />
+  <Footer slot="footer" />
+
+  <section class="px-4 sm:px-6 lg:px-8 py-10 lg:py-16">
+    <div class="mx-auto max-w-4xl">
+      <div
+        data-weiter-success
+        hidden
+        role="status"
+        aria-live="polite"
+        class="mb-8 rounded-xl border border-brand-green-leaf/40 bg-brand-green-leaf/10 px-4 py-3 flex items-center gap-3"
+      >
+        <span class="text-brand-green-leaf shrink-0">
+          <Icon name="check" size={20} />
+        </span>
+        <p class="text-sm text-brand-cream">
+          Dein <span data-weiter-success-item class="font-semibold">Kebap</span>
+          wurde dem Warenkorb hinzugefügt.
+        </p>
+      </div>
+
+      <p class="eyebrow">Weiter bestellen</p>
+      <h1 class="display text-3xl sm:text-5xl text-brand-cream mt-2 mb-4">
+        Was darf's noch sein?
+      </h1>
+      <p class="text-brand-cream/75 mb-10 max-w-2xl">
+        Du kannst Kebap, Pizza und Speisen aus der Karte beliebig kombinieren —
+        alles landet im selben Warenkorb und geht in einer einzigen Nachricht raus.
+      </p>
+
+      <div class="grid sm:grid-cols-3 gap-4 mb-10">
+        <a
+          href={withBase('/konfigurator')}
+          class="card card-selectable p-5 flex flex-col gap-3 min-h-[12rem] group"
+        >
+          <Icon name="kebap" size={32} class="text-brand-gold" />
+          <h2 class="display text-lg text-brand-cream group-hover:text-brand-gold transition-colors">
+            Noch einen Kebap pimpen
+          </h2>
+          <p class="text-sm text-brand-cream/65 mt-auto">
+            3 Spieße · 4 Brote · 6 Soßen · 18 Zutaten
+          </p>
+          <span class="text-brand-gold text-sm">Konfigurator öffnen →</span>
+        </a>
+
+        <a
+          href={withBase('/pimp-my-pizza')}
+          class="card card-selectable p-5 flex flex-col gap-3 min-h-[12rem] group"
+        >
+          <Icon name="pizza" size={32} class="text-brand-gold" />
+          <h2 class="display text-lg text-brand-cream group-hover:text-brand-gold transition-colors">
+            Pizza pimpen
+          </h2>
+          <p class="text-sm text-brand-cream/65 mt-auto">
+            Boden + Käse als Basis. Topping für Topping.
+          </p>
+          <span class="text-brand-gold text-sm">Pizza bauen →</span>
+        </a>
+
+        <a
+          href={withBase('/speisekarte')}
+          class="card card-selectable p-5 flex flex-col gap-3 min-h-[12rem] group"
+        >
+          <Icon name="menu-list" size={32} class="text-brand-gold" />
+          <h2 class="display text-lg text-brand-cream group-hover:text-brand-gold transition-colors">
+            Speisekarte
+          </h2>
+          <p class="text-sm text-brand-cream/65 mt-auto">
+            Pide, Burger, Salate, Getränke und mehr.
+          </p>
+          <span class="text-brand-gold text-sm">Karte ansehen →</span>
+        </a>
+      </div>
+
+      <div class="rounded-xl border border-brand-gold/40 bg-brand-charcoal/60 p-4 sm:p-5 flex flex-col sm:flex-row gap-3 sm:items-center sm:justify-between">
+        <div class="text-sm">
+          <p class="text-brand-cream/60 uppercase tracking-wider text-xs">
+            Aktuell im Warenkorb
+          </p>
+          <p class="text-brand-cream mt-1">
+            <strong data-weiter-cart-count class="num">0</strong>
+            <span data-weiter-cart-count-noun> Artikel</span>
+            <span class="text-brand-cream/55"> · </span>
+            <strong data-weiter-cart-total class="text-brand-gold num">0,00 €</strong>
+          </p>
+        </div>
+        <button
+          type="button"
+          class="btn-primary inline-flex items-center justify-center gap-2"
+          data-weiter-checkout
+          disabled
+        >
+          <span>Bestellung abschließen</span>
+          <Icon name="arrow-right" size={16} />
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <CartDrawer />
+</Base>
+
+<script>
+  import { $itemCount, $totals, openCart } from '../../lib/cart';
+  import { formatEUR } from '../../lib/format';
+
+  // Personalized success banner driven by ?added=kebap | ?added=pizza
+  const params = new URLSearchParams(location.search);
+  const added = params.get('added');
+  const banner = document.querySelector<HTMLElement>('[data-weiter-success]');
+  const itemEl = document.querySelector<HTMLElement>('[data-weiter-success-item]');
+  if (banner && itemEl && (added === 'kebap' || added === 'pizza')) {
+    itemEl.textContent = added === 'kebap' ? 'Kebap' : 'Pizza';
+    banner.hidden = false;
+  }
+
+  // Live cart-summary footer
+  const countEl = document.querySelector<HTMLElement>('[data-weiter-cart-count]');
+  const countNounEl = document.querySelector<HTMLElement>('[data-weiter-cart-count-noun]');
+  const totalEl = document.querySelector<HTMLElement>('[data-weiter-cart-total]');
+  const checkoutBtn = document.querySelector<HTMLButtonElement>('[data-weiter-checkout]');
+
+  function renderSummary() {
+    const count = $itemCount.get();
+    const total = $totals.get().grandTotalEur;
+    if (countEl) countEl.textContent = String(count);
+    if (countNounEl) countNounEl.textContent = count === 1 ? ' Artikel' : ' Artikel';
+    if (totalEl) totalEl.textContent = formatEUR(total);
+    if (checkoutBtn) checkoutBtn.disabled = count === 0;
+  }
+  $itemCount.subscribe(renderSummary);
+  $totals.subscribe(renderSummary);
+
+  checkoutBtn?.addEventListener('click', () => openCart());
+</script>

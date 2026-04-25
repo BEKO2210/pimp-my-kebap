@@ -9,7 +9,17 @@ export default defineConfig({
     coverage: {
       provider: 'v8',
       reporter: ['text', 'html'],
-      include: ['src/lib/**/*.ts'],
+      // Coverage targets the pure-logic modules that have unit tests. Browser-
+      // only modules (boot, cart, history, share-cart, toast, url, random-kebab)
+      // touch DOM/localStorage and run only in the actual app shell.
+      include: [
+        'src/lib/format.ts',
+        'src/lib/holidays.ts',
+        'src/lib/pricing.ts',
+        'src/lib/time.ts',
+        'src/lib/validation.ts',
+        'src/lib/whatsapp.ts',
+      ],
       exclude: ['src/lib/**/*.d.ts'],
       thresholds: {
         lines: 85,

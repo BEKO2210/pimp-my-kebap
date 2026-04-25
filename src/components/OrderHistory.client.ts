@@ -18,7 +18,7 @@ function buildRepeatIcon(): SVGSVGElement {
   svg.setAttribute('viewBox', '0 0 24 24');
   svg.setAttribute('fill', 'none');
   svg.setAttribute('stroke', 'currentColor');
-  svg.setAttribute('stroke-width', '1.75');
+  svg.setAttribute('stroke-width', '2');
   svg.setAttribute('stroke-linecap', 'round');
   svg.setAttribute('stroke-linejoin', 'round');
   svg.setAttribute('aria-hidden', 'true');
@@ -27,10 +27,9 @@ function buildRepeatIcon(): SVGSVGElement {
     for (const [k, v] of Object.entries(attrs)) el.setAttribute(k, v);
     svg.appendChild(el);
   };
-  append('polyline', { points: '17 4 21 8 17 12' });
-  append('path', { d: 'M3 12V9a3 3 0 0 1 3-3h15' });
-  append('polyline', { points: '7 20 3 16 7 12' });
-  append('path', { d: 'M21 12v3a3 3 0 0 1-3 3H3' });
+  // lucide: rotate-cw
+  append('path', { d: 'M21 12a9 9 0 1 1-9-9c2.52 0 4.93 1 6.74 2.74L21 8' });
+  append('path', { d: 'M21 3v5h-5' });
   return svg;
 }
 

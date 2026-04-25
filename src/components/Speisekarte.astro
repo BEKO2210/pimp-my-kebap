@@ -109,14 +109,37 @@ const drinkCount = DRINKS.reduce((sum, d) => sum + d.variants.length, 0);
   </div>
 </section>
 
-{ALL_CATEGORIES.map((c) => (
-  <MenuSection
-    category={c}
-    weekday={weekday}
-    schoolHoursOpen={schoolHours}
-    itemCount={itemsByCategory(c).length}
-  />
-))}
+{ALL_CATEGORIES.map((c) => {
+  // Cross-link the matching configurator from the relevant category headers
+  // so a customer browsing the menu sees the build-your-own option in context.
+  const ctaProps =
+    c === 'drehspiess'
+      ? {
+          ctaHref: '/konfigurator',
+          ctaLabel: 'Pimp my Kebap — eigenen Drehspieß bauen',
+          ctaDescription:
+            '4 Brote, 6 Soßen, 18 Zutaten — stell dir deinen Kebap genau so zusammen, wie du ihn liebst.',
+          ctaIcon: 'kebap' as const,
+        }
+      : c === 'pizza'
+        ? {
+            ctaHref: '/pimp-my-pizza',
+            ctaLabel: 'Pimp my Pizza — eigene Pizza bauen',
+            ctaDescription:
+              'Boden + Tomatensoße + Käse als Basis. Topping für Topping zur Wunsch-Pizza.',
+            ctaIcon: 'pizza' as const,
+          }
+        : {};
+  return (
+    <MenuSection
+      category={c}
+      weekday={weekday}
+      schoolHoursOpen={schoolHours}
+      itemCount={itemsByCategory(c).length}
+      {...ctaProps}
+    />
+  );
+})}
 <Drinks itemCount={drinkCount} />
 
 <script>

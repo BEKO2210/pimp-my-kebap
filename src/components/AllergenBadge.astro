@@ -1,0 +1,20 @@
+---
+// Powered by skill: accessibility, seo-local
+import type { Markings } from '../data/allergens';
+import { describeMarkings } from '../data/allergens';
+
+interface Props { markings?: Markings; itemName: string }
+const { markings, itemName } = Astro.props;
+if (!markings || markings.length === 0) Astro.response.headers; // no-op when none
+const text = markings ? describeMarkings(markings) : '';
+---
+{markings && markings.length > 0 && (
+  <span
+    class="inline-flex items-center gap-1 text-[10px] uppercase tracking-wider text-brand-cream/50 cursor-help"
+    title={`${itemName}: ${text}`}
+    aria-label={`Allergene: ${text}`}
+  >
+    <span aria-hidden="true">ⓘ</span>
+    <span>{markings.join(',')}</span>
+  </span>
+)}

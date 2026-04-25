@@ -1,0 +1,195 @@
+---
+// Powered by skill: frontend-design, accessibility
+import { BREADS } from '../../data/breads';
+import { BASES, MEATS } from '../../data/configurator';
+import { SAUCES, FREE_SAUCE_COUNT } from '../../data/sauces';
+import { TOPPINGS } from '../../data/ingredients';
+import { formatEUR } from '../../lib/format';
+---
+
+<section
+  id="konfigurator"
+  class="px-4 sm:px-6 lg:px-8 py-12 lg:py-16"
+  aria-labelledby="cfg-heading"
+>
+  <div class="mx-auto max-w-5xl">
+    <header class="mb-8">
+      <p class="text-brand-gold uppercase tracking-widest text-xs font-bold mb-2">
+        3 Schritte zu deinem Kebap
+      </p>
+      <h2 id="cfg-heading" class="display text-3xl sm:text-4xl lg:text-5xl text-brand-cream">
+        Konfiguriere deinen Kebap
+      </h2>
+      <p class="text-brand-cream/70 mt-2 max-w-2xl">
+        Wähle Brot, Basis und Toppings — die Live-Summe aktualisiert sich bei jeder Änderung.
+      </p>
+    </header>
+
+    <div data-cfg-root class="space-y-10" aria-live="polite">
+      <!-- Step 1: Bread -->
+      <fieldset data-cfg-step="bread">
+        <legend class="display text-2xl text-brand-cream mb-4">
+          <span class="text-brand-gold mr-2">①</span>Wähle dein Brot
+        </legend>
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+          {BREADS.map((b) => (
+            <button
+              type="button"
+              class="card card-selectable p-4 text-left flex flex-col gap-2 min-h-[8rem]"
+              data-cfg-bread={b.id}
+              aria-pressed="false"
+            >
+              <span class="display text-lg text-brand-cream flex items-center gap-2">
+                {b.name}
+                {b.isNew && <span class="badge badge-new">NEU</span>}
+              </span>
+              <span class="text-xs text-brand-cream/60">{b.description}</span>
+            </button>
+          ))}
+        </div>
+      </fieldset>
+
+      <!-- Step 2: Base -->
+      <fieldset data-cfg-step="base">
+        <legend class="display text-2xl text-brand-cream mb-4">
+          <span class="text-brand-gold mr-2">②</span>Kebap Basis
+        </legend>
+        <p class="text-sm text-brand-cream/70 mb-4">
+          Immer enthalten: 100 g Fleisch, Salat (Kraut, Zwiebel, Tomaten), 2 Soßen nach Wahl.
+        </p>
+        <div class="grid sm:grid-cols-3 gap-3">
+          {BASES.map((b) => (
+            <button
+              type="button"
+              class="card card-selectable p-4 text-left flex flex-col gap-2 min-h-[10rem]"
+              data-cfg-base={b.id}
+              aria-pressed="false"
+            >
+              <span class="display text-lg text-brand-cream">{b.name}</span>
+              <span class="text-xs text-brand-cream/60">{b.description}</span>
+              <span class="mt-auto text-brand-gold font-semibold">{formatEUR(b.basePriceEur)}</span>
+            </button>
+          ))}
+        </div>
+
+        <div class="mt-6">
+          <p class="text-sm font-semibold text-brand-cream mb-2">Fleischsorte</p>
+          <div role="radiogroup" aria-label="Fleischsorte" class="flex flex-wrap gap-2">
+            {MEATS.map((m, i) => (
+              <button
+                type="button"
+                role="radio"
+                aria-checked={i === 0 ? 'true' : 'false'}
+                class="btn-secondary"
+                data-cfg-meat={m.id}
+              >
+                {m.name}{m.upchargeEur > 0 ? ` (+${formatEUR(m.upchargeEur)})` : ''}
+              </button>
+            ))}
+          </div>
+        </div>
+      </fieldset>
+
+      <!-- Step 3: Pimp -->
+      <fieldset data-cfg-step="pimp">
+        <legend class="display text-2xl text-brand-cream mb-4">
+          <span class="text-brand-gold mr-2">③</span>Pimp deinen Kebap
+        </legend>
+
+        <div class="grid lg:grid-cols-2 gap-6">
+          <div>
+            <p class="text-sm font-semibold text-brand-cream mb-3">Soßen ({FREE_SAUCE_COUNT} inklusive, weitere +0,50 €)</p>
+            <div class="grid grid-cols-2 gap-2">
+              {SAUCES.map((s) => (
+                <label class="card card-selectable p-3 flex items-center gap-3 cursor-pointer" data-cfg-sauce-card={s.id}>
+                  <input
+                    type="checkbox"
+                    class="sr-only"
+                    data-cfg-sauce={s.id}
+                    aria-label={s.name}
+                  />
+                  <span class="text-brand-cream text-sm flex items-center gap-1">
+                    {s.name}
+                    {s.spicy && <span aria-label="scharf" class="text-brand-red-fire">🌶️</span>}
+                  </span>
+                </label>
+              ))}
+            </div>
+          </div>
+
+          <div>
+            <p class="text-sm font-semibold text-brand-cream mb-3">Extras</p>
+            <div class="space-y-2">
+              <label class="card flex items-center justify-between gap-4 p-3 cursor-pointer" data-cfg-extra="schmelzkaese">
+                <span class="text-brand-cream text-sm">Schmelzkäse</span>
+                <span class="flex items-center gap-3">
+                  <span class="text-brand-gold text-sm">+1,00 €</span>
+                  <input type="checkbox" data-cfg-flag="schmelzkaese" />
+                </span>
+              </label>
+              <label class="card flex items-center justify-between gap-4 p-3 cursor-pointer" data-cfg-extra="steakUpgrade">
+                <span class="text-brand-cream text-sm">Steakfleisch-Upgrade (+100 g Rindfleisch)</span>
+                <span class="flex items-center gap-3">
+                  <span class="text-brand-gold text-sm">+1,00 €</span>
+                  <input type="checkbox" data-cfg-flag="meatUpgradeSteak" />
+                </span>
+              </label>
+              <div class="card p-3 flex items-center justify-between gap-3">
+                <span class="text-brand-cream text-sm">Mehr Fleisch (50 g)</span>
+                <div class="flex items-center gap-3">
+                  <span class="text-brand-gold text-sm">+1,50 €</span>
+                  <div class="flex items-center gap-1" role="group" aria-label="Mehr Fleisch Stepper">
+                    <button type="button" class="btn-secondary !px-3 !py-1 text-base" data-cfg-extra-meat="dec" aria-label="Weniger">−</button>
+                    <output data-cfg-extra-meat-value class="text-brand-cream w-6 text-center font-mono">0</output>
+                    <button type="button" class="btn-secondary !px-3 !py-1 text-base" data-cfg-extra-meat="inc" aria-label="Mehr">+</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="mt-8">
+          <p class="text-sm font-semibold text-brand-cream mb-3">Toppings (je +0,50 €)</p>
+          <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2">
+            {TOPPINGS.map((t) => (
+              <label class="card card-selectable p-2 flex items-center justify-center gap-1 text-center cursor-pointer min-h-[3rem]" data-cfg-topping-card={t.id}>
+                <input type="checkbox" class="sr-only" data-cfg-topping={t.id} aria-label={t.name} />
+                <span class="text-brand-cream text-xs">
+                  {t.name}
+                  {t.spicy && <span aria-hidden="true"> 🌶️</span>}
+                  {t.baseIncluded && <span class="text-brand-cream/40 block text-[10px]">(im Salat enthalten)</span>}
+                </span>
+              </label>
+            ))}
+          </div>
+        </div>
+      </fieldset>
+
+      <!-- Sticky live summary -->
+      <div
+        class="sticky bottom-4 z-10 mt-10 rounded-xl border border-brand-gold/40 bg-brand-charcoal/95 backdrop-blur p-4 shadow-2xl flex items-center justify-between gap-4"
+        data-cfg-summary
+        role="status"
+        aria-live="polite"
+      >
+        <div>
+          <p class="text-xs text-brand-cream/60 uppercase tracking-wider">Aktueller Preis</p>
+          <p class="display text-2xl text-brand-gold" data-cfg-total>0,00 €</p>
+        </div>
+        <button
+          type="button"
+          class="btn-primary"
+          data-cfg-add
+          disabled
+        >
+          In den Warenkorb →
+        </button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  import './configurator.client.ts';
+</script>

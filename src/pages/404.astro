@@ -1,0 +1,16 @@
+---
+// Powered by skill: frontend-design
+import Base from '../layouts/Base.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+---
+<Base title="Seite nicht gefunden — Pimp My Kebap" pathname="/404">
+  <Header slot="header" />
+  <Footer slot="footer" />
+  <div class="px-4 sm:px-6 lg:px-8 py-24 text-center">
+    <p class="display text-6xl text-brand-gold">404</p>
+    <h1 class="display text-2xl text-brand-cream mt-4">Hier gibt's leider nichts zum Verputzen.</h1>
+    <p class="text-brand-cream/70 mt-2">Die Seite wurde nicht gefunden.</p>
+    <a href="/" class="btn-primary mt-6 inline-flex">Zur Startseite</a>
+  </div>
+</Base>

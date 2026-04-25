@@ -1,0 +1,40 @@
+---
+// Powered by skill: frontend-design, accessibility
+import { ALL_CATEGORIES, CATEGORY_LABEL } from '../data/menu';
+import MenuSection from './MenuSection/MenuSection.astro';
+import Drinks from './MenuSection/Drinks.astro';
+import { getCurrentWeekday, isSchoolHoursWindow } from '../lib/time';
+
+const weekday = getCurrentWeekday();
+const schoolHours = isSchoolHoursWindow();
+---
+
+<section id="speisekarte" class="px-4 sm:px-6 lg:px-8 pt-12">
+  <div class="mx-auto max-w-6xl">
+    <p class="text-brand-gold uppercase tracking-widest text-xs font-bold mb-2">Vollständige Karte</p>
+    <h2 class="display text-3xl sm:text-4xl text-brand-cream mb-4">Speisekarte</h2>
+    <nav aria-label="Speisekarten-Kategorien" class="overflow-x-auto -mx-4 px-4">
+      <ul class="flex gap-2 pb-2">
+        {ALL_CATEGORIES.map((c) => (
+          <li>
+            <a href={`#section-${c}`} class="btn-secondary text-xs whitespace-nowrap">
+              {CATEGORY_LABEL[c]}
+            </a>
+          </li>
+        ))}
+        <li>
+          <a href="#section-getraenke" class="btn-secondary text-xs whitespace-nowrap">Getränke</a>
+        </li>
+      </ul>
+    </nav>
+  </div>
+</section>
+
+{ALL_CATEGORIES.map((c) => (
+  <MenuSection category={c} weekday={weekday} schoolHoursOpen={schoolHours} />
+))}
+<Drinks />
+
+<script>
+  import './MenuSection/menuSection.client.ts';
+</script>

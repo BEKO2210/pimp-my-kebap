@@ -123,28 +123,24 @@ import { formatEUR } from '../../lib/format';
               <label class="card flex items-center justify-between gap-4 p-3 cursor-pointer" data-cfg-extra="schmelzkaese">
                 <span class="text-brand-cream text-sm">Schmelzkäse</span>
                 <span class="flex items-center gap-3">
-                  <span class="text-brand-gold text-sm">+1,00 €</span>
+                  <span class="text-brand-gold text-sm num">+1,00 €</span>
                   <input type="checkbox" data-cfg-flag="schmelzkaese" />
-                </span>
-              </label>
-              <label class="card flex items-center justify-between gap-4 p-3 cursor-pointer" data-cfg-extra="steakUpgrade">
-                <span class="text-brand-cream text-sm">Steakfleisch-Upgrade (+100 g Rindfleisch)</span>
-                <span class="flex items-center gap-3">
-                  <span class="text-brand-gold text-sm">+1,00 €</span>
-                  <input type="checkbox" data-cfg-flag="meatUpgradeSteak" />
                 </span>
               </label>
               <div class="card p-3 flex items-center justify-between gap-3">
                 <span class="text-brand-cream text-sm">Mehr Fleisch (50 g)</span>
                 <div class="flex items-center gap-3">
-                  <span class="text-brand-gold text-sm">+1,50 €</span>
+                  <span class="text-brand-gold text-sm num">+1,50 €</span>
                   <div class="flex items-center gap-1" role="group" aria-label="Mehr Fleisch Stepper">
                     <button type="button" class="btn-secondary !px-3 !py-1 text-base" data-cfg-extra-meat="dec" aria-label="Weniger">−</button>
-                    <output data-cfg-extra-meat-value class="text-brand-cream w-6 text-center font-mono">0</output>
+                    <output data-cfg-extra-meat-value class="text-brand-cream w-6 text-center num">0</output>
                     <button type="button" class="btn-secondary !px-3 !py-1 text-base" data-cfg-extra-meat="inc" aria-label="Mehr">+</button>
                   </div>
                 </div>
               </div>
+              <p class="text-xs text-brand-cream/50 px-1">
+                Steak: +1,00 € auf den Grundpreis (oben in Schritt 2 wählen). Extra Fleisch (50 g) kostet bei jedem Fleisch 1,50 €.
+              </p>
             </div>
           </div>
         </div>

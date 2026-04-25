@@ -50,7 +50,6 @@ export const MEATS: readonly MeatOption[] = [
 ] as const;
 
 /* ── Pricing constants ── */
-export const STEAK_UPGRADE_PRICE_EUR = 1.0; // +100g Rindfleisch upgrade flag (separate from meat choice)
 export const EXTRA_MEAT_50G_PRICE_EUR = 1.5;
 export const SCHMELZKAESE_PRICE_EUR = 1.0;
 export const MAX_EXTRA_MEAT = 3;

@@ -26,22 +26,23 @@ Auf Desktop (Cart-Bar ist eh `lg:hidden`) Reset auf `1rem`. Beide
 Konfigurator-Footer (Kebap + Pizza) sind über die Klasse
 `.cfg-sticky-footer` markiert.
 
-### 3. Pickup-Zeiten beim Cart-Öffnen neu generieren [ ]
-`buildPickupOptions()` läuft genau einmal beim Page-Load. Wer 5 Min
-in der Speisekarte liest und dann den Cart öffnet, bekommt evtl.
-einen Slot, der bereits in der Vergangenheit liegt. Lösung: Beim
-Wechsel von `$isCartOpen` auf `true` neu bauen.
+### 3. Pickup-Zeiten beim Cart-Öffnen neu generieren [x]
+Slots werden jetzt jedes Mal beim Öffnen des Drawers (`setOpen(true)`)
+neu erzeugt. Vorherige Auswahl wird übernommen, falls sie noch in der
+Liste steht — sonst Reset auf ASAP und Store-Sync, damit die
+WhatsApp-Nachricht keinen veralteten ISO trägt.
 
 ### 4. PLZ visuell als invalid markieren [ ]
 Bei Lieferung mit leerer / falscher PLZ steht der rote Hinweis-Text,
 das Input-Feld selbst sieht aber unverändert aus. `aria-invalid="true"`
 + roter Border bei Fehler, sonst neutral.
 
-### 5. "Auf Anfrage"-Items: Telefon-Action [ ]
-`chili-cheese-pommes` & `chili-cheese-pommes-sucuk` haben
-`priceEur: null`. Aktuell Hinweis "Auf Anfrage", aber kein Weg zum
-Bestellen. Lösung: Statt nur Text einen "Anrufen / WhatsApp"-Mini-CTA
-auf der Karte zeigen.
+### 5. "Auf Anfrage"-Items: Telefon-Action [x]
+Erübrigt sich — die zwei betroffenen Pommes haben jetzt feste Preise:
+Chili Cheese Pommes 6,50 €, mit Sucuk 8,00 € (Pommes selbst stehen
+wie gehabt mit 5,00 € in der Nuggets-Kategorie). Damit gibt es im
+ganzen Menü kein `priceEur: null` mehr und der Stepper ist überall
+nutzbar. Markings ergänzt (a/b/d Boden, plus 3/6 für Sucuk).
 
 ### 6. WhatsApp-URL-Längenlimit absichern [ ]
 Eine sehr lange Bestellung kann den `wa.me`-Link über das praktische

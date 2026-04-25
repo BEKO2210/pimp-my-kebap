@@ -100,6 +100,25 @@ if (root) {
   }
   buildPickupOptions();
 
+  /**
+   * Rebuild the pickup-time options and preserve the user's selection if it's
+   * still in the future. Called every time the drawer opens, otherwise a slot
+   * picked many minutes ago could already be in the past.
+   */
+  function rebuildPickupOptions() {
+    const previous = pickupSel.value;
+    buildPickupOptions();
+    const stillValid = Array.from(pickupSel.options).some((o) => o.value === previous);
+    if (stillValid) {
+      pickupSel.value = previous;
+    } else if (previous !== 'asap') {
+      // Previously chosen ISO is no longer offered (now in the past). Reset
+      // to ASAP and sync the store so the WhatsApp message doesn't carry it.
+      pickupSel.value = 'asap';
+      patchCustomer({ pickup: { kind: 'asap' } });
+    }
+  }
+
   function lineSummary(line: CartLine): string {
     if (line.kind === 'kebab') {
       const base = BASES.find((b) => b.id === line.config.base)?.shortName ?? line.config.base;
@@ -270,6 +289,7 @@ if (root) {
   }
 
   function setOpen(open: boolean) {
+    if (open) rebuildPickupOptions();
     root!.classList.toggle('hidden', !open);
     root!.setAttribute('aria-hidden', String(!open));
     document.body.style.overflow = open ? 'hidden' : '';

@@ -1,8 +1,10 @@
 // Powered by skill: pwa, security
-// Boot script — runs on every page. Hydrates cart, registers service worker.
+// Boot script — runs on every page. Hydrates cart, registers service worker,
+// wires the global mobile-nav burger toggle.
 import { hydrateCart, startCartPersistence } from './cart';
 import { withBase, baseUrl } from './url';
 import { tryHydrateFromUrl } from './share-cart';
+import '../components/header.client.ts';
 
 hydrateCart();
 // If the URL carries a #cart=... payload (shared link), it overrides the

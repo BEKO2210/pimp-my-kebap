@@ -37,16 +37,18 @@ function buildIcon(tone: Tone): SVGSVGElement {
   };
 
   if (tone === 'error') {
-    append('path', { d: 'M12 3l10 17H2L12 3z' });
-    append('line', { x1: '12', y1: '10', x2: '12', y2: '14' });
-    append('line', { x1: '12', y1: '17.5', x2: '12', y2: '17.6' });
+    // lucide: triangle-alert
+    append('path', { d: 'm21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3' });
+    append('path', { d: 'M12 9v4' });
+    append('path', { d: 'M12 17h.01' });
   } else if (tone === 'success') {
-    append('polyline', { points: '4 12 10 18 20 6' });
+    // lucide: check
+    append('path', { d: 'M20 6 9 17l-5-5' });
   } else {
-    // info: a small dot inside a circle
-    append('circle', { cx: '12', cy: '12', r: '9' });
-    append('line', { x1: '12', y1: '8', x2: '12', y2: '12' });
-    append('line', { x1: '12', y1: '15.5', x2: '12', y2: '15.6' });
+    // lucide: info
+    append('circle', { cx: '12', cy: '12', r: '10' });
+    append('path', { d: 'M12 16v-4' });
+    append('path', { d: 'M12 8h.01' });
   }
   return svg;
 }

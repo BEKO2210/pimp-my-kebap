@@ -28,6 +28,7 @@ if (root) {
   let baseChosen = false;
 
   const totalEl = root.querySelector<HTMLElement>('[data-cfg-total]')!;
+  const totalLabelEl = root.querySelector<HTMLElement>('[data-cfg-total-label]')!;
   const addBtn = root.querySelector<HTMLButtonElement>('[data-cfg-add]')!;
   const extraMeatVal = root.querySelector<HTMLElement>('[data-cfg-extra-meat-value]')!;
   const breadStep = root.querySelector<HTMLElement>('fieldset[data-cfg-step="bread"]')!;
@@ -79,9 +80,26 @@ if (root) {
 
   function recompute() {
     const breakdown = priceKebab(state);
-    totalEl.textContent = formatEUR(breakdown.unitTotal);
     const breadOk = baseRequiresBread(state.base) ? breadChosen : true;
-    addBtn.disabled = !(baseChosen && breadOk);
+    const ready = baseChosen && breadOk;
+
+    if (!baseChosen) {
+      totalLabelEl.textContent = 'Schritt 1';
+      totalEl.textContent = 'Wähle deine Basis';
+      totalEl.classList.add('text-base', 'sm:text-lg');
+      totalEl.classList.remove('text-2xl');
+    } else if (!breadOk) {
+      totalLabelEl.textContent = 'Schritt 2';
+      totalEl.textContent = 'Wähle dein Brot';
+      totalEl.classList.add('text-base', 'sm:text-lg');
+      totalEl.classList.remove('text-2xl');
+    } else {
+      totalLabelEl.textContent = 'Aktueller Preis';
+      totalEl.textContent = formatEUR(breakdown.unitTotal);
+      totalEl.classList.remove('text-base', 'sm:text-lg');
+      totalEl.classList.add('text-2xl');
+    }
+    addBtn.disabled = !ready;
   }
 
   function setActive(group: string, value: string) {

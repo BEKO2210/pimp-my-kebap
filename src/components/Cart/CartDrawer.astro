@@ -19,10 +19,13 @@ const wa = import.meta.env.PUBLIC_RESTAURANT_WHATSAPP ?? '491742116095';
 >
   <div class="absolute inset-0 bg-black/70" data-cart-backdrop></div>
   <div
-    class="absolute bottom-0 inset-x-0 lg:inset-y-0 lg:right-0 lg:left-auto lg:w-[420px] bg-brand-charcoal border-t lg:border-t-0 lg:border-l border-brand-gold/30 rounded-t-2xl lg:rounded-none flex flex-col max-h-[92dvh] lg:max-h-none lg:h-full"
+    class="absolute bottom-0 inset-x-0 lg:inset-y-0 lg:right-0 lg:left-auto lg:w-[440px] bg-brand-charcoal border-t lg:border-t-0 lg:border-l border-brand-gold/30 rounded-t-2xl lg:rounded-none flex flex-col max-h-[92dvh] lg:max-h-none lg:h-full"
   >
-    <header class="flex items-center justify-between gap-2 p-4 border-b border-brand-gold/20">
-      <h2 id="cart-title" class="display text-xl text-brand-cream">Dein Warenkorb</h2>
+    <header class="shrink-0 flex items-center justify-between gap-2 px-4 py-3 border-b border-brand-gold/20 bg-brand-charcoal/95 backdrop-blur">
+      <div class="flex items-baseline gap-3">
+        <h2 id="cart-title" class="display text-xl text-brand-cream">Dein Warenkorb</h2>
+        <span class="text-xs text-brand-cream/55 num" data-cart-header-count></span>
+      </div>
       <button
         type="button"
         data-cart-close
@@ -33,121 +36,116 @@ const wa = import.meta.env.PUBLIC_RESTAURANT_WHATSAPP ?? '491742116095';
       </button>
     </header>
 
-    <div class="flex-1 overflow-y-auto p-4" data-cart-list aria-live="polite">
-      <p data-cart-empty class="text-center text-brand-cream/60 py-12">
-        Dein Warenkorb ist leer.<br />
-        <span class="text-sm">Stelle dir oben deinen Kebap zusammen oder wähle aus der Karte.</span>
-      </p>
-      <ul data-cart-items class="space-y-3"></ul>
+    <div class="flex-1 overflow-y-auto" data-cart-scroll>
+      <section class="px-4 py-4" aria-live="polite">
+        <p data-cart-empty class="text-center text-brand-cream/60 py-10">
+          Dein Warenkorb ist leer.<br />
+          <span class="text-sm">Pimp dir oben einen Kebap, eine Pizza oder wähle aus der Karte.</span>
+        </p>
+        <ul data-cart-items class="space-y-3"></ul>
+      </section>
+
+      <section class="px-4 pt-4 pb-6 border-t border-brand-gold/15 bg-brand-charcoal-soft/40 space-y-4">
+        <p class="eyebrow !mb-0">Deine Daten</p>
+
+        <fieldset class="space-y-2">
+          <legend class="text-xs uppercase tracking-wider text-brand-cream/65 mb-1">Bestellart</legend>
+          <div class="grid grid-cols-3 gap-2" role="radiogroup" aria-label="Bestellart">
+            <button type="button" class="btn-secondary text-xs !px-2" data-cart-fulfillment="abholung" aria-pressed="true">Abholung</button>
+            <button type="button" class="btn-secondary text-xs !px-2" data-cart-fulfillment="vor-ort">Vor Ort</button>
+            <button type="button" class="btn-secondary text-xs !px-2" data-cart-fulfillment="lieferung">Lieferung</button>
+          </div>
+        </fieldset>
+
+        <div class="grid grid-cols-2 gap-2">
+          <label class="block text-xs">
+            <span class="block text-brand-cream/65 mb-1">Vorname</span>
+            <input
+              type="text"
+              data-cart-firstname
+              maxlength="60"
+              autocomplete="given-name"
+              class="w-full bg-brand-black border border-brand-gold/30 rounded-md px-2 py-2 text-brand-cream"
+              placeholder="z. B. Max"
+            />
+          </label>
+          <label class="block text-xs">
+            <span class="block text-brand-cream/65 mb-1" data-cart-pickup-label>Abholzeit</span>
+            <select
+              data-cart-pickup
+              class="w-full bg-brand-black border border-brand-gold/30 rounded-md px-2 py-2 text-brand-cream"
+            >
+              <option value="asap">So schnell wie möglich</option>
+            </select>
+          </label>
+        </div>
+
+        <div data-cart-delivery hidden class="space-y-2 rounded-md border border-brand-gold/20 p-3 bg-brand-black/30">
+          <p class="text-xs text-brand-cream/65">
+            Liefergebiete · Mindestbestellwert {formatEUR(MIN_DELIVERY_ORDER_EUR)}.
+          </p>
+          <label class="block text-xs">
+            <span class="block text-brand-cream/65 mb-1">Stadt</span>
+            <select
+              data-cart-zone
+              class="w-full bg-brand-black border border-brand-gold/30 rounded-md px-2 py-2 text-brand-cream"
+            >
+              {DELIVERY_ZONES.map((z) => (
+                <option value={z.id}>{z.city} ({formatEUR(z.feeEur)})</option>
+              ))}
+              <option value={DELIVERY_ZONE_OTHER.id}>{DELIVERY_ZONE_OTHER.city}</option>
+            </select>
+          </label>
+          <div class="grid grid-cols-3 gap-2">
+            <label class="col-span-1 block text-xs">
+              <span class="block text-brand-cream/65 mb-1">PLZ</span>
+              <input
+                type="text"
+                inputmode="numeric"
+                maxlength="5"
+                data-cart-plz
+                class="w-full bg-brand-black border border-brand-gold/30 rounded-md px-2 py-2 text-brand-cream"
+                placeholder="71691"
+                autocomplete="postal-code"
+              />
+            </label>
+            <label class="col-span-2 block text-xs">
+              <span class="block text-brand-cream/65 mb-1">Straße & Nr.</span>
+              <input
+                type="text"
+                data-cart-street
+                maxlength="120"
+                class="w-full bg-brand-black border border-brand-gold/30 rounded-md px-2 py-2 text-brand-cream"
+                placeholder="Bahnhofstraße 5"
+                autocomplete="street-address"
+              />
+            </label>
+          </div>
+        </div>
+
+        <label class="block text-xs">
+          <span class="block text-brand-cream/65 mb-1">Anmerkung (optional)</span>
+          <textarea
+            data-cart-notes
+            rows="2"
+            maxlength="280"
+            class="w-full bg-brand-black border border-brand-gold/30 rounded-md px-2 py-2 text-brand-cream resize-none"
+            placeholder="z. B. extra scharf, ohne Zwiebeln…"
+          ></textarea>
+        </label>
+      </section>
     </div>
 
-    <div class="p-4 border-t border-brand-gold/20 space-y-3">
-      <fieldset class="space-y-2">
-        <legend class="text-xs uppercase tracking-wider text-brand-cream/65 mb-1">Bestellart</legend>
-        <div class="grid grid-cols-3 gap-2" role="radiogroup" aria-label="Bestellart">
-          <button type="button" class="btn-secondary text-xs !px-2" data-cart-fulfillment="abholung" aria-pressed="true">Abholung</button>
-          <button type="button" class="btn-secondary text-xs !px-2" data-cart-fulfillment="vor-ort">Vor Ort</button>
-          <button type="button" class="btn-secondary text-xs !px-2" data-cart-fulfillment="lieferung">Lieferung</button>
-        </div>
-      </fieldset>
-
-      <div class="grid grid-cols-2 gap-2">
-        <label class="block text-xs">
-          <span class="block text-brand-cream/65 mb-1">Vorname</span>
-          <input
-            type="text"
-            data-cart-firstname
-            maxlength="60"
-            autocomplete="given-name"
-            class="w-full bg-brand-black border border-brand-gold/30 rounded-md px-2 py-2 text-brand-cream"
-            placeholder="z. B. Max"
-          />
-        </label>
-        <label class="block text-xs">
-          <span class="block text-brand-cream/65 mb-1" data-cart-pickup-label>Abholzeit</span>
-          <select
-            data-cart-pickup
-            class="w-full bg-brand-black border border-brand-gold/30 rounded-md px-2 py-2 text-brand-cream"
-          >
-            <option value="asap">So schnell wie möglich</option>
-          </select>
-        </label>
-      </div>
-
-      <div data-cart-delivery hidden class="space-y-2">
-        <p class="text-xs text-brand-cream/65">
-          Liefergebiete · Mindestbestellwert {formatEUR(MIN_DELIVERY_ORDER_EUR)}.
-        </p>
-        <label class="block text-xs">
-          <span class="block text-brand-cream/65 mb-1">Stadt</span>
-          <select
-            data-cart-zone
-            class="w-full bg-brand-black border border-brand-gold/30 rounded-md px-2 py-2 text-brand-cream"
-          >
-            {DELIVERY_ZONES.map((z) => (
-              <option value={z.id}>{z.city} ({formatEUR(z.feeEur)})</option>
-            ))}
-            <option value={DELIVERY_ZONE_OTHER.id}>{DELIVERY_ZONE_OTHER.city}</option>
-          </select>
-        </label>
-        <div class="grid grid-cols-3 gap-2">
-          <label class="col-span-1 block text-xs">
-            <span class="block text-brand-cream/65 mb-1">PLZ</span>
-            <input
-              type="text"
-              inputmode="numeric"
-              maxlength="5"
-              data-cart-plz
-              class="w-full bg-brand-black border border-brand-gold/30 rounded-md px-2 py-2 text-brand-cream"
-              placeholder="71691"
-              autocomplete="postal-code"
-            />
-          </label>
-          <label class="col-span-2 block text-xs">
-            <span class="block text-brand-cream/65 mb-1">Straße & Nr.</span>
-            <input
-              type="text"
-              data-cart-street
-              maxlength="120"
-              class="w-full bg-brand-black border border-brand-gold/30 rounded-md px-2 py-2 text-brand-cream"
-              placeholder="Bahnhofstraße 5"
-              autocomplete="street-address"
-            />
-          </label>
-        </div>
-      </div>
-
-      <label class="block text-xs">
-        <span class="block text-brand-cream/65 mb-1">Anmerkung (optional)</span>
-        <textarea
-          data-cart-notes
-          rows="2"
-          maxlength="280"
-          class="w-full bg-brand-black border border-brand-gold/30 rounded-md px-2 py-2 text-brand-cream resize-none"
-          placeholder="z. B. extra scharf, ohne Zwiebeln…"
-        ></textarea>
-      </label>
-
+    <div class="shrink-0 border-t border-brand-gold/30 bg-brand-charcoal/95 backdrop-blur px-4 py-3 space-y-3">
       <dl class="text-sm space-y-1" data-cart-totals>
-        <div class="flex justify-between text-brand-cream/75"><dt>Zwischensumme</dt><dd data-totals-items>0,00 €</dd></div>
-        <div class="flex justify-between text-brand-cream/75" data-totals-deposit-row hidden><dt>Pfand</dt><dd data-totals-deposit>0,00 €</dd></div>
-        <div class="flex justify-between text-brand-cream/75" data-totals-fee-row hidden><dt>Liefergebühr</dt><dd data-totals-fee>0,00 €</dd></div>
-        <div class="flex justify-between text-brand-cream display text-lg font-semibold pt-2 border-t border-brand-gold/20"><dt>Gesamt</dt><dd data-totals-grand>0,00 €</dd></div>
+        <div class="flex justify-between text-brand-cream/75"><dt>Zwischensumme</dt><dd data-totals-items class="num">0,00 €</dd></div>
+        <div class="flex justify-between text-brand-cream/75" data-totals-deposit-row hidden><dt>Pfand</dt><dd data-totals-deposit class="num">0,00 €</dd></div>
+        <div class="flex justify-between text-brand-cream/75" data-totals-fee-row hidden><dt>Liefergebühr</dt><dd data-totals-fee class="num">0,00 €</dd></div>
+        <div class="flex justify-between items-baseline text-brand-cream display text-xl pt-2 border-t border-brand-gold/20"><dt>Gesamt</dt><dd data-totals-grand class="text-brand-gold num">0,00 €</dd></div>
       </dl>
 
       <p data-cart-warning hidden class="text-xs text-brand-red-fire bg-brand-red-fire/10 border border-brand-red-fire/30 rounded-md p-2"></p>
 
-      <div class="grid grid-cols-3 gap-2">
-        <button type="button" class="btn-secondary text-xs !px-2" data-cart-clear>Leeren</button>
-        <button type="button" class="btn-secondary text-xs !px-2 inline-flex items-center justify-center gap-1.5" data-cart-share aria-label="Warenkorb-Link kopieren">
-          <Icon name="share" size={14} />
-          <span>Teilen</span>
-        </button>
-        <button type="button" class="btn-secondary text-xs !px-2 inline-flex items-center justify-center gap-1.5" data-cart-print aria-label="Bon drucken">
-          <Icon name="printer" size={14} />
-          <span>Bon</span>
-        </button>
-      </div>
       <button
         type="button"
         class="btn-primary text-sm w-full"
@@ -155,6 +153,18 @@ const wa = import.meta.env.PUBLIC_RESTAURANT_WHATSAPP ?? '491742116095';
         data-wa-number={wa}
         disabled
       >Per WhatsApp senden →</button>
+
+      <div class="grid grid-cols-3 gap-2 text-xs">
+        <button type="button" class="text-brand-cream/55 hover:text-brand-red-fire transition-colors py-1" data-cart-clear>Leeren</button>
+        <button type="button" class="text-brand-cream/55 hover:text-brand-cream transition-colors inline-flex items-center justify-center gap-1.5 py-1" data-cart-share aria-label="Warenkorb-Link kopieren">
+          <Icon name="share" size={12} />
+          <span>Teilen</span>
+        </button>
+        <button type="button" class="text-brand-cream/55 hover:text-brand-cream transition-colors inline-flex items-center justify-center gap-1.5 py-1" data-cart-print aria-label="Bon drucken">
+          <Icon name="printer" size={12} />
+          <span>Bon</span>
+        </button>
+      </div>
     </div>
   </div>
 </aside>

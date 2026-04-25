@@ -192,6 +192,14 @@ h1, h2, h3, .display { font-family: var(--font-display); letter-spacing: -0.01em
   transform: translateY(-1px);
 }
 
+/* Salat-Zutaten (Kraut/Zwiebel/Tomaten) im Konfigurator: kostenlos in Basis,
+ * deshalb grünes Active-Theme statt gold — visuell klar abgegrenzt von den
+ * kostenpflichtigen Toppings. */
+.cfg-topping-base-included[data-active="true"] {
+  border-color: var(--color-brand-green-leaf) !important;
+  box-shadow: 0 0 0 1px var(--color-brand-green-leaf), 0 4px 14px rgba(46,125,50,.22) !important;
+}
+
 /* Numbers (prices, quantities) get tabular figures + slightly tightened spacing */
 .num, output, [data-num] {
   font-variant-numeric: tabular-nums;

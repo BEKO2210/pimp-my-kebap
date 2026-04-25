@@ -180,15 +180,27 @@ import Icon from '../Icon.astro';
         </div>
 
         <div class="mt-8">
-          <p class="text-sm font-semibold text-brand-cream mb-3">Toppings (je +0,50 €)</p>
+          <p class="text-sm font-semibold text-brand-cream mb-3">
+            Toppings <span class="text-brand-cream/55 font-normal">(je +0,50 € · grün markierte sind kostenlos in Basis dabei)</span>
+          </p>
           <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2">
             {TOPPINGS.map((t) => (
-              <label class="card card-selectable p-2 flex items-center justify-center gap-1 text-center cursor-pointer min-h-[3rem]" data-cfg-topping-card={t.id}>
-                <input type="checkbox" class="sr-only" data-cfg-topping={t.id} aria-label={t.name} />
+              <label
+                class={`card card-selectable p-2 flex items-center justify-center gap-1 text-center cursor-pointer min-h-[3rem] ${t.baseIncluded ? 'cfg-topping-base-included' : ''}`}
+                data-cfg-topping-card={t.id}
+                data-active={t.baseIncluded ? 'true' : 'false'}
+              >
+                <input
+                  type="checkbox"
+                  class="sr-only"
+                  data-cfg-topping={t.id}
+                  aria-label={t.name}
+                  checked={t.baseIncluded}
+                />
                 <span class="text-brand-cream text-xs inline-flex items-center justify-center gap-1 flex-wrap">
                   <span>{t.name}</span>
                   {t.spicy && <Icon name="flame" size={10} class="text-brand-red-fire" ariaLabel="scharf" />}
-                  {t.baseIncluded && <span class="text-brand-cream/40 block text-[10px] basis-full">(im Salat enthalten)</span>}
+                  {t.baseIncluded && <span class="text-brand-green-leaf block text-[10px] basis-full font-semibold">in Basis · kostenlos</span>}
                 </span>
               </label>
             ))}

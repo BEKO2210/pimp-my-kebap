@@ -26,12 +26,14 @@ const ogImageUrl = ogImage.startsWith('http') ? ogImage : `${siteUrl}${withBase(
 
 const jsonLdItems = jsonLd ? (Array.isArray(jsonLd) ? jsonLd : [jsonLd]) : [];
 
-// CSP delivered as a meta http-equiv fallback (Cloudflare _headers is the
-// authoritative source). Same policy as public/_headers.
+// CSP delivered as a meta http-equiv fallback. The HTTP-header version in
+// public/_headers is the authoritative source on Cloudflare Pages and adds
+// `frame-ancestors 'none'` — that directive is silently ignored when delivered
+// via <meta> (HTML standard), so we omit it here to avoid a console error.
 const csp =
   "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; " +
   "img-src 'self' data: https://tile.openstreetmap.org; font-src 'self'; " +
-  "connect-src 'self'; frame-ancestors 'none'; form-action 'self'; " +
+  "connect-src 'self'; form-action 'self'; " +
   "base-uri 'self'; object-src 'none'; upgrade-insecure-requests";
 ---
 

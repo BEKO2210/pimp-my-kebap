@@ -32,8 +32,8 @@ const isOnRequest = effectivePrice === null;
   itemscope
   itemtype="https://schema.org/MenuItem"
 >
-  <div class="relative aspect-[4/3] bg-brand-charcoal-soft">
-    <picture>
+  <div class="relative aspect-[4/3] bg-brand-charcoal-soft overflow-hidden">
+    <picture class="absolute inset-0 block w-full h-full">
       <source srcset={`${photoBase}.avif`} type="image/avif" />
       <source srcset={`${photoBase}.webp`} type="image/webp" />
       <img
@@ -42,8 +42,8 @@ const isOnRequest = effectivePrice === null;
         loading="lazy"
         decoding="async"
         width="640" height="480"
-        class="w-full h-full object-cover"
-        onerror={`this.onerror=null;this.src='${placeholder}'`}
+        class="absolute inset-0 w-full h-full object-cover"
+        data-fallback={placeholder}
       />
     </picture>
     {item.tag === 'neu' && (

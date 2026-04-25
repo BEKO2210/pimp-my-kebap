@@ -71,10 +71,18 @@ Mehrere Hinweise (geschlossener Laden + langer Link) werden in einen
 einzigen Confirm-Dialog konsolidiert, statt den User durch zwei
 hintereinander zu schicken.
 
-### 7. Konfigurator: Default-Spieß deutlicher hervorheben [ ]
-`rinderhack` ist `aria-checked=true` aber visuell ähnlich zu
-unselektiert. Stärkere Active-Variante (gold-ring) damit klar ist,
-dass das die aktuelle Wahl ist und ggf. geändert werden kann.
+### 7. Konfigurator: Default-Spieß deutlicher hervorheben [x]
+Zwei Probleme: (1) der Active-Selector `.btn-secondary[aria-pressed="true"]`
+griff nicht auf die Spieß-Buttons, weil sie `role="radio"` mit
+`aria-checked` benutzen, nicht `aria-pressed`. (2) Der Active-Look war
+sowieso zu zurückhaltend (nur Tönung).
+Fix: Selektor um `[aria-checked="true"]` erweitert, Active-Variante
+verstärkt um einen Gold-Ring + soften Glow (`box-shadow: 0 0 0 1px
+gold, 0 4px 14px gold/.18`). Server-side wird der erste MEAT jetzt
+schon mit `data-active="true"` ausgeliefert, also ist der Highlight
+sofort sichtbar — auch ohne JS-Hydrate. Nebeneffekt: Filter-Buttons
+in der Speisekarte und der Bestellart-Toggle im Cart bekommen den
+gleichen klaren Active-Look — konsistent durch die App.
 
 ### 8. Filter-Dropdown: Auto-Close bei Allergen-Reset [ ]
 Aktuell bleibt der Dropdown nach "Alle Filter zurücksetzen" offen.

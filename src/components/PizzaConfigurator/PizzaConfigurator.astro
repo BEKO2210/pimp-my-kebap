@@ -1,0 +1,86 @@
+---
+// Powered by skill: frontend-design, accessibility
+import {
+  PIZZA_TOPPINGS,
+  PIZZA_BASE_PRICE_EUR,
+  PIZZA_TOPPING_PRICE_EUR,
+  PIZZA_TOPPING_PRICE_PREMIUM_EUR,
+  pizzaToppingPrice,
+} from '../../data/pizza';
+import { formatEUR } from '../../lib/format';
+---
+
+<section
+  id="pimp-pizza"
+  class="px-4 sm:px-6 lg:px-8 py-12 lg:py-16"
+  aria-labelledby="pizza-cfg-heading"
+>
+  <div class="mx-auto max-w-5xl">
+    <header class="mb-8">
+      <p class="eyebrow">Pimp my Pizza</p>
+      <h1 id="pizza-cfg-heading" class="display text-3xl sm:text-5xl text-brand-cream mt-2">
+        Bau dir deine <span class="text-brand-gold italic">eigene</span> Pizza
+      </h1>
+      <p class="text-brand-cream/70 mt-3 max-w-2xl">
+        Boden mit Tomatensoße + Käse für <strong class="text-brand-gold num">{formatEUR(PIZZA_BASE_PRICE_EUR)}</strong>.
+        Standard-Topping je <strong class="text-brand-gold num">+{formatEUR(PIZZA_TOPPING_PRICE_EUR)}</strong>,
+        Premium-Topping je <strong class="text-brand-gold num">+{formatEUR(PIZZA_TOPPING_PRICE_PREMIUM_EUR)}</strong>.
+      </p>
+    </header>
+
+    <div data-pizza-root class="space-y-8">
+
+      <fieldset>
+        <legend class="display text-2xl text-brand-cream mb-4">
+          <span class="text-brand-gold mr-2">①</span>Wähle deine Toppings
+        </legend>
+        <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2">
+          {PIZZA_TOPPINGS.map((t) => {
+            const price = pizzaToppingPrice(t);
+            const isPremium = price > PIZZA_TOPPING_PRICE_EUR;
+            return (
+              <label
+                class="card card-selectable p-3 flex items-center justify-between gap-2 cursor-pointer text-sm min-h-[3.5rem]"
+                data-pizza-topping-card={t.id}
+              >
+                <input type="checkbox" class="sr-only" data-pizza-topping={t.id} aria-label={t.name} />
+                <span class="text-brand-cream flex items-center gap-1">
+                  {t.name}
+                  {t.spicy && <span aria-label="scharf" class="text-brand-red-fire">🌶️</span>}
+                  {t.veg && <span aria-label="vegetarisch" class="text-brand-green-leaf">🌱</span>}
+                </span>
+                <span class={`text-xs num ${isPremium ? 'text-brand-orange' : 'text-brand-gold'}`}>
+                  +{formatEUR(price)}
+                </span>
+              </label>
+            );
+          })}
+        </div>
+      </fieldset>
+
+      <!-- Sticky live summary -->
+      <div
+        class="sticky bottom-4 z-10 mt-10 rounded-xl border border-brand-gold/40 bg-brand-charcoal/95 backdrop-blur p-4 flex items-center justify-between gap-4 shadow-2xl"
+        role="status"
+        aria-live="polite"
+      >
+        <div>
+          <p class="text-xs text-brand-cream/60 uppercase tracking-wider">Deine Pizza</p>
+          <p class="display text-lg text-brand-cream truncate max-w-[14rem] sm:max-w-none" data-pizza-summary>Margherita-Stil</p>
+          <p class="display text-2xl text-brand-gold num" data-pizza-total>{formatEUR(PIZZA_BASE_PRICE_EUR)}</p>
+        </div>
+        <button
+          type="button"
+          class="btn-primary"
+          data-pizza-add
+        >
+          In den Warenkorb →
+        </button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  import './pizzaConfigurator.client.ts';
+</script>

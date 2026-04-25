@@ -13,16 +13,22 @@ import { formatEUR } from '../../lib/format';
   aria-labelledby="cfg-heading"
 >
   <div class="mx-auto max-w-5xl">
-    <header class="mb-8">
-      <p class="text-brand-gold uppercase tracking-widest text-xs font-bold mb-2">
-        3 Schritte zu deinem Kebap
-      </p>
-      <h2 id="cfg-heading" class="display text-3xl sm:text-4xl lg:text-5xl text-brand-cream">
-        Konfiguriere deinen Kebap
-      </h2>
-      <p class="text-brand-cream/70 mt-2 max-w-2xl">
-        Wähle Brot, Basis und Toppings — die Live-Summe aktualisiert sich bei jeder Änderung.
-      </p>
+    <header class="mb-8 flex items-end justify-between gap-4 flex-wrap">
+      <div>
+        <p class="eyebrow">3 Schritte zu deinem Kebap</p>
+        <h1 id="cfg-heading" class="display text-3xl sm:text-4xl lg:text-5xl text-brand-cream mt-2">
+          Pimp my <span class="text-brand-gold italic">Kebap</span>
+        </h1>
+        <p class="text-brand-cream/70 mt-2 max-w-2xl">
+          Wähle Brot, Basis, Drehspieß und Toppings — Live-Summe aktualisiert sich bei jeder Änderung.
+        </p>
+      </div>
+      <button
+        type="button"
+        data-surprise-me
+        class="btn-secondary text-sm"
+        aria-label="Zufalls-Kebap konfigurieren lassen"
+      >🎲 Surprise Me</button>
     </header>
 
     <div data-cfg-root class="space-y-10" aria-live="polite">
@@ -52,10 +58,10 @@ import { formatEUR } from '../../lib/format';
       <!-- Step 2: Base -->
       <fieldset data-cfg-step="base">
         <legend class="display text-2xl text-brand-cream mb-4">
-          <span class="text-brand-gold mr-2">②</span>Kebap Basis
+          <span class="text-brand-gold mr-2">②</span>Wähle deine Basis
         </legend>
         <p class="text-sm text-brand-cream/70 mb-4">
-          Immer enthalten: 100 g Fleisch, Salat (Kraut, Zwiebel, Tomaten), 2 Soßen nach Wahl.
+          Immer enthalten: 100 g vom Spieß deiner Wahl, Salat (Kraut, Zwiebel, Tomaten), 2 Soßen.
         </p>
         <div class="grid sm:grid-cols-3 gap-3">
           {BASES.map((b) => (
@@ -67,23 +73,26 @@ import { formatEUR } from '../../lib/format';
             >
               <span class="display text-lg text-brand-cream">{b.name}</span>
               <span class="text-xs text-brand-cream/60">{b.description}</span>
-              <span class="mt-auto text-brand-gold font-semibold">{formatEUR(b.basePriceEur)}</span>
+              <span class="mt-auto text-brand-gold font-semibold num">{formatEUR(b.basePriceEur)}</span>
             </button>
           ))}
         </div>
 
         <div class="mt-6">
-          <p class="text-sm font-semibold text-brand-cream mb-2">Fleischsorte</p>
-          <div role="radiogroup" aria-label="Fleischsorte" class="flex flex-wrap gap-2">
+          <p class="text-sm font-semibold text-brand-cream mb-2">Welcher Spieß?</p>
+          <div role="radiogroup" aria-label="Drehspieß-Sorte" class="grid sm:grid-cols-3 gap-2">
             {MEATS.map((m, i) => (
               <button
                 type="button"
                 role="radio"
                 aria-checked={i === 0 ? 'true' : 'false'}
-                class="btn-secondary"
+                class="btn-secondary !py-3 flex-col !items-start text-left"
                 data-cfg-meat={m.id}
               >
-                {m.name}{m.upchargeEur > 0 ? ` (+${formatEUR(m.upchargeEur)})` : ''}
+                <span class="display text-base text-brand-cream">{m.name}</span>
+                <span class="text-xs text-brand-cream/60 num">
+                  {m.upchargeEur > 0 ? `+${formatEUR(m.upchargeEur)} auf den Grundpreis` : 'kein Aufpreis'}
+                </span>
               </button>
             ))}
           </div>

@@ -206,7 +206,7 @@ describe('buildWhatsAppMessage', () => {
       },
     };
     const msg = buildWhatsAppMessage({ cart: { lines: [line], customer } });
-    expect(msg).toContain('Fleisch: Rindersteak (+1,00');
+    expect(msg).toContain('Fleisch: Steak Döner (+1,00');
     expect(msg).toContain('Mehr Fleisch: 2× 50 g');
     expect(msg).not.toContain('Steakfleisch-Upgrade');
   });

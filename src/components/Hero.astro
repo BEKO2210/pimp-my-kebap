@@ -40,14 +40,9 @@ const offer = offerForDay(getCurrentWeekday());
         wie du ihn liebst — und sende deine Bestellung in 30 Sekunden per WhatsApp.
       </p>
       <div class="mt-8 flex flex-wrap items-center gap-3">
-        <a href={withBase('/') + '#konfigurator'} class="btn-primary">Jetzt konfigurieren →</a>
-        <a href={withBase('/') + '#speisekarte'} class="btn-secondary">Speisekarte ansehen</a>
-        <button
-          type="button"
-          data-surprise-me
-          class="btn-secondary text-sm"
-          aria-label="Zufalls-Kebap konfigurieren lassen"
-        >🎲 Surprise Me</button>
+        <a href={withBase('/konfigurator')} class="btn-primary">Kebap konfigurieren →</a>
+        <a href={withBase('/pimp-my-pizza')} class="btn-secondary">🍕 Pizza bauen</a>
+        <a href={withBase('/speisekarte')} class="btn-secondary">📋 Speisekarte</a>
       </div>
       <dl class="mt-10 grid grid-cols-3 gap-4 max-w-md">
         <div>

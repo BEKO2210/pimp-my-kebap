@@ -1,0 +1,64 @@
+---
+// Powered by skill: frontend-design, accessibility
+// Three giant CTA cards under the hero — one per main path.
+import { withBase } from '../lib/url';
+---
+
+<section
+  id="los-gehts"
+  class="px-4 sm:px-6 lg:px-8 py-12"
+  aria-labelledby="los-heading"
+>
+  <div class="mx-auto max-w-6xl">
+    <p class="eyebrow">Wo willst du anfangen?</p>
+    <h2 id="los-heading" class="display text-2xl sm:text-3xl text-brand-cream mt-2 mb-6">
+      Drei Wege zu deinem Essen.
+    </h2>
+    <div class="grid sm:grid-cols-3 gap-4">
+
+      <a
+        href={withBase('/konfigurator')}
+        class="card card-selectable group p-5 flex flex-col gap-3 min-h-[14rem]"
+      >
+        <span class="text-3xl" aria-hidden="true">🥙</span>
+        <span class="display text-xl text-brand-cream group-hover:text-brand-gold transition-colors">
+          Pimp my Kebap
+        </span>
+        <span class="text-sm text-brand-cream/65">
+          3 Spieße · 4 Brote · 6 Soßen · 18 Toppings.
+          Stell dir deinen Kebap zusammen.
+        </span>
+        <span class="mt-auto text-brand-gold text-sm">Konfigurator öffnen →</span>
+      </a>
+
+      <a
+        href={withBase('/pimp-my-pizza')}
+        class="card card-selectable group p-5 flex flex-col gap-3 min-h-[14rem]"
+      >
+        <span class="text-3xl" aria-hidden="true">🍕</span>
+        <span class="display text-xl text-brand-cream group-hover:text-brand-gold transition-colors">
+          Pimp my Pizza
+        </span>
+        <span class="text-sm text-brand-cream/65">
+          Boden + Käse als Basis. Topping für Topping zur eigenen Pizza.
+        </span>
+        <span class="mt-auto text-brand-gold text-sm">Pizza bauen →</span>
+      </a>
+
+      <a
+        href={withBase('/speisekarte')}
+        class="card card-selectable group p-5 flex flex-col gap-3 min-h-[14rem]"
+      >
+        <span class="text-3xl" aria-hidden="true">📋</span>
+        <span class="display text-xl text-brand-cream group-hover:text-brand-gold transition-colors">
+          Speisekarte
+        </span>
+        <span class="text-sm text-brand-cream/65">
+          Alle fertigen Gerichte: Pide, Pizza, Seele, Burger Kebap, Salate, Getränke.
+        </span>
+        <span class="mt-auto text-brand-gold text-sm">Karte ansehen →</span>
+      </a>
+
+    </div>
+  </div>
+</section>

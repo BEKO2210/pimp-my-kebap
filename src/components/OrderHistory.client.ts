@@ -4,6 +4,10 @@ import { $lines, openCart } from '../lib/cart';
 import { computeTotals } from '../lib/whatsapp';
 import { formatEUR } from '../lib/format';
 import { toast } from '../lib/toast';
+import { priceKebab, effectiveMenuPrice } from '../lib/pricing';
+import { getCurrentWeekday } from '../lib/time';
+import { MENU } from '../data/menu';
+import { DRINKS } from '../data/drinks';
 import type { CartLine } from '../lib/cart-types';
 
 const SVG_NS = 'http://www.w3.org/2000/svg';
@@ -59,12 +63,43 @@ if (root) {
     }).format(new Date(ts));
   }
 
+  /**
+   * Reapply prices to the cloned lines using *today's* pricing rules.
+   * Without this, a Mo-promo Dönerteller (11 €) would re-enter the cart at
+   * 11 € on a Tuesday — which is wrong (regular price 13 €).
+   * Lines whose source item is no longer on the menu are skipped (e.g. a
+   * pimp-pizza-... saved months ago) — those keep their stored unit price.
+   */
+  function repriceLine(l: CartLine): CartLine {
+    const id = 'reorder-' + Math.random().toString(36).slice(2, 10);
+    if (l.kind === 'kebab') {
+      // Kebab price is fully derived from config — recompute deterministically.
+      const breakdown = priceKebab(l.config);
+      return { ...l, id, unitPriceEur: breakdown.unitTotal };
+    }
+    if (l.kind === 'menu') {
+      const item = MENU.find((m) => m.id === l.itemId);
+      if (item) {
+        const today = getCurrentWeekday();
+        const eff = effectiveMenuPrice(item, today);
+        if (eff !== null) {
+          const promo = item.priceEur !== null && eff < item.priceEur;
+          return { ...l, id, unitPriceEur: eff, promoApplied: promo };
+        }
+      }
+      return { ...l, id };
+    }
+    // l.kind === 'drink' (only remaining branch)
+    const drink = DRINKS.find((d) => d.id === l.drinkId);
+    const variant = drink?.variants.find((v) => v.id === l.id || v.label === l.variantLabel);
+    if (drink && variant) {
+      return { ...l, id, unitPriceEur: variant.priceEur, unitDepositEur: variant.depositEur };
+    }
+    return { ...l, id };
+  }
+
   function reorder(lines: CartLine[]) {
-    // Append a fresh copy with new ids so the cart reducer treats them as new
-    const cloned: CartLine[] = lines.map((l) => ({
-      ...l,
-      id: 'reorder-' + Math.random().toString(36).slice(2, 10),
-    }));
+    const cloned: CartLine[] = lines.map(repriceLine);
     $lines.set([...$lines.get(), ...cloned]);
     openCart();
     toast('Bestellung erneut in den Warenkorb gelegt', { tone: 'success' });

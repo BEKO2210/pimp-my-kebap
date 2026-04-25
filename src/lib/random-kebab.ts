@@ -27,9 +27,12 @@ export function randomKebab(): KebabConfig {
   // Toppings: skip the base-included items (kraut/zwiebeln/tomaten)
   const candidates = TOPPINGS.filter((t) => !t.baseIncluded);
   const toppings = sample(candidates, 2, 5).map((t) => t.id);
+  // Surprise should produce a fully customised kebap — exclude the Kebap Box,
+  // which strips all extras and would feel anticlimactic.
+  const baseCandidates = BASES.filter((b) => b.id !== 'kebap_box');
   return {
     bread: pick(BREADS).id,
-    base: pick(BASES).id,
+    base: pick(baseCandidates).id,
     meat: pick(MEATS).id,
     extraMeat50g: Math.random() < 0.25 ? 1 : 0,
     schmelzkaese: Math.random() < 0.4,

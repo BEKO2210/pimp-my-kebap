@@ -13,6 +13,13 @@
 | `describeKebab` zählte baseIncluded ins "(N× +0,50 €)" | **Bug B2 — gefixt** in `src/lib/whatsapp.ts`. | OK |
 | Brot-Auswahl bei Yufka Basic & Kebap Box erzwungen | **Bug B3 — gefixt**: Konfigurator zeigt Schritt "Brot" jetzt nur bei `kebap_basic`. Yufka kommt im Yufka, Box in der Box. WhatsApp + Cart-Summary blenden Brot-Label entsprechend aus. | OK |
 | Kebap Box mit Extras konfigurierbar (Topping/Schmelzkäse/Extra-Fleisch) | **Bug B4 — gefixt**: Box ist Salat + 2 Saucen, fertig. Pimp-Section wird ausgeblendet, beim Wechsel auf Box werden Extras im State zurückgesetzt; `addLine` sendet trotzdem ein sanitiziertes Config-Objekt als Defense-in-Depth. | OK |
+| Schüler-Items am Wochenende / nach 16:00 bestellbar | **Bug L1 — gefixt**: Stepper wird bei `schoolHoursOnly && !schoolHoursOpen` ausgeblendet, stattdessen Hinweis "Nur Mo–Fr bis 16:00 Uhr". Client doppelt geprüft. | OK |
+| Pickup-Zeiten ignorierten Öffnungszeiten | **Bug L2 — gefixt**: Slots starten bei `max(now+20m, todayOpen)`, enden bei `todayClose`. Sonntags nur ASAP. | OK |
+| Surprise Me konnte Kebap Box ziehen → leere Bestellung | **Bug L3 — gefixt**: `randomKebab()` filtert `kebap_box`. | OK |
+| Reorder behielt alte (Promo-)Preise | **Bug L4 — gefixt**: `repriceLine()` rechnet Kebab via `priceKebab(config)` neu, Menu-Items via `effectiveMenuPrice(MENU.find(...), today)`, Drinks via DRINKS-Lookup. | OK |
+| Lieferung absendbar ohne Adresse | **Bug L5 — gefixt**: Checkout-Block + Hinweis bei fehlender PLZ/Straße sowie ungültigem PLZ-Format. | OK |
+| LMIV-Markings inkonsistent (Pizza ohne Boden-Allergene, Ei-Pides ohne f) | **Bug L6 — gefixt**: Boden-Allergene `a,b,d` für alle Pizzas/Pides/Burger ergänzt; Ei-Items mit `f`; rein vegetarische Pizzas/Pides/Seelen mit `tag: 'vegetarisch'` getaggt. | OK |
+| ASAP außerhalb Öffnungszeiten ohne Hinweis | **Bug L7 — gefixt**: Checkout-Bestätigungsdialog enthält Hinweis "Wir haben gerade geschlossen — wir bearbeiten deine Bestellung [nextOpenLabel]." | OK |
 | Sauce-Pricing (FREE_SAUCE_COUNT=2) | `Math.max(0, len - 2) * 0,50` — korrekt für 0/1/2/3+ Saucen. | OK |
 | Steak-Aufpreis | nur via `MEATS.upchargeEur` (1,00 €), kein doppeltes Flag mehr. | OK |
 | Extra Fleisch +50 g | clamp 0..3, je 1,50 €, unabhängig von Fleischsorte. | OK |

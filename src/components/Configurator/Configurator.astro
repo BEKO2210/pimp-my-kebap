@@ -27,9 +27,12 @@ import Icon from '../Icon.astro';
       <button
         type="button"
         data-surprise-me
-        class="btn-secondary text-sm"
+        class="btn-secondary text-sm inline-flex items-center gap-2"
         aria-label="Zufalls-Kebap konfigurieren lassen"
-      >🎲 Surprise Me</button>
+      >
+        <Icon name="dice" size={16} />
+        <span>Surprise Me</span>
+      </button>
     </header>
 
     <div data-cfg-root class="space-y-10" aria-live="polite">

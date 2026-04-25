@@ -47,10 +47,13 @@ function describeKebab(line: Extract<CartLine, { kind: 'kebab' }>): string[] {
     out.push(`   • Soßen: ${sauceNames.join(', ')}${extraText}`);
   }
   if (config.toppings.length > 0) {
+    const baseIncluded = new Set(TOPPINGS.filter((t) => t.baseIncluded).map((t) => t.id));
+    const chargeable = config.toppings.filter((id) => !baseIncluded.has(id));
     const toppingNames = config.toppings.map((t) => nameOf(TOPPINGS, t));
-    out.push(
-      `   • Toppings: ${toppingNames.join(', ')} (${config.toppings.length}× +${formatEUR(0.5)})`,
-    );
+    const tail = chargeable.length > 0
+      ? ` (${chargeable.length}× +${formatEUR(0.5)})`
+      : '';
+    out.push(`   • Toppings: ${toppingNames.join(', ')}${tail}`);
   }
   if (line.notes && line.notes.trim()) {
     out.push(`   • Anmerkung: ${line.notes.trim()}`);

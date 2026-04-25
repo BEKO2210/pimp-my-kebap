@@ -5,7 +5,7 @@ import { BASES, MEATS, EXTRA_MEAT_50G_PRICE_EUR, SCHMELZKAESE_PRICE_EUR } from '
 import type { BaseId, MeatId } from '../data/configurator';
 import { FREE_SAUCE_COUNT, EXTRA_SAUCE_PRICE_EUR } from '../data/sauces';
 import type { SauceId } from '../data/sauces';
-import { TOPPING_PRICE_EUR } from '../data/ingredients';
+import { TOPPINGS, TOPPING_PRICE_EUR } from '../data/ingredients';
 import type { ToppingId } from '../data/ingredients';
 import type { BreadId } from '../data/breads';
 import type { MenuItem } from '../data/menu';
@@ -51,7 +51,11 @@ export function priceKebab(cfg: KebabConfig): KebabPriceBreakdown {
   const schmelz = cfg.schmelzkaese ? SCHMELZKAESE_PRICE_EUR : 0;
   const extraSauces =
     Math.max(0, cfg.sauces.length - FREE_SAUCE_COUNT) * EXTRA_SAUCE_PRICE_EUR;
-  const toppings = cfg.toppings.length * TOPPING_PRICE_EUR;
+  // baseIncluded toppings (kraut/zwiebeln/tomaten) are part of the base salad
+  // and never charged — even if the user re-checks them in the UI.
+  const baseIncludedIds = new Set(TOPPINGS.filter((t) => t.baseIncluded).map((t) => t.id));
+  const chargeableToppings = cfg.toppings.filter((id) => !baseIncludedIds.has(id));
+  const toppings = chargeableToppings.length * TOPPING_PRICE_EUR;
 
   const unitTotal = round2(
     base.basePriceEur + meatUpcharge + extraMeat + schmelz + extraSauces + toppings,

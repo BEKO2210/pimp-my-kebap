@@ -6,6 +6,30 @@ import { formatEUR } from '../lib/format';
 import { toast } from '../lib/toast';
 import type { CartLine } from '../lib/cart-types';
 
+const SVG_NS = 'http://www.w3.org/2000/svg';
+function buildRepeatIcon(): SVGSVGElement {
+  const svg = document.createElementNS(SVG_NS, 'svg');
+  svg.setAttribute('width', '14');
+  svg.setAttribute('height', '14');
+  svg.setAttribute('viewBox', '0 0 24 24');
+  svg.setAttribute('fill', 'none');
+  svg.setAttribute('stroke', 'currentColor');
+  svg.setAttribute('stroke-width', '1.75');
+  svg.setAttribute('stroke-linecap', 'round');
+  svg.setAttribute('stroke-linejoin', 'round');
+  svg.setAttribute('aria-hidden', 'true');
+  const append = (tag: string, attrs: Record<string, string>) => {
+    const el = document.createElementNS(SVG_NS, tag);
+    for (const [k, v] of Object.entries(attrs)) el.setAttribute(k, v);
+    svg.appendChild(el);
+  };
+  append('polyline', { points: '17 4 21 8 17 12' });
+  append('path', { d: 'M3 12V9a3 3 0 0 1 3-3h15' });
+  append('polyline', { points: '7 20 3 16 7 12' });
+  append('path', { d: 'M21 12v3a3 3 0 0 1-3 3H3' });
+  return svg;
+}
+
 const root = document.querySelector<HTMLElement>('[data-history-root]');
 if (root) {
   const listEl = root.querySelector<HTMLUListElement>('[data-history-list]')!;
@@ -79,8 +103,8 @@ if (root) {
 
       const reorderBtn = document.createElement('button');
       reorderBtn.type = 'button';
-      reorderBtn.className = 'btn-secondary text-xs mt-auto';
-      reorderBtn.textContent = '↻ Erneut bestellen';
+      reorderBtn.className = 'btn-secondary text-xs mt-auto inline-flex items-center justify-center gap-1.5';
+      reorderBtn.append(buildRepeatIcon(), document.createTextNode('Erneut bestellen'));
       reorderBtn.addEventListener('click', () => reorder(order.lines as CartLine[]));
       li.appendChild(reorderBtn);
 

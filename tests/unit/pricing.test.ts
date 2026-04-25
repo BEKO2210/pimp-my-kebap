@@ -59,6 +59,17 @@ describe('priceKebab', () => {
     ).toBe(8.0);
   });
 
+  it('does not charge for baseIncluded toppings (kraut/zwiebeln/tomaten)', () => {
+    // re-checking the salad ingredients must not increase the price
+    expect(
+      priceKebab(baseCfg({ toppings: ['kraut', 'zwiebeln', 'tomaten'] })).unitTotal,
+    ).toBe(6.5);
+    // mixed: 2 baseIncluded + 1 chargeable → only +0.50
+    expect(
+      priceKebab(baseCfg({ toppings: ['kraut', 'zwiebeln', 'rucola'] })).unitTotal,
+    ).toBe(7.0);
+  });
+
   it('combines all upgrades correctly', () => {
     const cfg = baseCfg({
       base: 'yufka_basic', // 7.50

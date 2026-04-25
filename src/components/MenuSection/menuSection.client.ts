@@ -73,6 +73,10 @@ if (cards.length > 0) {
           });
         }
         if (navigator.vibrate) navigator.vibrate(8);
+        // Brief gold pulse on the +-button so the customer sees the click landed.
+        incBtn.classList.remove('cart-added-pulse');
+        void incBtn.offsetWidth;
+        incBtn.classList.add('cart-added-pulse');
       });
     }
 

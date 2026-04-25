@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { priceKebab, effectiveMenuPrice, type KebabConfig } from '../../src/lib/pricing';
-import { MENU } from '../../src/data/menu';
+import { MENU, type MenuItem } from '../../src/data/menu';
 
 const baseCfg = (over: Partial<KebabConfig> = {}): KebabConfig => ({
   bread: 'klassisch',
@@ -121,9 +121,15 @@ describe('effectiveMenuPrice', () => {
     expect(effectiveMenuPrice(teller, 2)).toBe(13.0);
   });
 
-  it('returns null for items "Auf Anfrage"', () => {
-    const onRequest = MENU.find((m) => m.priceEur === null);
-    expect(onRequest).toBeDefined();
-    expect(effectiveMenuPrice(onRequest!, 3)).toBeNull();
+  it('returns null when an item has no price (priceEur === null)', () => {
+    // Synthetic — every real menu item now has a price, but the null branch
+    // of effectiveMenuPrice still has to behave correctly.
+    const onRequest: MenuItem = {
+      id: 'synthetic-on-request',
+      category: 'pommes',
+      name: 'On request item',
+      priceEur: null,
+    };
+    expect(effectiveMenuPrice(onRequest, 3)).toBeNull();
   });
 });

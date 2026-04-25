@@ -244,12 +244,21 @@ h1, h2, h3, .display { font-family: var(--font-display); letter-spacing: -0.01em
  * ──────────────────────────────────────────────────────────── */
 #toast-region {
   position: fixed; z-index: 60;
-  inset-inline: 0; bottom: 5.5rem;
+  inset-inline: 0; bottom: 1rem;
   display: flex; flex-direction: column; gap: .5rem; align-items: center;
   pointer-events: none;
+  /* On mobile the toast slides up from outside the viewport — cleaner than
+   * fading in. The transition is gated by prefers-reduced-motion below. */
+  transition: bottom 0.18s ease;
 }
+/* Lift the stack above the sticky mobile cart bar when it's visible. */
+body.has-cart-bar #toast-region { bottom: 5.25rem; }
 @media (min-width: 1024px) {
-  #toast-region { inset-inline: auto 1.5rem; bottom: 1.5rem; align-items: flex-end; }
+  /* Cart bar hides ≥lg, and we anchor toasts to the bottom-right instead. */
+  #toast-region,
+  body.has-cart-bar #toast-region {
+    inset-inline: auto 1.5rem; bottom: 1.5rem; align-items: flex-end;
+  }
 }
 .toast {
   pointer-events: auto;

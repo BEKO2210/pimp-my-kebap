@@ -137,9 +137,20 @@ Drei Polishings:
    sind Kontakt + Rechtliches nebeneinander, Allergene voll breit.
 Hover-States der Links auf gold mit Transition für klares Feedback.
 
-### 13. Toast-Stack auf Mobile [ ]
-Mehrere Toasts schnell nacheinander → wie sieht das aus? Position
-und Stacking-Verhalten prüfen.
+### 13. Toast-Stack auf Mobile [x]
+Drei Verbesserungen in `lib/toast.ts` und `global.css`:
+1. **Stack-Limit**: max 3 sichtbare Toasts. Bei viertem Toast wird
+   der älteste sofort dismissed — keine Endlos-Schlange mehr.
+2. **Dedupe-Window**: identische Message innerhalb 600 ms wird
+   verworfen. Rapid + Klicks am gleichen Item spammen den Toast
+   nicht mehr.
+3. **Position folgt Cart-Bar**: ohne Cart-Bar `bottom: 1rem`, mit
+   sichtbarer Cart-Bar `bottom: 5.25rem` (über die ~60 px Bar
+   gehoben). Auf Desktop ist die Bar `lg:hidden`, da bleibt Toast
+   bottom-right `1.5rem` egal welcher Body-State.
+
+`dismiss()`-Helper extrahiert, double-dismiss durch `data-leaving`
+Guard verhindert.
 
 ### 14. Veraltete E2E-Tests aufräumen [ ]
 `tests/e2e/konfigurator.spec.ts` testet noch alte Routen / alte

@@ -3,7 +3,12 @@
 
 type Tone = 'info' | 'success' | 'error';
 
+const MAX_VISIBLE = 3;
+const DEDUPE_WINDOW_MS = 600;
+
 let region: HTMLElement | null = null;
+let lastMessage = '';
+let lastMessageAt = 0;
 
 function ensureRegion(): HTMLElement {
   if (region) return region;
@@ -53,10 +58,35 @@ function buildIcon(tone: Tone): SVGSVGElement {
   return svg;
 }
 
+function dismiss(el: HTMLElement) {
+  if (el.dataset.leaving === 'true') return; // already animating out
+  el.dataset.leaving = 'true';
+  setTimeout(() => el.remove(), 220);
+}
+
 export function toast(message: string, opts: { tone?: Tone; ms?: number } = {}): void {
   const tone: Tone = opts.tone ?? 'info';
   const ms = opts.ms ?? 3500;
+  const now = Date.now();
+
+  // Dedupe: a rapid sequence of identical messages (e.g. tapping +-buttons
+  // in a row) becomes one notification instead of a spam stack.
+  if (message === lastMessage && now - lastMessageAt < DEDUPE_WINDOW_MS) {
+    lastMessageAt = now;
+    return;
+  }
+  lastMessage = message;
+  lastMessageAt = now;
+
   const root = ensureRegion();
+
+  // Cap how many toasts can be visible at once — push the oldest out so the
+  // stack never overruns the viewport on rapid bursts.
+  while (root.children.length >= MAX_VISIBLE) {
+    const oldest = root.firstElementChild as HTMLElement | null;
+    if (!oldest) break;
+    dismiss(oldest);
+  }
 
   const el = document.createElement('div');
   el.className = 'toast';
@@ -74,10 +104,6 @@ export function toast(message: string, opts: { tone?: Tone; ms?: number } = {}):
   el.append(iconWrap, text);
   root.appendChild(el);
 
-  const dismiss = () => {
-    el.dataset.leaving = 'true';
-    setTimeout(() => el.remove(), 220);
-  };
-  setTimeout(dismiss, ms);
-  el.addEventListener('click', dismiss);
+  setTimeout(() => dismiss(el), ms);
+  el.addEventListener('click', () => dismiss(el));
 }

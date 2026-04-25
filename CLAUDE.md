@@ -90,11 +90,15 @@ Reset-Handler in `menuFilter.client.ts` schließt den
 `apply()`. Action abgeschlossen → Panel zu, User sieht direkt die
 ungefilterte Liste.
 
-### 9. Schüler-Section am Sonntag/Feiertag verstecken [ ]
-Aktuell bleibt die Sektion sichtbar (gedimmt + "außerhalb Schulzeit"-
-Badge). An Tagen, an denen das Restaurant gar nicht öffnet bzw.
-Schule geschlossen ist (Sonntag, Feiertag), ist auch die ganze
-Sektion uninteressant. Sauberer: ganz ausblenden.
+### 9. Schüler-Section am Sonntag/Feiertag verstecken [x]
+Neuer Helper `isSchoolDay()` in `lib/time.ts` (Mo–Fr, kein Feiertag —
+unabhängig von der Uhrzeit, im Gegensatz zum bestehenden
+`isSchoolHoursWindow`). `Speisekarte.astro` filtert die Kategorien-
+Liste mit ihm: an Sa/So/Feiertagen verschwinden sowohl die
+Quick-Jump-Nav-Pille als auch die ganze Schüler-Sektion. An
+Mo–Fr ≤16 bleibt sie voll funktional, an Mo–Fr nach 16 zeigt sie
+weiter den "außerhalb Schulzeit"-Hinweis (kein Stepper, wie L1).
+Tests: 4 neue Cases für `isSchoolDay`.
 
 ### 10. Konfigurator-Footer-Hint inline am Step [ ]
 Aktuell sagt der Footer "Wähle deine Basis", aber der User scrollt

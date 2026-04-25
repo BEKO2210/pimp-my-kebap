@@ -30,11 +30,58 @@ if (root) {
   const totalEl = root.querySelector<HTMLElement>('[data-cfg-total]')!;
   const addBtn = root.querySelector<HTMLButtonElement>('[data-cfg-add]')!;
   const extraMeatVal = root.querySelector<HTMLElement>('[data-cfg-extra-meat-value]')!;
+  const breadStep = root.querySelector<HTMLElement>('fieldset[data-cfg-step="bread"]')!;
+  const pimpStep = root.querySelector<HTMLElement>('fieldset[data-cfg-step="pimp"]')!;
+  const boxHint = root.querySelector<HTMLElement>('[data-cfg-box-hint]')!;
+
+  /** Bread is only relevant when the base is "im Brot" (kebap_basic). */
+  const baseRequiresBread = (b: BaseId) => b === 'kebap_basic';
+  /** Kebap Box ships with salad + 2 sauces and no extras. */
+  const baseAllowsExtras = (b: BaseId) => b !== 'kebap_box';
+
+  function renumberSteps() {
+    const numerals = ['①', '②', '③'];
+    let i = 0;
+    root!.querySelectorAll<HTMLElement>('fieldset[data-cfg-step]').forEach((fs) => {
+      if (fs.hasAttribute('hidden')) return;
+      const numEl = fs.querySelector<HTMLElement>('[data-cfg-step-num]');
+      if (numEl) numEl.textContent = numerals[i++] ?? '';
+    });
+  }
+
+  function clearExtras() {
+    state.sauces = [];
+    state.toppings = [];
+    state.schmelzkaese = false;
+    state.extraMeat50g = 0;
+    extraMeatVal.textContent = '0';
+    root!.querySelectorAll<HTMLInputElement>('[data-cfg-sauce]').forEach((cb) => {
+      cb.checked = false;
+      cb.closest<HTMLElement>('[data-cfg-sauce-card]')?.removeAttribute('data-active');
+    });
+    root!.querySelectorAll<HTMLInputElement>('[data-cfg-topping]').forEach((cb) => {
+      cb.checked = false;
+      cb.closest<HTMLElement>('[data-cfg-topping-card]')?.removeAttribute('data-active');
+    });
+    root!.querySelectorAll<HTMLInputElement>('[data-cfg-flag]').forEach((cb) => {
+      cb.checked = false;
+    });
+  }
+
+  function applyVisibility() {
+    const breadVisible = baseRequiresBread(state.base);
+    breadStep.toggleAttribute('hidden', !breadVisible);
+    const extras = baseAllowsExtras(state.base);
+    pimpStep.toggleAttribute('hidden', !extras);
+    boxHint.toggleAttribute('hidden', extras);
+    renumberSteps();
+  }
 
   function recompute() {
     const breakdown = priceKebab(state);
     totalEl.textContent = formatEUR(breakdown.unitTotal);
-    addBtn.disabled = !(breadChosen && baseChosen);
+    const breadOk = baseRequiresBread(state.base) ? breadChosen : true;
+    addBtn.disabled = !(baseChosen && breadOk);
   }
 
   function setActive(group: string, value: string) {
@@ -61,9 +108,15 @@ if (root) {
   root.querySelectorAll<HTMLButtonElement>('[data-cfg-base]').forEach((btn) => {
     btn.addEventListener('click', () => {
       const id = btn.getAttribute('data-cfg-base') as BaseId;
+      const previous = state.base;
       state.base = id;
       baseChosen = true;
       setActive('base', id);
+      // Switching to Kebap Box discards any extras the user already picked.
+      if (!baseAllowsExtras(id) && baseAllowsExtras(previous)) {
+        clearExtras();
+      }
+      applyVisibility();
       recompute();
     });
   });
@@ -132,14 +185,21 @@ if (root) {
     });
   });
 
-  // Add to cart
+  // Add to cart — sanitises state for bases that don't carry extras / bread.
   addBtn.addEventListener('click', () => {
     if (addBtn.disabled) return;
-    const breakdown = priceKebab(state);
+    const cleaned: KebabConfig = {
+      ...state,
+      sauces: baseAllowsExtras(state.base) ? [...state.sauces] : [],
+      toppings: baseAllowsExtras(state.base) ? [...state.toppings] : [],
+      schmelzkaese: baseAllowsExtras(state.base) ? state.schmelzkaese : false,
+      extraMeat50g: baseAllowsExtras(state.base) ? state.extraMeat50g : 0,
+    };
+    const breakdown = priceKebab(cleaned);
     addLine({
       kind: 'kebab',
       quantity: 1,
-      config: { ...state, sauces: [...state.sauces], toppings: [...state.toppings] },
+      config: cleaned,
       unitPriceEur: breakdown.unitTotal,
     });
     if (navigator.vibrate) navigator.vibrate(10);
@@ -151,11 +211,11 @@ if (root) {
     state.bread = cfg.bread;
     state.base = cfg.base;
     state.meat = cfg.meat;
-    state.extraMeat50g = cfg.extraMeat50g;
-    state.schmelzkaese = cfg.schmelzkaese;
-    state.sauces = [...cfg.sauces];
-    state.toppings = [...cfg.toppings];
-    breadChosen = true;
+    state.extraMeat50g = baseAllowsExtras(cfg.base) ? cfg.extraMeat50g : 0;
+    state.schmelzkaese = baseAllowsExtras(cfg.base) ? cfg.schmelzkaese : false;
+    state.sauces = baseAllowsExtras(cfg.base) ? [...cfg.sauces] : [];
+    state.toppings = baseAllowsExtras(cfg.base) ? [...cfg.toppings] : [];
+    breadChosen = baseRequiresBread(cfg.base);
     baseChosen = true;
     setActive('bread', state.bread);
     setActive('base', state.base);
@@ -175,6 +235,7 @@ if (root) {
       if (flag === 'schmelzkaese') cb.checked = state.schmelzkaese;
     });
     extraMeatVal.textContent = String(state.extraMeat50g);
+    applyVisibility();
     recompute();
   }
 
@@ -189,5 +250,6 @@ if (root) {
     });
   });
 
+  applyVisibility();
   recompute();
 }

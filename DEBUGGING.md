@@ -11,6 +11,8 @@
 |---|---|---|
 | `priceKebab` charged baseIncluded toppings (kraut/zwiebeln/tomaten) | **Bug B1 — gefixt** in `src/lib/pricing.ts`. Test in `tests/unit/pricing.test.ts`. | OK |
 | `describeKebab` zählte baseIncluded ins "(N× +0,50 €)" | **Bug B2 — gefixt** in `src/lib/whatsapp.ts`. | OK |
+| Brot-Auswahl bei Yufka Basic & Kebap Box erzwungen | **Bug B3 — gefixt**: Konfigurator zeigt Schritt "Brot" jetzt nur bei `kebap_basic`. Yufka kommt im Yufka, Box in der Box. WhatsApp + Cart-Summary blenden Brot-Label entsprechend aus. | OK |
+| Kebap Box mit Extras konfigurierbar (Topping/Schmelzkäse/Extra-Fleisch) | **Bug B4 — gefixt**: Box ist Salat + 2 Saucen, fertig. Pimp-Section wird ausgeblendet, beim Wechsel auf Box werden Extras im State zurückgesetzt; `addLine` sendet trotzdem ein sanitiziertes Config-Objekt als Defense-in-Depth. | OK |
 | Sauce-Pricing (FREE_SAUCE_COUNT=2) | `Math.max(0, len - 2) * 0,50` — korrekt für 0/1/2/3+ Saucen. | OK |
 | Steak-Aufpreis | nur via `MEATS.upchargeEur` (1,00 €), kein doppeltes Flag mehr. | OK |
 | Extra Fleisch +50 g | clamp 0..3, je 1,50 €, unabhängig von Fleischsorte. | OK |
@@ -66,8 +68,12 @@
 ### T2 — Kebap konfigurieren (Zutaten add/remove)
 | Schritt | Erwartung |
 |---|---|
-| `/konfigurator` öffnen | Preisanzeige `0,00 €`, "In den Warenkorb" disabled |
-| Brot "Klassisch" wählen → Basis "Kebap Basic" wählen | Preis `6,50 €`, Add-Button enabled |
+| `/konfigurator` öffnen | Preisanzeige `0,00 €`, "In den Warenkorb" disabled, Schritt 1 = Basis (Brot-Schritt versteckt bis Basis = Kebap Basic) |
+| Basis "Yufka Basic" wählen | Brot-Schritt **bleibt versteckt**, Pimp-Schritt sichtbar, Step-Nummern: ① Basis, ② Pimp, Add-Button enabled (kein Brot nötig) |
+| Basis "Kebap Box" wählen | Brot- + Pimp-Schritt versteckt, Hinweis-Karte "Kebap Box — fertig komponiert" sichtbar, Add-Button sofort enabled |
+| Im Pimp Toppings/Saucen anklicken, dann auf "Kebap Box" wechseln | Extras werden geleert (Checkboxen weg, State leer, Preis nur Basis) |
+| Basis "Kebap Basic" wählen | Brot-Schritt erscheint, Step-Nummern: ① Basis, ② Brot, ③ Pimp, Add-Button **disabled** (Brot fehlt noch) |
+| Brot "Klassisch" wählen | Preis `6,50 €`, Add-Button enabled |
 | Spieß "Steak Döner" wählen | Preis `7,50 €` |
 | Mehr Fleisch +1 (Stepper) | Preis `9,00 €` |
 | Mehr Fleisch +1 +1 (3 total) | Preis `12,00 €` (3× 1,50 €) |

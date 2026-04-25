@@ -36,33 +36,10 @@ import Icon from '../Icon.astro';
     </header>
 
     <div data-cfg-root class="space-y-10" aria-live="polite">
-      <!-- Step 1: Bread -->
-      <fieldset data-cfg-step="bread">
-        <legend class="display text-2xl text-brand-cream mb-4">
-          <span class="text-brand-gold mr-2">①</span>Wähle dein Brot
-        </legend>
-        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
-          {BREADS.map((b) => (
-            <button
-              type="button"
-              class="card card-selectable p-4 text-left flex flex-col gap-2 min-h-[8rem]"
-              data-cfg-bread={b.id}
-              aria-pressed="false"
-            >
-              <span class="display text-lg text-brand-cream flex items-center gap-2">
-                {b.name}
-                {b.isNew && <span class="badge badge-new">NEU</span>}
-              </span>
-              <span class="text-xs text-brand-cream/60">{b.description}</span>
-            </button>
-          ))}
-        </div>
-      </fieldset>
-
-      <!-- Step 2: Base -->
+      <!-- Step 1: Base + Spieß -->
       <fieldset data-cfg-step="base">
         <legend class="display text-2xl text-brand-cream mb-4">
-          <span class="text-brand-gold mr-2">②</span>Wähle deine Basis
+          <span class="text-brand-gold mr-2" data-cfg-step-num>①</span>Wähle deine Basis
         </legend>
         <p class="text-sm text-brand-cream/70 mb-4">
           Immer enthalten: 100 g vom Spieß deiner Wahl, Salat (Kraut, Zwiebel, Tomaten), 2 Soßen.
@@ -103,10 +80,33 @@ import Icon from '../Icon.astro';
         </div>
       </fieldset>
 
-      <!-- Step 3: Pimp -->
+      <!-- Step 2: Bread — only relevant for Kebap Basic (im Brot) -->
+      <fieldset data-cfg-step="bread" hidden>
+        <legend class="display text-2xl text-brand-cream mb-4">
+          <span class="text-brand-gold mr-2" data-cfg-step-num>②</span>Wähle dein Brot
+        </legend>
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+          {BREADS.map((b) => (
+            <button
+              type="button"
+              class="card card-selectable p-4 text-left flex flex-col gap-2 min-h-[8rem]"
+              data-cfg-bread={b.id}
+              aria-pressed="false"
+            >
+              <span class="display text-lg text-brand-cream flex items-center gap-2">
+                {b.name}
+                {b.isNew && <span class="badge badge-new">NEU</span>}
+              </span>
+              <span class="text-xs text-brand-cream/60">{b.description}</span>
+            </button>
+          ))}
+        </div>
+      </fieldset>
+
+      <!-- Step 3: Pimp — hidden for Kebap Box (only Salad + 2 Soßen, no extras) -->
       <fieldset data-cfg-step="pimp">
         <legend class="display text-2xl text-brand-cream mb-4">
-          <span class="text-brand-gold mr-2">③</span>Pimp deinen Kebap
+          <span class="text-brand-gold mr-2" data-cfg-step-num>③</span>Pimp deinen Kebap
         </legend>
 
         <div class="grid lg:grid-cols-2 gap-6">
@@ -174,6 +174,21 @@ import Icon from '../Icon.astro';
           </div>
         </div>
       </fieldset>
+
+      <!-- Box hint — replaces the Pimp step when Kebap Box is selected -->
+      <aside
+        data-cfg-box-hint
+        hidden
+        class="rounded-xl border border-brand-gold/30 bg-brand-charcoal/60 p-5"
+        role="note"
+      >
+        <p class="display text-xl text-brand-cream mb-2">Kebap Box — fertig komponiert</p>
+        <p class="text-sm text-brand-cream/75">
+          Die Box kommt mit Salat (Kraut, Zwiebel, Tomaten) und 2 Soßen deiner Wahl —
+          keine zusätzlichen Toppings, kein Schmelzkäse, kein Extra-Fleisch.
+          Spieß oben wählen und ab in den Warenkorb.
+        </p>
+      </aside>
 
       <!-- Sticky live summary -->
       <div

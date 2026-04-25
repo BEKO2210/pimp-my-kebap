@@ -25,7 +25,9 @@ function describeKebab(line: Extract<CartLine, { kind: 'kebab' }>): string[] {
   const breadLabel = nameOf(BREADS, config.bread);
   const meat = MEATS.find((m) => m.id === config.meat)!;
   const out: string[] = [];
-  out.push(`${line.quantity}x ${baseLabel} (${breadLabel})`);
+  // Bread only matters for the "im Brot" base; Yufka and Box have no separate bread.
+  const showBread = config.base === 'kebap_basic';
+  out.push(showBread ? `${line.quantity}x ${baseLabel} (${breadLabel})` : `${line.quantity}x ${baseLabel}`);
 
   if (meat.upchargeEur > 0) {
     out.push(`   • Fleisch: ${meat.name} (+${formatEUR(meat.upchargeEur)})`);

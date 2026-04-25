@@ -86,6 +86,8 @@ if (root) {
   function lineSummary(line: CartLine): string {
     if (line.kind === 'kebab') {
       const base = BASES.find((b) => b.id === line.config.base)?.shortName ?? line.config.base;
+      // Bread label is only relevant for Kebap Basic (im Brot).
+      if (line.config.base !== 'kebap_basic') return base;
       const bread = BREADS.find((b) => b.id === line.config.bread)?.name ?? '';
       return `${base} (${bread})`;
     }

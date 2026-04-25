@@ -1,0 +1,17 @@
+---
+// Powered by skill: frontend-design
+import { offerForDay } from '../data/weeklyOffers';
+import { getCurrentWeekday } from '../lib/time';
+
+const day = getCurrentWeekday();
+const offer = offerForDay(day);
+---
+
+{offer && (
+  <aside
+    class="bg-gradient-to-r from-brand-gold to-brand-orange text-black px-4 py-2 text-center text-sm font-semibold"
+    role="status"
+  >
+    <strong>{offer.shortLabel}-Special:</strong>{' '}{offer.title} · {offer.description}
+  </aside>
+)}

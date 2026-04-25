@@ -1,0 +1,37 @@
+---
+// Powered by skill: frontend-design
+import { DELIVERY_ZONES, MIN_DELIVERY_ORDER_EUR } from '../data/delivery';
+import { BRAND } from '../data/brand';
+import { formatEUR } from '../lib/format';
+---
+
+<section
+  id="liefergebiet"
+  class="px-4 sm:px-6 lg:px-8 py-12 bg-brand-charcoal/40 border-y border-brand-gold/15"
+  aria-labelledby="liefergebiet-heading"
+>
+  <div class="mx-auto max-w-6xl grid lg:grid-cols-[1fr_2fr] gap-8 items-start">
+    <div>
+      <p class="text-brand-gold uppercase tracking-widest text-xs font-bold mb-2">Lieferung</p>
+      <h2 id="liefergebiet-heading" class="display text-2xl sm:text-3xl text-brand-cream">
+        Wir liefern bis zu dir nach Hause
+      </h2>
+      <p class="text-brand-cream/75 mt-3">
+        Mindestbestellwert: <strong class="text-brand-gold">{formatEUR(MIN_DELIVERY_ORDER_EUR)}</strong>.<br />
+        {BRAND.delivery.note}
+      </p>
+    </div>
+    <ul class="grid sm:grid-cols-2 gap-3">
+      {DELIVERY_ZONES.map((z) => (
+        <li class="card p-4 flex items-center justify-between">
+          <span class="display text-lg text-brand-cream">{z.city}</span>
+          <span class="text-brand-gold font-semibold">{formatEUR(z.feeEur)}</span>
+        </li>
+      ))}
+      <li class="card p-4 flex items-center justify-between border-dashed">
+        <span class="display text-lg text-brand-cream/80">Andere Stadt</span>
+        <span class="text-brand-cream/65 text-sm">nach Absprache</span>
+      </li>
+    </ul>
+  </div>
+</section>

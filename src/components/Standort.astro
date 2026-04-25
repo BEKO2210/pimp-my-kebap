@@ -1,0 +1,59 @@
+---
+// Powered by skill: seo-local, security
+// Static OSM tile via <img>. No JS map, no iframe — DSGVO-friendly.
+import { BRAND } from '../data/brand';
+
+const { latitude, longitude } = BRAND.geo;
+// OSM static-tile URL: zoom 17, 600x400. Allowed under CSP img-src.
+// Note: OSM has no official static-image API; we use the standard tile server
+// for a *single* tile near the address. For a real production site, swap to a
+// self-hosted Stadia / MapTiler static image once licensed.
+const tileX = Math.floor(((longitude + 180) / 360) * 2 ** 17);
+const lat_rad = (latitude * Math.PI) / 180;
+const tileY = Math.floor(
+  ((1 - Math.log(Math.tan(lat_rad) + 1 / Math.cos(lat_rad)) / Math.PI) / 2) * 2 ** 17,
+);
+const mapImg = `https://tile.openstreetmap.org/17/${tileX}/${tileY}.png`;
+const directionsUrl = `https://www.openstreetmap.org/?mlat=${latitude}&mlon=${longitude}#map=17/${latitude}/${longitude}`;
+---
+
+<section id="standort" class="px-4 sm:px-6 lg:px-8 py-12" aria-labelledby="standort-heading">
+  <div class="mx-auto max-w-6xl grid lg:grid-cols-2 gap-8 items-start">
+    <div>
+      <p class="text-brand-gold uppercase tracking-widest text-xs font-bold mb-2">Standort & Anfahrt</p>
+      <h2 id="standort-heading" class="display text-2xl sm:text-3xl text-brand-cream">
+        Mitten im Marktplatz von Freiberg
+      </h2>
+      <address class="not-italic text-brand-cream/85 mt-4 space-y-1">
+        <p><strong>{BRAND.marketingName}</strong></p>
+        <p>{BRAND.address.street}</p>
+        <p>{BRAND.address.postalCode} {BRAND.address.city}</p>
+        <p class="pt-2">
+          📞 <a href={`tel:${BRAND.contact.phoneE164}`} class="underline decoration-brand-gold/40 hover:decoration-brand-gold">{BRAND.contact.phoneDisplay}</a>
+        </p>
+        <p>
+          ✉️ <a href={`mailto:${BRAND.contact.email}`} class="underline decoration-brand-gold/40 hover:decoration-brand-gold">{BRAND.contact.email}</a>
+        </p>
+      </address>
+      <h3 class="display text-lg text-brand-cream mt-6">Öffnungszeiten</h3>
+      <dl class="text-sm text-brand-cream/85 mt-2 space-y-1">
+        <div class="flex justify-between max-w-xs"><dt>Mo – Sa</dt><dd>{BRAND.openingHours.weekday.open} – {BRAND.openingHours.weekday.close} Uhr</dd></div>
+        <div class="flex justify-between max-w-xs"><dt>So</dt><dd>geschlossen</dd></div>
+        <div class="flex justify-between max-w-xs"><dt>Feiertags</dt><dd>{BRAND.openingHours.holiday.open} – {BRAND.openingHours.holiday.close} Uhr</dd></div>
+      </dl>
+      {BRAND.social.instagramUrl && (
+        <p class="mt-4 text-sm text-brand-cream/70">
+          📸 <a href={BRAND.social.instagramUrl} target="_blank" rel="noopener noreferrer" class="underline decoration-brand-gold/40 hover:decoration-brand-gold">@{BRAND.social.instagramHandle}</a>
+        </p>
+      )}
+    </div>
+    <div class="card overflow-hidden">
+      <a href={directionsUrl} target="_blank" rel="noopener noreferrer" aria-label="Route zu Pimp My Kebap">
+        <img src={mapImg} alt={`Karte ${BRAND.address.street}`} width="600" height="400" loading="lazy" decoding="async" class="w-full h-auto block" />
+        <span class="block px-4 py-3 text-sm text-brand-cream/80 hover:text-brand-cream">
+          Route in OpenStreetMap öffnen →
+        </span>
+      </a>
+    </div>
+  </div>
+</section>

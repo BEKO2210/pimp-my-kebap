@@ -1,0 +1,52 @@
+---
+// Powered by skill: frontend-design
+import type { MenuCategory } from '../../data/menu';
+import { itemsByCategory, CATEGORY_LABEL } from '../../data/menu';
+import { effectiveMenuPrice } from '../../lib/pricing';
+import ItemCard from '../ItemCard/ItemCard.astro';
+
+interface Props {
+  category: MenuCategory;
+  weekday: 1 | 2 | 3 | 4 | 5 | 6 | 7;
+  schoolHoursOpen?: boolean;
+  /** When set, descriptive blurb under heading. */
+  blurb?: string;
+}
+
+const { category, weekday, schoolHoursOpen = true, blurb } = Astro.props;
+const items = itemsByCategory(category);
+const isSchoolSection = category === 'schueler';
+const sectionDimmed = isSchoolSection && !schoolHoursOpen;
+---
+
+<section
+  id={`section-${category}`}
+  class={`px-4 sm:px-6 lg:px-8 py-10 ${sectionDimmed ? 'opacity-60' : ''}`}
+  data-menu-section={category}
+  aria-labelledby={`heading-${category}`}
+>
+  <div class="mx-auto max-w-6xl">
+    <div class="flex items-end justify-between gap-4 mb-6 flex-wrap">
+      <div>
+        <h2 id={`heading-${category}`} class="display text-2xl sm:text-3xl text-brand-cream">
+          {CATEGORY_LABEL[category]}
+        </h2>
+        {blurb && <p class="text-sm text-brand-cream/65 mt-1 max-w-xl">{blurb}</p>}
+      </div>
+      {isSchoolSection && (
+        <p class={`badge ${schoolHoursOpen ? 'badge-veg' : 'badge-spicy'}`}>
+          {schoolHoursOpen
+            ? 'Heute aktiv (Mo–Fr bis 16:00)'
+            : 'Aktuell außerhalb der Schulzeit'}
+        </p>
+      )}
+    </div>
+    <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+      {items.map((item) => {
+        const eff = effectiveMenuPrice(item, weekday);
+        const promo = eff !== null && item.priceEur !== null && eff < item.priceEur;
+        return <ItemCard item={item} promo={promo} effectivePrice={eff} />;
+      })}
+    </div>
+  </div>
+</section>

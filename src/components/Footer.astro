@@ -1,0 +1,57 @@
+---
+// Powered by skill: accessibility, seo-local
+import { BRAND } from '../data/brand';
+import { ALLERGENS, ADDITIVES } from '../data/allergens';
+const year = new Date().getFullYear();
+---
+<footer class="border-t border-brand-gold/20 bg-brand-charcoal/60 mt-12">
+  <div class="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 py-10 grid lg:grid-cols-3 gap-8">
+    <div>
+      <p class="display text-xl text-brand-cream mb-2">{BRAND.marketingName}</p>
+      <address class="not-italic text-sm text-brand-cream/75 leading-relaxed">
+        {BRAND.address.street}<br />
+        {BRAND.address.postalCode} {BRAND.address.city}<br />
+        <a href={`tel:${BRAND.contact.phoneE164}`} class="underline decoration-brand-gold/40">
+          {BRAND.contact.phoneDisplay}
+        </a><br />
+        <a href={`mailto:${BRAND.contact.email}`} class="underline decoration-brand-gold/40">
+          {BRAND.contact.email}
+        </a>
+      </address>
+      <p class="text-xs text-brand-cream/45 mt-4">
+        Vorgängername: Zentrum Döner.
+      </p>
+    </div>
+    <nav aria-label="Rechtliches" class="text-sm">
+      <p class="text-brand-gold uppercase text-xs tracking-wider mb-2">Rechtliches</p>
+      <ul class="space-y-1 text-brand-cream/85">
+        <li><a href="/impressum" class="hover:text-brand-cream">Impressum</a></li>
+        <li><a href="/datenschutz" class="hover:text-brand-cream">Datenschutz</a></li>
+      </ul>
+    </nav>
+    <details class="text-sm">
+      <summary class="cursor-pointer text-brand-gold uppercase text-xs tracking-wider">Allergene & Zusatzstoffe</summary>
+      <div class="mt-3 grid grid-cols-2 gap-3 text-xs text-brand-cream/85">
+        <div>
+          <p class="font-semibold mb-1">Allergene</p>
+          <ul>
+            {Object.entries(ALLERGENS).map(([k, v]) => (
+              <li><strong>{k})</strong> {v}</li>
+            ))}
+          </ul>
+        </div>
+        <div>
+          <p class="font-semibold mb-1">Zusatzstoffe</p>
+          <ul>
+            {Object.entries(ADDITIVES).map(([k, v]) => (
+              <li><strong>{k})</strong> {v}</li>
+            ))}
+          </ul>
+        </div>
+      </div>
+    </details>
+  </div>
+  <p class="text-center text-xs text-brand-cream/40 pb-6">
+    © {year} {BRAND.legalName} · Inh. {BRAND.ownerName}
+  </p>
+</footer>

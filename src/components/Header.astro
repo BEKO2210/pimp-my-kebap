@@ -1,0 +1,48 @@
+---
+// Powered by skill: frontend-design, accessibility
+import { BRAND } from '../data/brand';
+import { getCurrentOpeningStatus } from '../lib/time';
+
+const status = getCurrentOpeningStatus();
+let pillClass = 'badge-spicy';
+let pillLabel = 'Geschlossen';
+if (status.isOpen && status.reason === 'regular') {
+  pillClass = 'badge-veg';
+  pillLabel = `Jetzt geöffnet — bis ${status.todayClose} Uhr`;
+} else if (status.isOpen && status.reason === 'holiday') {
+  pillClass = 'badge-gold';
+  pillLabel = `Heute Feiertag — bis ${status.todayClose} Uhr`;
+} else if (status.reason === 'closed_sunday') {
+  pillLabel = `Heute geschlossen (So) — ${status.nextOpenLabel ?? ''}`;
+} else if (status.reason === 'before_opening') {
+  pillLabel = `Geschlossen — ${status.nextOpenLabel ?? ''}`;
+} else if (status.reason === 'after_closing') {
+  pillLabel = `Geschlossen — ${status.nextOpenLabel ?? ''}`;
+}
+---
+
+<header class="sticky top-0 z-30 border-b border-brand-gold/20 bg-brand-black/85 backdrop-blur">
+  <div class="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 py-3 flex items-center justify-between gap-3">
+    <a href="/" class="flex items-center gap-3" aria-label={`${BRAND.marketingName} Startseite`}>
+      <picture>
+        <source srcset="/brand/logo.avif" type="image/avif" />
+        <source srcset="/brand/logo.webp" type="image/webp" />
+        <img src="/brand/logo.png" alt="" width="48" height="48" class="h-10 w-10 object-contain" decoding="async" />
+      </picture>
+      <span class="display text-brand-cream text-base sm:text-lg leading-tight">
+        Pimp My <span class="text-brand-gold">Kebap</span>
+      </span>
+    </a>
+    <span class={`badge ${pillClass} hidden sm:inline-flex`} data-opening-pill>
+      <span class="w-2 h-2 rounded-full bg-current opacity-70"></span>
+      {pillLabel}
+    </span>
+    <div class="flex items-center gap-2">
+      <a href={`tel:${BRAND.contact.phoneE164}`} class="btn-secondary text-xs !py-2" aria-label="Anrufen">
+        ☎ Anrufen
+      </a>
+      <a href="#konfigurator" class="btn-primary text-xs !py-2 hidden sm:inline-flex">Bestellen</a>
+    </div>
+  </div>
+  <p class={`badge ${pillClass} sm:hidden mx-4 mb-2 inline-flex`}>{pillLabel}</p>
+</header>

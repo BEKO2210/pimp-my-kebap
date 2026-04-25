@@ -125,9 +125,17 @@ prependet, ergab sich
 `og:image` zeigt auf die echte URL und `dist/brand/og-image.jpg`
 existiert.
 
-### 12. Footer: Links sauber ausrichten [ ]
-Sichtprüfung — Impressum/Datenschutz/Allergene-Liste auf Mobile +
-Desktop. Spacing, Tab-Order.
+### 12. Footer: Links sauber ausrichten [x]
+Drei Polishings:
+1. Section-Headers konsistent — alle drei Spalten benutzen jetzt
+   `.eyebrow` (Brand-Spalte mit zusätzlichem display-Headline für
+   den Brand-Namen).
+2. Allergene-Akkordeon: Default-Browser-Triangle entfernt, durch
+   Lucide-Chevron mit 180°-Rotation ersetzt (gleicher Stil wie
+   Speisekarten-Akkordeons).
+3. Mobile-Layout: Grid `sm:grid-cols-2 lg:grid-cols-3` — auf Tablet
+   sind Kontakt + Rechtliches nebeneinander, Allergene voll breit.
+Hover-States der Links auf gold mit Transition für klares Feedback.
 
 ### 13. Toast-Stack auf Mobile [ ]
 Mehrere Toasts schnell nacheinander → wie sieht das aus? Position

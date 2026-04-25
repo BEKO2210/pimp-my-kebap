@@ -152,10 +152,19 @@ Drei Verbesserungen in `lib/toast.ts` und `global.css`:
 `dismiss()`-Helper extrahiert, double-dismiss durch `data-leaving`
 Guard verhindert.
 
-### 14. Veraltete E2E-Tests aufräumen [ ]
-`tests/e2e/konfigurator.spec.ts` testet noch alte Routen / alte
-Step-Reihenfolge. Entweder anpassen oder ersetzen, damit niemand
-auf veralteten Code blickt.
+### 14. Veraltete E2E-Tests aufräumen [x]
+`tests/e2e/konfigurator.spec.ts` komplett neu geschrieben für den
+aktuellen Flow. Alte Tests zielten auf `/` (Konfigurator war dort),
+erwarteten Bread vor Basis und automatisches Cart-Drawer-Auf-Pop —
+alles drei stimmt nicht mehr. Neue Tests:
+- Kebap Basic: Basis → Brot → /weiter (kein Drawer-Pop).
+- Yufka Basic: kein Bread-Step sichtbar.
+- Kebap Box: Bread + Pimp hidden, Box-Hint sichtbar.
+- Speisekarte +: Drawer bleibt zu, Cart-Bar zeigt 1 Item.
+- Hamburger (mobile-only via viewport-Skip): Click öffnet, ESC schließt.
+
+E2E ist nicht in CI (CI macht typecheck/lint/vitest/build), läuft
+aber lokal über `npm run test:e2e`.
 
 ### 15. CSP/Security-Header Sichtprüfung [ ]
 Nach allen Änderungen einmal `dist/index.html` prüfen: stimmen die

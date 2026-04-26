@@ -31,9 +31,11 @@ export const BRAND = {
   },
 
   geo: {
-    // Marktplatz 18, 71691 Freiberg am Neckar (approx.; verify on first deploy)
-    latitude: 48.9333,
-    longitude: 9.215,
+    // Marktplatz 18, 71691 Freiberg am Neckar (Ortsteil Beihingen) —
+    // 2026-04-26 vom Eigentuemer per Google Maps verifiziert.
+    // Vorherige Werte (48.9333 / 9.215) waren ~1.7 km oestlich daneben.
+    latitude: 48.9354395,
+    longitude: 9.1926226,
   },
 
   openingHours: {

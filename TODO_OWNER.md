@@ -46,10 +46,10 @@ unser Marken-SVG-Platzhalter angezeigt, also nichts kaputt.
 - [ ] DNS auf Cloudflare Pages oder GitHub Pages umleiten
 - [ ] In `.env` `PUBLIC_SITE_URL` aktualisieren
 
-## Geo-Koordinaten (optional, schärfer)
+## Geo-Koordinaten
 
-- [ ] Exakte Lat/Long von Marktplatz 18 ausmessen, dann in
-  `src/data/brand.ts → geo` eintragen. Aktuelle Werte sind eine Näherung.
+- [x] Exakte Lat/Long von Marktplatz 18 sind in `src/data/brand.ts → geo`
+  eingetragen (verifiziert 2026-04-26 via Google Maps).
 
 ## Optional / Marketing
 

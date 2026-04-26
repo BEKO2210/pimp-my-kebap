@@ -64,7 +64,29 @@ const directionsUrl = `https://www.google.com/maps/dir/?api=1&destination=${dest
         aria-label={`Route zu ${BRAND.marketingName} in Google Maps`}
         class="block group"
       >
-        <img src={mapImg} alt={`Karte ${BRAND.address.street}`} width="600" height="400" loading="lazy" decoding="async" class="w-full h-auto block" />
+        <!-- Karten-Bild mit zentriertem Pin als Overlay.
+             Das OSM-Tile ist 256x256 (quadratisch). aspect-square + object-cover
+             zeigt es ohne Verzerrung; die Adresse liegt zentral im Tile, das
+             Crop-Verhalten verliert sie nicht. Der Pin sitzt visuell exakt ueber
+             dem Zentrum und macht den Standort sofort sichtbar — auch ohne dass
+             der User auf "Route in Google Maps" klicken muss. -->
+        <div class="relative aspect-square bg-brand-charcoal-soft overflow-hidden">
+          <img
+            src={mapImg}
+            alt={`Karte ${BRAND.address.street}, ${BRAND.address.city}`}
+            width="600"
+            height="600"
+            loading="lazy"
+            decoding="async"
+            class="absolute inset-0 w-full h-full object-cover block"
+          />
+          <span
+            class="standort-pin absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-full pointer-events-none text-brand-gold drop-shadow-[0_2px_6px_rgba(0,0,0,0.85)]"
+            aria-hidden="true"
+          >
+            <Icon name="map-pin" size={40} strokeWidth={2.5} />
+          </span>
+        </div>
         <div class="flex items-start gap-3 px-4 py-3 group-hover:bg-brand-charcoal-soft/40 transition-colors">
           <Icon name="map-pin" size={18} class="text-brand-gold shrink-0 mt-0.5" />
           <div class="text-sm flex-1 min-w-0">

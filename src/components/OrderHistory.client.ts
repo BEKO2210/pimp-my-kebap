@@ -102,9 +102,13 @@ if (root) {
       }
       return { ...l, id };
     }
-    // l.kind === 'drink' (only remaining branch)
+    // l.kind === 'drink' (only remaining branch).
+    // Variant wird ueber variantLabel re-identifiziert. Labels sind innerhalb
+    // eines Drinks unique (z.B. Cola hat "Dose 330 ml" + "Glasflasche 500 ml
+    // (Kronkorken)") — drink.id hat NICHTS mit l.id zu tun (l.id ist der
+    // zufaellige Cart-Line-UUID via uid()).
     const drink = DRINKS.find((d) => d.id === l.drinkId);
-    const variant = drink?.variants.find((v) => v.id === l.id || v.label === l.variantLabel);
+    const variant = drink?.variants.find((v) => v.label === l.variantLabel);
     if (drink && variant) {
       return { ...l, id, unitPriceEur: variant.priceEur, unitDepositEur: variant.depositEur };
     }

@@ -77,8 +77,11 @@ export function getCurrentOpeningStatus(date: Date = new Date()): OpeningStatus 
   const isHoliday = isHolidayBW(date);
   const isSunday = now.weekday === 7;
 
-  // Sunday: always closed (overrides holidays — though Sunday is rarely a fixed holiday)
-  if (isSunday && !isHoliday) {
+  // Sonntag ist IMMER zu — auch wenn es gleichzeitig ein Feiertag ist
+  // (z.B. 25.12 / 1.1 / 1.5 / 3.10 / 1.11 die rotierend auf Sonntag
+  // fallen koennen). Geschaeftsregel des Inhabers, ueberschreibt die
+  // Holiday-Hours fuer diesen einen Sonderfall.
+  if (isSunday) {
     return {
       isOpen: false,
       reason: 'closed_sunday',

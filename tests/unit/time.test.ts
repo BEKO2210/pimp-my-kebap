@@ -120,6 +120,23 @@ describe('getCurrentOpeningStatus', () => {
     expect(status.reason).toBe('before_opening');
     expect(status.todayOpen).toBe('12:00');
   });
+
+  it('Sunday that is also a holiday is STILL closed_sunday (Sonntag ueberschreibt Feiertag)', () => {
+    // 25.12.2022 war ein SONNTAG und gleichzeitig 1. Weihnachtstag.
+    // Geschaeftsregel des Inhabers: Sonntag ist immer zu — auch an Feiertagen.
+    // Test sperrt diese Domaenen-Regel ein und schuetzt vor versehentlicher
+    // Re-Aktivierung der Holiday-Override-Logik.
+    const status = getCurrentOpeningStatus(berlinWinter(2022, 12, 25, 14));
+    expect(status.isOpen).toBe(false);
+    expect(status.reason).toBe('closed_sunday');
+    expect(status.nextOpenLabel).toMatch(/Mo/);
+  });
+
+  it('Neujahr 2023 (Sonntag) = closed_sunday (gleiche Regel)', () => {
+    const status = getCurrentOpeningStatus(berlinWinter(2023, 1, 1, 14));
+    expect(status.isOpen).toBe(false);
+    expect(status.reason).toBe('closed_sunday');
+  });
 });
 
 describe('isSchoolHoursWindow', () => {

@@ -32,7 +32,7 @@ const drinkCount = DRINKS.reduce((sum, d) => sum + d.variants.length, 0);
       <div class="flex gap-2 items-stretch">
         <label class="relative block flex-1">
           <span class="sr-only">Speisen suchen</span>
-          <span class="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-brand-cream/40">
+          <span class="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-brand-cream/55">
             <Icon name="search" size={18} />
           </span>
           <input
@@ -40,7 +40,7 @@ const drinkCount = DRINKS.reduce((sum, d) => sum + d.variants.length, 0);
             data-menu-search
             placeholder="Suche: Pizza, Vegetarisch, Sucuk…"
             autocomplete="off"
-            class="w-full bg-brand-charcoal border border-brand-gold/30 focus:border-brand-gold rounded-md pl-10 pr-4 py-3 text-brand-cream placeholder:text-brand-cream/40"
+            class="w-full bg-brand-charcoal border border-brand-gold/30 focus:border-brand-gold rounded-md pl-10 pr-4 py-3 text-brand-cream placeholder:text-brand-cream/55"
             aria-label="Speisen durchsuchen"
           />
         </label>

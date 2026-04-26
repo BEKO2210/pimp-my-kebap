@@ -12,7 +12,12 @@ export interface PizzaToppingOption {
 
 export const PIZZA_BASE_PRICE_EUR = 8.0; // Pizzaboden mit Tomatensoße + Käse
 export const PIZZA_TOPPING_PRICE_EUR = 1.0; // pro Standard-Topping
-export const PIZZA_TOPPING_PRICE_PREMIUM_EUR = 1.5; // Steakfleisch, Meeresfrüchte, Sucuk
+// Premium-Topping = 2,00 €, damit eine Pimp-my-Pizza mit einem Premium-Item
+// (Sucuk / Hackfleisch / Hähnchen / Thunfisch / Meeresfrüchte / Gorgonzola)
+// niemals UNTER dem Menü-Preis der entsprechenden fertigen Pizza landet.
+// Menü-Sucuk/Hackfleisch/Hähnchen kosten je 10 € (= 8 + 2). Standard-Topping
+// und Boden bleiben unangetastet.
+export const PIZZA_TOPPING_PRICE_PREMIUM_EUR = 2.0; // Steakfleisch, Meeresfrüchte, Sucuk, Gorgonzola
 
 export const PIZZA_TOPPINGS: readonly PizzaToppingOption[] = [
   // Klassiker

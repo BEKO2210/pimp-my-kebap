@@ -45,6 +45,8 @@ const MenuLineSchema = z.object({
   category: z.string().min(1).max(40),
   unitPriceEur: z.number().min(0).max(200),
   promoApplied: z.boolean().optional(),
+  selectedOptions: z.record(z.string(), z.string()).optional(),
+  optionsLabel: z.string().max(200).optional(),
 });
 
 const DrinkLineSchema = z.object({

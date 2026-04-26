@@ -5,6 +5,7 @@ import { ALLERGENS } from '../data/allergens';
 import { DRINKS } from '../data/drinks';
 import MenuSection from './MenuSection/MenuSection.astro';
 import Drinks from './MenuSection/Drinks.astro';
+import ItemOptionsDialog from './MenuSection/ItemOptionsDialog.astro';
 import { getCurrentWeekday, isSchoolDay, isSchoolHoursWindow } from '../lib/time';
 import Icon from './Icon.astro';
 
@@ -146,6 +147,7 @@ const drinkCount = DRINKS.reduce((sum, d) => sum + d.variants.length, 0);
   );
 })}
 <Drinks itemCount={drinkCount} />
+<ItemOptionsDialog />
 
 <script>
   import './MenuSection/menuSection.client.ts';

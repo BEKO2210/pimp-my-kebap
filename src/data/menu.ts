@@ -49,6 +49,22 @@ export const CATEGORY_LABEL: Record<MenuCategory, string> = {
   pommes: 'Pommes-Highlights',
 };
 
+export interface ItemChoice {
+  id: string;
+  label: string;
+  /** Surcharge added on top of the item's base price (e.g. Steak +1,00 €). */
+  priceDeltaEur?: number;
+}
+
+export interface ItemOption {
+  id: string;
+  label: string;
+  /** When true, no default is preselected and the customer must pick before
+   *  the item can be added. When false, the first choice is the default. */
+  required?: boolean;
+  choices: ItemChoice[];
+}
+
 export interface MenuItem {
   id: string;
   category: MenuCategory;
@@ -63,7 +79,42 @@ export interface MenuItem {
   schoolHoursOnly?: boolean;
   /** Aktionstag-Override-Preis (used by weeklyOffers logic). */
   promoPriceMap?: Partial<Record<1 | 2 | 3 | 4 | 5 | 6, number>>;
+  /** Item-level options (Beilage, Drehspieß, …). When set, ItemCard shows a
+   *  "Auswählen" CTA that opens a modal instead of the direct stepper. */
+  options?: ItemOption[];
 }
+
+/* ─────────── Reusable option definitions ─────────── */
+const OPT_BEILAGE: ItemOption = {
+  id: 'beilage',
+  label: 'Beilage',
+  required: true,
+  choices: [
+    { id: 'pommes', label: 'Pommes' },
+    { id: 'reis', label: 'Reis' },
+  ],
+};
+
+const OPT_SPIESS: ItemOption = {
+  id: 'spiess',
+  label: 'Drehspieß',
+  required: true,
+  choices: [
+    { id: 'rinderhack', label: 'Hackfleisch Drehspieß' },
+    { id: 'haehnchen', label: 'Chicken Kebab' },
+    { id: 'rindersteak', label: 'Steak Döner', priceDeltaEur: 1.0 },
+  ],
+};
+
+const OPT_SPIESS_NO_STEAK: ItemOption = {
+  id: 'spiess',
+  label: 'Drehspieß',
+  required: true,
+  choices: [
+    { id: 'rinderhack', label: 'Hackfleisch Drehspieß' },
+    { id: 'haehnchen', label: 'Chicken Kebab' },
+  ],
+};
 
 /* ─────────── Drehspieß ─────────── */
 const drehspiess: MenuItem[] = [
@@ -75,17 +126,18 @@ const drehspiess: MenuItem[] = [
     priceEur: 13.0,
     markings: ['3', '6'],
     promoPriceMap: { 1: 11.0 }, // Mo: Dönerteller-Aktion 11 €
+    options: [OPT_SPIESS, OPT_BEILAGE],
   },
 ];
 
 /* ─────────── Schülerangebote (Mo–Fr bis 16:00) ─────────── */
 const schueler: MenuItem[] = [
-  { id: 'schueler-box', category: 'schueler', name: 'Schüler-Box', description: 'Pommes/Reis/Salat.', priceEur: 6.0, schoolHoursOnly: true },
-  { id: 'schueler-yufka', category: 'schueler', name: 'Schüler-Yufka', priceEur: 7.0, schoolHoursOnly: true },
-  { id: 'schueler-fladen', category: 'schueler', name: 'Schüler-Döner (Fladenbrot)', priceEur: 6.0, schoolHoursOnly: true, tag: 'aktion' },
+  { id: 'schueler-box', category: 'schueler', name: 'Schüler-Box', description: 'Pommes oder Reis, dazu Salat.', priceEur: 6.0, schoolHoursOnly: true, options: [OPT_SPIESS_NO_STEAK, OPT_BEILAGE] },
+  { id: 'schueler-yufka', category: 'schueler', name: 'Schüler-Yufka', priceEur: 7.0, schoolHoursOnly: true, options: [OPT_SPIESS_NO_STEAK] },
+  { id: 'schueler-fladen', category: 'schueler', name: 'Schüler-Döner (Fladenbrot)', priceEur: 6.0, schoolHoursOnly: true, tag: 'aktion', options: [OPT_SPIESS_NO_STEAK] },
   { id: 'schueler-pizza', category: 'schueler', name: 'Schülerpizza (1 Zutat)', priceEur: 5.0, schoolHoursOnly: true },
   { id: 'schueler-pommes', category: 'schueler', name: 'Schüler-Pommes', priceEur: 4.0, schoolHoursOnly: true },
-  { id: 'schueler-doener', category: 'schueler', name: 'Schüler-Döner', description: 'Perfekt für Schüler.', priceEur: 6.0, schoolHoursOnly: true, tag: 'aktion' },
+  { id: 'schueler-doener', category: 'schueler', name: 'Schüler-Döner', description: 'Perfekt für Schüler.', priceEur: 6.0, schoolHoursOnly: true, tag: 'aktion', options: [OPT_SPIESS_NO_STEAK] },
 ];
 
 /* ─────────── Lahmacun ─────────── */
@@ -93,7 +145,7 @@ const lahmacun: MenuItem[] = [
   { id: 'lahmacun-pur', category: 'lahmacun', name: 'Lahmacun pur', priceEur: 6.0, markings: ['3', '4', 'a', 'b', 'd'] },
   { id: 'lahmacun-salat', category: 'lahmacun', name: 'Lahmacun mit Salat', priceEur: 8.0, markings: ['3', '4', 'a', 'b', 'd'] },
   { id: 'lahmacun-fleisch-salat', category: 'lahmacun', name: 'Lahmacun mit Fleisch & Salat', priceEur: 9.5, markings: ['3', '4', 'a', 'b', 'd'] },
-  { id: 'lahmacun-teller', category: 'lahmacun', name: 'Lahmacun-Teller', priceEur: 13.0, markings: ['3', '4', 'a', 'b', 'd'] },
+  { id: 'lahmacun-teller', category: 'lahmacun', name: 'Lahmacun-Teller', priceEur: 13.0, markings: ['3', '4', 'a', 'b', 'd'], options: [OPT_BEILAGE] },
 ];
 
 /* ─────────── Salate ─────────── */
@@ -111,13 +163,13 @@ const vegetarisch: MenuItem[] = [
   { id: 'halloumi-brot', category: 'vegetarisch', name: 'Halloumi im Brot', priceEur: 8.0, markings: ['a', 'd'], tag: 'vegetarisch' },
   { id: 'halloumi-yufka', category: 'vegetarisch', name: 'Halloumi Yufka', priceEur: 9.0, markings: ['a', 'd'], tag: 'vegetarisch' },
   { id: 'halloumi-box', category: 'vegetarisch', name: 'Halloumi Box', priceEur: 8.0, markings: ['d'], tag: 'vegetarisch' },
-  { id: 'halloumi-teller', category: 'vegetarisch', name: 'Halloumi Teller', priceEur: 13.0, markings: ['d'], tag: 'vegetarisch' },
+  { id: 'halloumi-teller', category: 'vegetarisch', name: 'Halloumi Teller', priceEur: 13.0, markings: ['d'], tag: 'vegetarisch', options: [OPT_BEILAGE] },
   { id: 'halloumi-6', category: 'vegetarisch', name: 'Halloumi 6 Stück', priceEur: 5.5, markings: ['d'], tag: 'vegetarisch' },
   { id: 'halloumi-12', category: 'vegetarisch', name: 'Halloumi 12 Stück', priceEur: 9.0, markings: ['d'], tag: 'vegetarisch' },
   { id: 'falafel-brot', category: 'vegetarisch', name: 'Falafel im Brot', priceEur: 8.0, markings: ['a', 'b', 'd', 'e', 'f', 'g'], tag: 'vegetarisch' },
   { id: 'falafel-yufka', category: 'vegetarisch', name: 'Falafel Yufka', priceEur: 9.0, markings: ['a', 'b', 'd', 'e', 'f', 'g'], tag: 'vegetarisch' },
   { id: 'falafel-box', category: 'vegetarisch', name: 'Falafel Box', priceEur: 8.0, markings: ['a', 'b', 'd', 'e', 'f', 'g'], tag: 'vegetarisch' },
-  { id: 'falafel-teller', category: 'vegetarisch', name: 'Falafel Teller', priceEur: 13.0, markings: ['a', 'b', 'd', 'e', 'f', 'g'], tag: 'vegetarisch' },
+  { id: 'falafel-teller', category: 'vegetarisch', name: 'Falafel Teller', priceEur: 13.0, markings: ['a', 'b', 'd', 'e', 'f', 'g'], tag: 'vegetarisch', options: [OPT_BEILAGE] },
   { id: 'falafel-6', category: 'vegetarisch', name: 'Falafel 6 Stück', priceEur: 5.5, markings: ['a', 'b', 'd', 'e', 'f', 'g'], tag: 'vegetarisch' },
   { id: 'falafel-12', category: 'vegetarisch', name: 'Falafel 12 Stück', priceEur: 9.0, markings: ['a', 'b', 'd', 'e', 'f', 'g'], tag: 'vegetarisch' },
 ];
@@ -125,8 +177,8 @@ const vegetarisch: MenuItem[] = [
 /* ─────────── Chicken Nuggets & Pommes ─────────── */
 const nuggets: MenuItem[] = [
   { id: 'nuggets-pommes', category: 'nuggets', name: 'Pommes', priceEur: 5.0 },
-  { id: 'nuggets-5er-box', category: 'nuggets', name: '5er Nuggets-Box', description: 'Pommes/Salat/Reis.', priceEur: 8.0, markings: ['a', 'f'] },
-  { id: 'nuggets-teller-8', category: 'nuggets', name: 'Nuggets-Teller (8 St., 2 Beilagen)', priceEur: 13.0, markings: ['a', 'f'] },
+  { id: 'nuggets-5er-box', category: 'nuggets', name: '5er Nuggets-Box', description: 'Pommes oder Reis, dazu Salat.', priceEur: 8.0, markings: ['a', 'f'], options: [OPT_BEILAGE] },
+  { id: 'nuggets-teller-8', category: 'nuggets', name: 'Nuggets-Teller (8 St.)', description: 'Auf Teller mit Salat & einer Beilage.', priceEur: 13.0, markings: ['a', 'f'], options: [OPT_BEILAGE] },
   { id: 'nuggets-6', category: 'nuggets', name: 'Nuggets 6 Stück', priceEur: 5.5, markings: ['a', 'f'] },
   { id: 'nuggets-12', category: 'nuggets', name: 'Nuggets 12 Stück', priceEur: 9.0, markings: ['a', 'f'] },
 ];

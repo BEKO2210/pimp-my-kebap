@@ -50,6 +50,8 @@ if (cards.length > 0) {
     const promo = card.dataset.itemPromo === 'true';
     const price = Number.parseFloat(card.dataset.itemPrice ?? '');
     const orderable = card.dataset.itemOrderable !== 'false';
+    const hasOptions = card.dataset.itemHasOptions === 'true';
+    const optionsRaw = card.dataset.itemOptions;
 
     const incBtn = card.querySelector<HTMLButtonElement>('[data-item-inc]');
     const decBtn = card.querySelector<HTMLButtonElement>('[data-item-dec]');
@@ -58,6 +60,19 @@ if (cards.length > 0) {
       incBtn.addEventListener('click', () => {
         if (Number.isNaN(price)) return;
         if (!orderable) return; // server-rendered as not orderable; ignore stray clicks
+        // Items with options always open the dialog. Quantity stepper still
+        // works on the - side for previously-added (configured) lines.
+        if (hasOptions && optionsRaw) {
+          const open = (window as unknown as { __openItemOptions?: (p: unknown) => void }).__openItemOptions;
+          if (open) {
+            try {
+              open(JSON.parse(optionsRaw));
+              return;
+            } catch {
+              // fall through to direct add as a last resort
+            }
+          }
+        }
         const existing = findFirstLineForItem(id);
         if (existing) {
           setQuantity(existing.id, existing.quantity + 1);

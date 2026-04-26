@@ -7,13 +7,29 @@ import { BRAND } from '../data/brand';
 import Icon from './Icon.astro';
 
 const { latitude, longitude } = BRAND.geo;
-// OSM static-tile URL: zoom 17, 600x400. Allowed under CSP img-src.
-const tileX = Math.floor(((longitude + 180) / 360) * 2 ** 17);
+
+// Slippy-Map-Tile-Mathe. Zoom 16 = ~300 m pro Tile in dieser Breite — wichtig
+// fuer Marktplatz 18, weil die Adresse bei zoom 17 zufaellig auf einer Tile-
+// Kante liegt (Pin landet bei 98% Hor.) und der User dann nur Pampa rechts
+// vom Pin sieht. Bei zoom 16 sitzt der Pin praktisch zentriert (49%/40%).
+// Bruchteile speichern wir, weil der Pin gleich pixel-genau auf der Adresse
+// positioniert wird — nicht im geometrischen Tile-Mittelpunkt.
+const Z = 16;
+const tileXfrac = ((longitude + 180) / 360) * 2 ** Z;
 const lat_rad = (latitude * Math.PI) / 180;
-const tileY = Math.floor(
-  ((1 - Math.log(Math.tan(lat_rad) + 1 / Math.cos(lat_rad)) / Math.PI) / 2) * 2 ** 17,
-);
-const mapImg = `https://tile.openstreetmap.org/17/${tileX}/${tileY}.png`;
+const tileYfrac =
+  ((1 - Math.log(Math.tan(lat_rad) + 1 / Math.cos(lat_rad)) / Math.PI) / 2) * 2 ** Z;
+const tileX = Math.floor(tileXfrac);
+const tileY = Math.floor(tileYfrac);
+const mapImg = `https://tile.openstreetmap.org/${Z}/${tileX}/${tileY}.png`;
+
+// Pixel-Position der echten lat/lon innerhalb des 256x256-Tiles, in Prozent.
+// Das Tile wird quadratisch dargestellt (aspect-square + object-cover auf
+// quadratischem Source) → Prozent mappen 1:1 auf Display-Pixel. Der Pin
+// landet damit exakt auf der Adresse, nicht nur in der Tile-Mitte.
+const pinPercentX = ((tileXfrac - tileX) * 100).toFixed(2);
+const pinPercentY = ((tileYfrac - tileY) * 100).toFixed(2);
+
 // Google Maps directions deep-link — works on iOS, Android and desktop.
 const destination = encodeURIComponent(
   `${BRAND.address.street}, ${BRAND.address.postalCode} ${BRAND.address.city}`,
@@ -64,12 +80,13 @@ const directionsUrl = `https://www.google.com/maps/dir/?api=1&destination=${dest
         aria-label={`Route zu ${BRAND.marketingName} in Google Maps`}
         class="block group"
       >
-        <!-- Karten-Bild mit zentriertem Pin als Overlay.
-             Das OSM-Tile ist 256x256 (quadratisch). aspect-square + object-cover
-             zeigt es ohne Verzerrung; die Adresse liegt zentral im Tile, das
-             Crop-Verhalten verliert sie nicht. Der Pin sitzt visuell exakt ueber
-             dem Zentrum und macht den Standort sofort sichtbar — auch ohne dass
-             der User auf "Route in Google Maps" klicken muss. -->
+        <!-- Karten-Bild mit pixel-genau positioniertem Pin.
+             Das OSM-Tile ist 256x256, quadratisch dargestellt (aspect-square +
+             object-cover auf quadratischem Source = keine Verzerrung). Der Pin
+             sitzt nicht im Tile-Zentrum, sondern auf der echten Adress-Position
+             innerhalb des Tiles — berechnet aus der lat/lon ueber pinPercent
+             oben. translate(-50%,-100%) verankert die Pin-SPITZE auf den Punkt,
+             damit es visuell stimmt (Mitte unten = Pin-Tip). -->
         <div class="relative aspect-square bg-brand-charcoal-soft overflow-hidden">
           <img
             src={mapImg}
@@ -81,7 +98,8 @@ const directionsUrl = `https://www.google.com/maps/dir/?api=1&destination=${dest
             class="absolute inset-0 w-full h-full object-cover block"
           />
           <span
-            class="standort-pin absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-full pointer-events-none text-brand-gold drop-shadow-[0_2px_6px_rgba(0,0,0,0.85)]"
+            class="standort-pin absolute pointer-events-none text-brand-gold drop-shadow-[0_2px_6px_rgba(0,0,0,0.85)]"
+            style={`left:${pinPercentX}%;top:${pinPercentY}%;transform:translate(-50%,-100%);`}
             aria-hidden="true"
           >
             <Icon name="map-pin" size={40} strokeWidth={2.5} />

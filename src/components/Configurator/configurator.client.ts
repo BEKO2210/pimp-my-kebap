@@ -112,19 +112,10 @@ if (root) {
     boxHint.toggleAttribute('hidden', extras);
   }
 
-  function setStepHint(activeStep: 'base' | 'bread' | null) {
-    root!.querySelectorAll<HTMLElement>('[data-cfg-step-hint]').forEach((el) => {
-      const fs = el.closest<HTMLElement>('fieldset[data-cfg-step]');
-      const step = fs?.getAttribute('data-cfg-step');
-      el.toggleAttribute('hidden', activeStep !== step);
-    });
-  }
-
   function recompute() {
     const breakdown = priceKebab(state);
     const breadOk = baseRequiresBread(state.base) ? breadChosen : true;
     const ready = baseChosen && breadOk;
-    setStepHint(!baseChosen ? 'base' : !breadOk ? 'bread' : null);
 
     if (!baseChosen) {
       totalLabelEl.textContent = 'Schritt 1';

@@ -38,18 +38,8 @@ import Icon from '../Icon.astro';
     <div data-cfg-root class="space-y-10" aria-live="polite">
       <!-- Step 1 — Basis -->
       <fieldset data-cfg-step="base" class="scroll-mt-20">
-        <legend class="display text-2xl text-brand-cream mb-4 flex flex-wrap items-baseline gap-x-3 gap-y-1">
-          <span>
-            <span class="text-brand-gold mr-2 num">1.</span>Wähle deine Basis
-          </span>
-          <span
-            data-cfg-step-hint
-            hidden
-            class="text-sm font-normal text-brand-gold/90 inline-flex items-center gap-1.5 cfg-pulse"
-          >
-            <span aria-hidden="true">←</span>
-            <span>hier starten</span>
-          </span>
+        <legend class="display text-2xl text-brand-cream mb-4">
+          <span class="text-brand-gold mr-2 num">1.</span>Wähle deine Basis
         </legend>
         <p class="text-sm text-brand-cream/70 mb-4">
           Immer enthalten: 100 g vom Spieß deiner Wahl, Salat (Kraut, Zwiebel, Tomaten), 2 Soßen.
@@ -96,18 +86,8 @@ import Icon from '../Icon.astro';
 
       <!-- Step 2 — Brot (only Kebap Basic) -->
       <fieldset data-cfg-step="bread" class="scroll-mt-20" hidden>
-        <legend class="display text-2xl text-brand-cream mb-4 flex flex-wrap items-baseline gap-x-3 gap-y-1">
-          <span>
-            <span class="text-brand-gold mr-2 num">2.</span>Wähle dein Brot
-          </span>
-          <span
-            data-cfg-step-hint
-            hidden
-            class="text-sm font-normal text-brand-gold/90 inline-flex items-center gap-1.5 cfg-pulse"
-          >
-            <span aria-hidden="true">←</span>
-            <span>hier weitermachen</span>
-          </span>
+        <legend class="display text-2xl text-brand-cream mb-4">
+          <span class="text-brand-gold mr-2 num">2.</span>Wähle dein Brot
         </legend>
         <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
           {BREADS.map((b) => (

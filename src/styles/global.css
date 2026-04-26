@@ -75,19 +75,6 @@ input[aria-invalid='true'] {
   box-shadow: 0 0 0 1px var(--color-brand-red-fire);
 }
 
-/* Step-hint pulse — gentle attention nudge next to the active configurator
- * step legend ("← hier starten" / "← hier weitermachen"). */
-.cfg-pulse {
-  animation: cfg-pulse 1.6s ease-in-out infinite;
-}
-@keyframes cfg-pulse {
-  0%, 100% { opacity: .65; transform: translateX(0); }
-  50%      { opacity: 1;   transform: translateX(2px); }
-}
-@media (prefers-reduced-motion: reduce) {
-  .cfg-pulse { animation: none; opacity: .9; }
-}
-
 /* "Item added" feedback — short gold pulse on the +-button right after a
  * Speisekarten or Drinks add, so the customer sees the click landed without
  * the cart drawer hijacking the screen. */

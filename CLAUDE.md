@@ -14,11 +14,12 @@ Cloudflare-Pages-Setup ist via `wrangler.toml` ebenfalls vorbereitet.
 
 ## Stack (Stand 2026-04-26)
 
-- **Astro 5.18.1** (static, Islands-Hydration) · **TypeScript strict**
+- **Astro 6.1.9** (static, Islands-Hydration) · **TypeScript strict**
 - **Tailwind v4** (`@tailwindcss/vite`) · eigene Tokens in `src/styles/tokens.css`
 - **nanostores** (Cart) · **Zod** (localStorage-Validation)
 - **Vitest** Unit · **Playwright** E2E (lokal, nicht in CI)
 - **sharp** für Build-Image-Pipeline (AVIF/WebP/PWA-Icons)
+- **Vite 7.3.2 (gepinnt)** via `"overrides"` in `package.json` — siehe Gotcha #10
 
 ## Architektur-Konventionen (wichtig!)
 
@@ -48,8 +49,9 @@ data/menu.ts | data/configurator.ts
 
 ## Kritische Invarianten / Gotchas
 
-1. **`define:vars` nicht benutzen** — wegen GHSA-jh87-52p2-xcff (XSS in Astro <6.1.6).
-   Wir sind auf 5.18.1 = nicht-exploitabel solange die Direktive ungenutzt bleibt.
+1. **`define:vars` weiter vermeiden.** GHSA-jh87-52p2-xcff (XSS in Astro &lt;6.1.6) ist mit
+   dem Bump auf 6.1.9 gefixt; die Direktive verwischt aber generell Server-/Client-Scope
+   und ist nirgendwo im Code im Einsatz — soll auch so bleiben.
 2. **`siteUrl` enthält bereits `base`-Pfad.** OG-Image-URLs **nie** zusätzlich durch `withBase()`
    schicken. Siehe Fix in `Base.astro` (CLAUDE-History-Schritt 11).
 3. **GitHub Pages ignoriert `public/_headers`.** Production-CSP läuft nur über
@@ -71,6 +73,10 @@ data/menu.ts | data/configurator.ts
    (siehe [`LICENSE`](./LICENSE)) — Code-Eigentum: Belkis Aslani; Inhalte (Marke,
    Menü, Fotos): Inhaberin. **Diese Attribution darf nicht entfernt oder versteckt
    werden** — explizit Bestandteil der Lizenzbedingungen.
+10. **`overrides: { "vite": "7.3.2" }`** in `package.json` ist Pflicht. Vitest 4.x zieht
+    sonst Vite 8.x als Top-Level-Hoist, und `@tailwindcss/vite 4.2.4` bricht dann gegen
+    Vite-8's Rolldown-Resolver (`Missing field tsconfigPaths`-Error im Build). Wenn
+    Vitest / Tailwind alle Vite-8-kompatibel werden, kann der Override raus.
 
 ## Quality-Gates (vor jedem Commit)
 
@@ -104,9 +110,3 @@ CI macht genau das (`.github/workflows/ci.yml`). E2E (`npm run test:e2e`) läuft
 
 Siehe [`TODO_OWNER.md`](./TODO_OWNER.md) — Inhaberin-Aufgaben (1-Klick-GH-Pages-Setup,
 WhatsApp-Test-Bestellung, optional Domain).
-
-Dependabot-Alert **GHSA-jh87-52p2-xcff** (Astro &lt;6.1.6 XSS via `define:vars`):
-Wir sind nicht exploitabel (kein `define:vars`-Use). Major-Bump auf Astro 6 wurde im
-Branch `claude/test-astro-6-bump` erfolgreich getestet (typecheck/lint/vitest/build/preview alle grün),
-braucht nur einen `"overrides": {"vite": "7.3.2"}`-Eintrag wegen Vitest-vs-Tailwind-Vite-Mismatch.
-Merge erst nach Browser-QA + E2E-Run in einer Wartungsfenster-Session.

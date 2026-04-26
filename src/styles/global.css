@@ -304,19 +304,31 @@ body.has-cart-bar #toast-region { bottom: 5.25rem; }
 
 /* ────────────────────────────────────────────────────────────
  * Print stylesheet — used for the cart receipt
+ *
+ * `#print-receipt` lives inside <main> (wrapped by the page slot in
+ * Base.astro), so a `body > *:not(...)` rule would hide its ancestor
+ * <main> and the receipt with it. The `visibility: hidden` cascade
+ * works regardless of DOM nesting: hide every descendant of <body>,
+ * then surgically re-enable the receipt subtree. `position: absolute`
+ * removes the receipt from the now-empty flow so it prints at the
+ * top of the page instead of below the collapsed-but-still-spaced
+ * page content.
  * ──────────────────────────────────────────────────────────── */
 @media print {
   body { background: white !important; color: black !important; padding: 0 !important; }
-  body > *:not(#cart-drawer):not(#print-receipt) { display: none !important; }
+  body * { visibility: hidden !important; }
+  #print-receipt, #print-receipt * { visibility: visible !important; }
   #print-receipt {
     display: block !important;
+    position: absolute;
+    left: 0; top: 0;
+    width: 100%;
     background: white;
     color: black;
     padding: 2rem;
     font-family: ui-monospace, 'SF Mono', monospace;
   }
   #print-receipt h1 { font-family: 'Playfair Display', serif; }
-  #cart-drawer { display: none !important; }
 }
 @media not print {
   #print-receipt { display: none; }

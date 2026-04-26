@@ -144,7 +144,7 @@ export function buildWhatsAppMessage({ cart, now = new Date() }: BuildWhatsAppOp
     deliveryZoneId: customer.delivery?.zoneId,
   });
 
-  const header = '🥙 Pimp My Kebap – Neue Bestellung';
+  const header = 'PIMP MY KEBAP — Neue Bestellung';
   const customerName = customer.firstName.trim() || '(ohne Name)';
   const fulfillLabel =
     customer.fulfillment === 'vor-ort'
@@ -184,7 +184,7 @@ export function buildWhatsAppMessage({ cart, now = new Date() }: BuildWhatsAppOp
   }
   totalsBlock.push(`GESAMT:        ${formatEUR(totals.grandTotalEur)}`);
   if (totals.belowDeliveryMinimum) {
-    totalsBlock.push(`⚠️  Hinweis: Lieferung erst ab ${formatEUR(20)} möglich.`);
+    totalsBlock.push(`Hinweis: Lieferung erst ab ${formatEUR(20)} möglich.`);
   }
 
   const noteBlock = customer.notes?.trim()
@@ -195,7 +195,7 @@ export function buildWhatsAppMessage({ cart, now = new Date() }: BuildWhatsAppOp
     customer.fulfillment === 'lieferung' && customer.delivery
       ? [
           SEPARATOR,
-          `🛵 Lieferadresse:`,
+          `Lieferadresse:`,
           `   ${customer.delivery.street}`,
           `   ${customer.delivery.postalCode} ${
             findZone(customer.delivery.zoneId)?.city ?? customer.delivery.zoneId
@@ -209,18 +209,18 @@ export function buildWhatsAppMessage({ cart, now = new Date() }: BuildWhatsAppOp
   const footer = [
     SEPARATOR,
     customer.fulfillment === 'lieferung'
-      ? `📍 Restaurant: ${BRAND.address.street}, ${BRAND.address.postalCode} ${BRAND.address.city}`
-      : `📍 Abholung: ${BRAND.address.street}, ${BRAND.address.postalCode} ${BRAND.address.city}`,
-    `📞 Rückfragen: ${BRAND.contact.phoneDisplay}`,
+      ? `Restaurant: ${BRAND.address.street}, ${BRAND.address.postalCode} ${BRAND.address.city}`
+      : `Abholung bei: ${BRAND.address.street}, ${BRAND.address.postalCode} ${BRAND.address.city}`,
+    `Rückfragen: ${BRAND.contact.phoneDisplay}`,
   ];
 
   const empty = lines.length === 0;
   const messageLines = [
     header,
     SEPARATOR,
-    `👤 Name: ${customerName}`,
-    `🛍️ ${timeLabel}: ${pickupLabel}`,
-    `🍽️ Verzehr: ${fulfillLabel}`,
+    `Name:    ${customerName}`,
+    `${timeLabel}: ${pickupLabel}`,
+    `Verzehr: ${fulfillLabel}`,
     ...deliveryBlock,
     SEPARATOR,
     ...(empty ? ['(Warenkorb ist leer)'] : lineBlocks),

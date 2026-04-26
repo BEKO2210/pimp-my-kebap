@@ -17,6 +17,7 @@ interface OptionData {
   id: string;
   label: string;
   required?: boolean;
+  multi?: boolean;
   choices: ChoiceData[];
 }
 interface OpenPayload {
@@ -46,16 +47,23 @@ if (dialogEl) {
   const webpEl = dialog.querySelector<HTMLSourceElement>('[data-options-webp]')!;
 
   let current: OpenPayload | null = null;
-  /** option.id → choice.id of the currently picked choice. */
-  const selected = new Map<string, string>();
+  /** option.id → choice.id (single) or string[] (multi) of currently picked. */
+  const selected = new Map<string, string | string[]>();
+
+  function selectedIds(optId: string): string[] {
+    const v = selected.get(optId);
+    if (!v) return [];
+    return Array.isArray(v) ? v : [v];
+  }
 
   function recomputePrice() {
     if (!current) return;
     let total = current.basePriceEur;
     for (const opt of current.options) {
-      const choiceId = selected.get(opt.id);
-      const choice = opt.choices.find((c) => c.id === choiceId);
-      if (choice?.priceDeltaEur) total += choice.priceDeltaEur;
+      for (const choiceId of selectedIds(opt.id)) {
+        const choice = opt.choices.find((c) => c.id === choiceId);
+        if (choice?.priceDeltaEur) total += choice.priceDeltaEur;
+      }
     }
     priceEl.textContent = formatEUR(total);
   }
@@ -68,16 +76,18 @@ if (dialogEl) {
       fs.className = 'space-y-2';
       const legend = document.createElement('legend');
       legend.className = 'eyebrow !mb-1';
-      legend.textContent = opt.label;
+      legend.textContent = opt.multi ? `${opt.label} (mehrere möglich)` : opt.label;
       fs.appendChild(legend);
 
       const grid = document.createElement('div');
-      grid.className = 'grid grid-cols-1 gap-2';
+      grid.className = opt.multi ? 'grid grid-cols-2 gap-2' : 'grid grid-cols-1 gap-2';
+
+      const choiceButtons: HTMLButtonElement[] = [];
 
       for (const choice of opt.choices) {
         const btn = document.createElement('button');
         btn.type = 'button';
-        btn.className = 'btn-secondary !justify-between !py-3 !px-4 text-left';
+        btn.className = 'btn-secondary !justify-between !py-3 !px-4 text-left text-sm';
         btn.dataset.optionId = opt.id;
         btn.dataset.choiceId = choice.id;
 
@@ -93,11 +103,24 @@ if (dialogEl) {
         }
 
         btn.setAttribute('aria-pressed', 'false');
+        choiceButtons.push(btn);
+
         btn.addEventListener('click', () => {
-          selected.set(opt.id, choice.id);
-          for (const sib of grid.querySelectorAll<HTMLButtonElement>('[data-option-id]')) {
-            sib.setAttribute('aria-pressed', String(sib === btn));
-            sib.toggleAttribute('data-active', sib === btn);
+          if (opt.multi) {
+            const arr = selectedIds(opt.id);
+            const idx = arr.indexOf(choice.id);
+            if (idx >= 0) arr.splice(idx, 1);
+            else arr.push(choice.id);
+            selected.set(opt.id, [...arr]);
+            const isActive = arr.includes(choice.id);
+            btn.setAttribute('aria-pressed', String(isActive));
+            btn.toggleAttribute('data-active', isActive);
+          } else {
+            selected.set(opt.id, choice.id);
+            for (const sib of choiceButtons) {
+              sib.setAttribute('aria-pressed', String(sib === btn));
+              sib.toggleAttribute('data-active', sib === btn);
+            }
           }
           recomputePrice();
           updateAddState();
@@ -105,13 +128,14 @@ if (dialogEl) {
         grid.appendChild(btn);
       }
 
-      // Default-pick the first non-required option's first choice. Required
-      // options stay unpicked until the customer chooses.
-      if (!opt.required) {
+      // For non-required single-choice options, pre-select the first choice
+      // (e.g. Schmelzkäse defaults to "ohne"). Required choices stay unpicked.
+      // Multi-options default to nothing selected.
+      if (!opt.required && !opt.multi) {
         const first = opt.choices[0];
         if (first) {
           selected.set(opt.id, first.id);
-          const firstBtn = grid.querySelector<HTMLButtonElement>('[data-choice-id]');
+          const firstBtn = choiceButtons[0];
           if (firstBtn) {
             firstBtn.setAttribute('aria-pressed', 'true');
             firstBtn.setAttribute('data-active', 'true');
@@ -126,24 +150,35 @@ if (dialogEl) {
 
   function allRequiredPicked(): boolean {
     if (!current) return false;
-    return current.options.every((opt) => !opt.required || selected.has(opt.id));
+    return current.options.every((opt) => {
+      if (!opt.required) return true;
+      const ids = selectedIds(opt.id);
+      return ids.length > 0;
+    });
   }
 
   function updateAddState() {
     addBtn.disabled = !allRequiredPicked();
   }
 
-  function buildLabel(): { label: string; selectedMap: Record<string, string> } {
+  function buildLabel(): { label: string; selectedMap: Record<string, string | string[]> } {
     if (!current) return { label: '', selectedMap: {} };
     const parts: string[] = [];
-    const map: Record<string, string> = {};
+    const map: Record<string, string | string[]> = {};
     for (const opt of current.options) {
-      const choiceId = selected.get(opt.id);
-      if (!choiceId) continue;
-      const choice = opt.choices.find((c) => c.id === choiceId);
-      if (!choice) continue;
-      map[opt.id] = choice.id;
-      parts.push(choice.label);
+      const ids = selectedIds(opt.id);
+      if (ids.length === 0) continue;
+      const labels = ids
+        .map((id) => opt.choices.find((c) => c.id === id)?.label)
+        .filter((s): s is string => Boolean(s));
+      if (labels.length === 0) continue;
+      if (opt.multi) {
+        map[opt.id] = ids;
+        parts.push(`${opt.label}: ${labels.join(', ')}`);
+      } else {
+        map[opt.id] = ids[0]!;
+        parts.push(labels[0]!);
+      }
     }
     return { label: parts.join(' · '), selectedMap: map };
   }
@@ -163,9 +198,10 @@ if (dialogEl) {
     if (!current || !allRequiredPicked()) return;
     let unitPrice = current.basePriceEur;
     for (const opt of current.options) {
-      const choiceId = selected.get(opt.id);
-      const choice = opt.choices.find((c) => c.id === choiceId);
-      if (choice?.priceDeltaEur) unitPrice += choice.priceDeltaEur;
+      for (const choiceId of selectedIds(opt.id)) {
+        const choice = opt.choices.find((c) => c.id === choiceId);
+        if (choice?.priceDeltaEur) unitPrice += choice.priceDeltaEur;
+      }
     }
     const { label, selectedMap } = buildLabel();
     addLine({

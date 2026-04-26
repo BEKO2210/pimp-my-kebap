@@ -30,8 +30,9 @@ export interface MenuItemCartLine {
   unitPriceEur: number;
   /** Note: a promo override that was active when the line was added. */
   promoApplied?: boolean;
-  /** Customer-picked options (Beilage/Spieß/...). Map of option.id → choice.id. */
-  selectedOptions?: Record<string, string>;
+  /** Customer-picked options. Map of option.id → choice.id (single) or
+   *  choice.id[] (multi-select like sauces / dips). */
+  selectedOptions?: Record<string, string | string[]>;
   /** Human-readable summary of the picked options ("Hackfleisch · Pommes"). */
   optionsLabel?: string;
 }

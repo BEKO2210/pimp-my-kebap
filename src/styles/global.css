@@ -244,7 +244,12 @@ h1, h2, h3, .display { font-family: var(--font-display); letter-spacing: -0.01em
 .badge-veg { background: rgba(46,125,50,.18); color: #6dc873; }
 .badge-spicy { background: rgba(211,47,47,.18); color: #ff7b7b; }
 .badge-new { background: var(--color-brand-orange); color: #000; }
-.badge-gold { background: rgba(212,175,55,.18); color: var(--color-brand-gold-light); }
+/* Solid gold + schwarzer Text — siehe .badge-new fuer das gleiche
+ * "Aufkleber"-Pattern. Vorher rgba(.18) ueber Speisen-Fotos verschwand
+ * der "Aktion"-Tag in gelben/orangen Bildern (Pommes/Pizza/Kebap).
+ * #d4af37 auf #000 hat ~9.9:1 Kontrast (AAA), und die solide Flaeche
+ * ist Background-unabhaengig. */
+.badge-gold { background: var(--color-brand-gold); color: #000; }
 
 } /* end @layer components */
 

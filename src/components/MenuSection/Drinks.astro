@@ -50,7 +50,7 @@ const count = itemCount ?? DRINKS.reduce((sum, d) => sum + d.variants.length, 0)
                   <span class="text-brand-cream/85">
                     {v.label}
                     {v.depositEur > 0 && (
-                      <span class="text-brand-cream/45 text-xs"> (+{formatEUR(v.depositEur)} Pfand)</span>
+                      <span class="text-brand-cream/60 text-xs"> (+{formatEUR(v.depositEur)} Pfand)</span>
                     )}
                   </span>
                   <span class="flex items-center gap-3">

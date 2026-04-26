@@ -96,7 +96,7 @@ const csp =
     <meta name="twitter:image" content={ogImageUrl} />
 
     {jsonLdItems.map((data) => (
-      <script type="application/ld+json" set:html={JSON.stringify(data)} />
+      <script is:inline type="application/ld+json" set:html={JSON.stringify(data)} />
     ))}
   </head>
   <body>

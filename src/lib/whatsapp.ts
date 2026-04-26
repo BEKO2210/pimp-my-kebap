@@ -68,6 +68,7 @@ function describeMenuItem(line: Extract<CartLine, { kind: 'menu' }>): string[] {
   const promo = line.promoApplied ? ' (Aktion)' : '';
   return [
     `${line.quantity}x ${line.itemName}${promo}`,
+    line.optionsLabel ? `   • ${line.optionsLabel}` : null,
     line.notes && line.notes.trim() ? `   • Anmerkung: ${line.notes.trim()}` : null,
     `   = ${formatEUR(round2(line.unitPriceEur * line.quantity))}`,
   ].filter((s): s is string => s !== null);

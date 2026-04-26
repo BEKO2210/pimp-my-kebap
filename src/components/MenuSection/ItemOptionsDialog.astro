@@ -1,0 +1,76 @@
+---
+// Powered by skill: frontend-design, accessibility
+// Native <dialog> picks up Body-Scroll-Lock and ESC handling for free.
+// The DOM is empty until the client opens it via openItemOptionsDialog().
+import Icon from '../Icon.astro';
+---
+
+<dialog
+  id="item-options-dialog"
+  data-item-options-dialog
+  class="bg-transparent p-0 max-w-lg w-[min(92vw,28rem)] backdrop:bg-black/70 backdrop:backdrop-blur-sm"
+  aria-labelledby="item-options-title"
+>
+  <div class="bg-brand-charcoal border border-brand-gold/40 rounded-2xl shadow-2xl overflow-hidden">
+    <header class="relative">
+      <picture data-options-picture class="block aspect-[4/3] bg-brand-charcoal-soft">
+        <source data-options-avif type="image/avif" />
+        <source data-options-webp type="image/webp" />
+        <img
+          data-options-img
+          alt=""
+          width="640" height="480"
+          class="w-full h-full object-cover"
+          decoding="async"
+        />
+      </picture>
+      <button
+        type="button"
+        data-options-close
+        aria-label="Schließen"
+        class="absolute top-3 right-3 inline-flex items-center justify-center w-9 h-9 rounded-full bg-brand-charcoal/80 hover:bg-brand-charcoal text-brand-cream backdrop-blur"
+      >
+        <Icon name="close" size={18} />
+      </button>
+    </header>
+
+    <div class="p-5 space-y-4">
+      <div>
+        <h2 id="item-options-title" data-options-title class="display text-2xl text-brand-cream"></h2>
+        <p data-options-description class="text-sm text-brand-cream/70 mt-1 hidden"></p>
+      </div>
+
+      <div data-options-fieldsets class="space-y-4"></div>
+
+      <button
+        type="button"
+        data-options-add
+        class="btn-primary w-full inline-flex items-center justify-center gap-2"
+      >
+        <span>In den Warenkorb</span>
+        <span class="opacity-70">·</span>
+        <span data-options-price class="num">0,00 €</span>
+      </button>
+    </div>
+  </div>
+</dialog>
+
+<style>
+  /* Vertically center the native dialog (default is browser-dependent). */
+  dialog[data-item-options-dialog] {
+    margin: auto;
+    border: 0;
+  }
+  /* Lock body scroll when the dialog is open. The browser already prevents
+   * scroll-chaining for <dialog>, but iOS Safari sometimes lets the body
+   * scroll behind it; setting overflow hidden on body is a belt-and-braces
+   * guarantee that the background sits still. */
+  body:has(dialog[data-item-options-dialog][open]) {
+    overflow: hidden;
+    touch-action: none;
+  }
+</style>
+
+<script>
+  import './itemOptionsDialog.client.ts';
+</script>

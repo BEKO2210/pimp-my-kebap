@@ -4,8 +4,8 @@
 //
 // Skips silently if `sharp` is not installed (lets `npm install` succeed
 // before native deps are present).
-import { existsSync, mkdirSync, writeFileSync } from 'node:fs';
-import { resolve } from 'node:path';
+import { existsSync, mkdirSync, readdirSync, writeFileSync, statSync } from 'node:fs';
+import { resolve, basename, extname } from 'node:path';
 
 const ROOT = resolve(process.cwd());
 const LOGO_PNG = resolve(ROOT, 'public/brand/logo.png');
@@ -13,6 +13,7 @@ const BRAND_DIR = resolve(ROOT, 'public/brand');
 const ICON_DIR = resolve(ROOT, 'public/icons');
 const PUBLIC_DIR = resolve(ROOT, 'public');
 const PLACEHOLDER_DIR = resolve(ROOT, 'public/images/placeholders');
+const MEALS_DIR = resolve(ROOT, 'public/images/meals');
 
 let sharp;
 try {
@@ -33,6 +34,7 @@ function ensureDir(p) {
 ensureDir(BRAND_DIR);
 ensureDir(ICON_DIR);
 ensureDir(PLACEHOLDER_DIR);
+ensureDir(MEALS_DIR);
 
 const BRAND_BG = { r: 10, g: 10, b: 10, alpha: 1 };
 const logo = sharp(LOGO_PNG);
@@ -174,5 +176,36 @@ for (const cat of PLACEHOLDER_CATEGORIES) {
   </svg>`;
   writeFileSync(resolve(PLACEHOLDER_DIR, `${cat}.svg`), svg);
 }
+
+// 7. Auto-convert every uploaded meal photo (.jpg/.jpeg/.png) into a webp
+//    + avif variant next to it. ItemCard.astro renders <picture> with three
+//    sources (avif → webp → jpg), so dropping a `${id}.jpg` into images/meals
+//    and re-running the build is enough to get optimised delivery.
+async function convertMealPhotos() {
+  if (!existsSync(MEALS_DIR)) return;
+  const entries = readdirSync(MEALS_DIR);
+  let converted = 0;
+  for (const entry of entries) {
+    const ext = extname(entry).toLowerCase();
+    if (ext !== '.jpg' && ext !== '.jpeg' && ext !== '.png') continue;
+    const stem = basename(entry, ext);
+    const src = resolve(MEALS_DIR, entry);
+    if (!statSync(src).isFile()) continue;
+    const webp = resolve(MEALS_DIR, `${stem}.webp`);
+    const avif = resolve(MEALS_DIR, `${stem}.avif`);
+    // Resize to a sane menu-card width (max 960 px wide, keeps aspect),
+    // then encode. AVIF is slow but tiny; webp is fast and broad.
+    const pipeline = sharp(src).resize({ width: 960, withoutEnlargement: true });
+    if (!existsSync(webp)) {
+      await pipeline.clone().webp({ quality: 82 }).toFile(webp);
+    }
+    if (!existsSync(avif)) {
+      await pipeline.clone().avif({ quality: 60 }).toFile(avif);
+    }
+    converted++;
+  }
+  if (converted > 0) console.log(`🍽  Converted ${converted} meal photo(s) to webp + avif`);
+}
+await convertMealPhotos();
 
 console.log('✅ Image build done');

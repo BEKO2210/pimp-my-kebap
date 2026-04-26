@@ -23,6 +23,23 @@ const photoBase = withBase(`/images/meals/${item.id}`);
 const placeholder = withBase(`/images/placeholders/${slug}.svg`);
 const isOnRequest = effectivePrice === null;
 const canOrder = !isOnRequest && orderable;
+// When the item carries options (Beilage / Drehspieß / …) the +-button no
+// longer adds directly — it opens the options dialog. The options payload is
+// JSON-serialised onto the card so the client doesn't need a separate fetch.
+const hasOptions = (item.options?.length ?? 0) > 0;
+const optionsPayload = hasOptions
+  ? JSON.stringify({
+      itemId: item.id,
+      itemName: item.name,
+      category: item.category,
+      description: item.description,
+      basePriceEur: effectivePrice,
+      promo: promo ?? false,
+      options: item.options,
+      imgBase: `/images/meals/${item.id}`,
+      fallback: `/images/placeholders/${slug}.svg`,
+    })
+  : null;
 ---
 
 <article
@@ -36,6 +53,8 @@ const canOrder = !isOnRequest && orderable;
   data-item-markings={(item.markings ?? []).join(',')}
   data-item-search={`${item.name} ${item.description ?? ''} ${item.tag ?? ''}`.toLowerCase()}
   data-item-orderable={canOrder ? 'true' : 'false'}
+  data-item-has-options={hasOptions ? 'true' : 'false'}
+  data-item-options={optionsPayload}
   itemscope
   itemtype="https://schema.org/MenuItem"
 >
@@ -99,8 +118,8 @@ const canOrder = !isOnRequest && orderable;
             type="button"
             data-item-inc
             class="btn-primary text-sm !px-3 !py-2"
-            aria-label={`${item.name} mehr / hinzufügen`}
-          >+</button>
+            aria-label={hasOptions ? `${item.name} auswählen und hinzufügen` : `${item.name} mehr / hinzufügen`}
+          >{hasOptions ? 'Auswählen' : '+'}</button>
         </div>
       )}
       {!canOrder && !isOnRequest && unavailableReason && (

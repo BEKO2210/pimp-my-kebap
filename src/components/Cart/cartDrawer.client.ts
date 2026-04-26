@@ -145,11 +145,14 @@ if (root) {
   }
 
   function lineDetails(line: CartLine): string {
-    if (line.kind !== 'kebab') {
-      if (line.kind === 'drink' && line.unitDepositEur > 0) {
-        return `+ ${formatEUR(line.unitDepositEur)} Pfand pro Stück`;
-      }
-      return '';
+    if (line.kind === 'menu') {
+      const parts: string[] = [];
+      if (line.optionsLabel) parts.push(line.optionsLabel);
+      if (line.notes?.trim()) parts.push(`Anm.: ${line.notes.trim()}`);
+      return parts.join(' · ');
+    }
+    if (line.kind === 'drink') {
+      return line.unitDepositEur > 0 ? `+ ${formatEUR(line.unitDepositEur)} Pfand pro Stück` : '';
     }
     const parts: string[] = [];
     const meat = MEATS.find((m) => m.id === line.config.meat);

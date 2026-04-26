@@ -1,7 +1,9 @@
 // Powered by skill: frontend-design
-// 18 frische Zutaten / Toppings.
+// 19 frische Zutaten / Toppings — 4 davon kostenlos in der Basis (Salat,
+// Kraut, Zwiebeln, Tomaten), die restlichen 15 kosten 0,50 € pro Auswahl.
 
 export type ToppingId =
+  | 'salat'
   | 'jalapenos'
   | 'mais'
   | 'kidneybohnen'
@@ -29,8 +31,9 @@ export interface Topping {
   baseIncluded?: boolean;
 }
 
-/** All 18 ingredients. Order is the visual order in the gallery. */
+/** All 19 ingredients. Order is the visual order in the gallery. */
 export const TOPPINGS: readonly Topping[] = [
+  { id: 'salat', name: 'Salat', baseIncluded: true },
   { id: 'kraut', name: 'Kraut', baseIncluded: true },
   { id: 'zwiebeln', name: 'Zwiebeln', baseIncluded: true },
   { id: 'tomaten', name: 'Tomaten', baseIncluded: true },

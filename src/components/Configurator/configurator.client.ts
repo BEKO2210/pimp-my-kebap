@@ -40,7 +40,7 @@ if (root) {
   const addBtn = root.querySelector<HTMLButtonElement>('[data-cfg-add]')!;
   const extraMeatVal = root.querySelector<HTMLElement>('[data-cfg-extra-meat-value]')!;
   const breadStep = root.querySelector<HTMLElement>('fieldset[data-cfg-step="bread"]')!;
-  const pimpStep = root.querySelector<HTMLElement>('fieldset[data-cfg-step="pimp"]')!;
+  const pimpSections = root.querySelectorAll<HTMLElement>('[data-cfg-pimp-section]');
   const boxHint = root.querySelector<HTMLElement>('[data-cfg-box-hint]')!;
 
   /** Bread is only relevant when the base is "im Brot" (kebap_basic). */
@@ -48,14 +48,41 @@ if (root) {
   /** Kebap Box ships with salad + 2 sauces and no extras. */
   const baseAllowsExtras = (b: BaseId) => b !== 'kebap_box';
 
-  function renumberSteps() {
-    const numerals = ['①', '②', '③'];
-    let i = 0;
-    root!.querySelectorAll<HTMLElement>('fieldset[data-cfg-step]').forEach((fs) => {
-      if (fs.hasAttribute('hidden')) return;
-      const numEl = fs.querySelector<HTMLElement>('[data-cfg-step-num]');
-      if (numEl) numEl.textContent = numerals[i++] ?? '';
+  // Mobile-only auto-advance: nach jedem Klick auf eine Single-Select-Option
+  // (Basis, Spieß, Brot) scrollen wir zum nächsten sichtbaren Schritt.
+  // Auf Desktop sehen User alle Schritte gleichzeitig — kein Scroll-Eingriff.
+  // Bei Multi-Select (Soßen, Toppings) bleibt der Scroll-Position stehen,
+  // damit User mehrere Optionen anklicken können ohne dass die Seite wegläuft.
+  const mobileMQ = window.matchMedia('(max-width: 767px)');
+  const STEP_ORDER = ['base', 'meat', 'bread', 'sauces', 'toppings', 'extras'] as const;
+  type StepName = typeof STEP_ORDER[number];
+
+  function nextVisibleStep(currentStep: StepName): StepName | null {
+    const idx = STEP_ORDER.indexOf(currentStep);
+    if (idx < 0) return null;
+    for (let i = idx + 1; i < STEP_ORDER.length; i++) {
+      const candidate = STEP_ORDER[i];
+      if (!candidate) continue;
+      const next = root!.querySelector<HTMLElement>(`fieldset[data-cfg-step="${candidate}"]:not([hidden])`);
+      if (next) return candidate;
+    }
+    return null;
+  }
+
+  function scrollToStep(step: StepName) {
+    if (!mobileMQ.matches) return;
+    const el = root!.querySelector<HTMLElement>(`fieldset[data-cfg-step="${step}"]:not([hidden])`);
+    if (!el) return;
+    // Defer to next frame so any visibility changes (z.B. Brot-Step beim
+    // Wechsel auf Yufka/Box ausblenden) bereits angewendet sind.
+    requestAnimationFrame(() => {
+      el.scrollIntoView({ behavior: 'smooth', block: 'start' });
     });
+  }
+
+  function autoAdvance(fromStep: StepName) {
+    const next = nextVisibleStep(fromStep);
+    if (next) scrollToStep(next);
   }
 
   function clearExtras() {
@@ -81,9 +108,8 @@ if (root) {
     const breadVisible = baseRequiresBread(state.base);
     breadStep.toggleAttribute('hidden', !breadVisible);
     const extras = baseAllowsExtras(state.base);
-    pimpStep.toggleAttribute('hidden', !extras);
+    pimpSections.forEach((el) => el.toggleAttribute('hidden', !extras));
     boxHint.toggleAttribute('hidden', extras);
-    renumberSteps();
   }
 
   function setStepHint(activeStep: 'base' | 'bread' | null) {
@@ -128,7 +154,7 @@ if (root) {
     });
   }
 
-  // Bread buttons
+  // Bread buttons (single-select → auto-advance on mobile)
   root.querySelectorAll<HTMLButtonElement>('[data-cfg-bread]').forEach((btn) => {
     btn.addEventListener('click', () => {
       const id = btn.getAttribute('data-cfg-bread') as BreadId;
@@ -136,10 +162,11 @@ if (root) {
       breadChosen = true;
       setActive('bread', id);
       recompute();
+      autoAdvance('bread');
     });
   });
 
-  // Base buttons
+  // Base buttons (single-select → auto-advance on mobile)
   root.querySelectorAll<HTMLButtonElement>('[data-cfg-base]').forEach((btn) => {
     btn.addEventListener('click', () => {
       const id = btn.getAttribute('data-cfg-base') as BaseId;
@@ -153,22 +180,24 @@ if (root) {
       }
       applyVisibility();
       recompute();
+      autoAdvance('base');
     });
   });
 
-  // Meat radios
+  // Meat radios (single-select → auto-advance on mobile)
   root.querySelectorAll<HTMLButtonElement>('[data-cfg-meat]').forEach((btn) => {
     btn.addEventListener('click', () => {
       const id = btn.getAttribute('data-cfg-meat') as MeatId;
       state.meat = id;
       setActive('meat', id);
       recompute();
+      autoAdvance('meat');
     });
   });
   // Default-select first meat visually
   setActive('meat', state.meat);
 
-  // Sauces (checkbox cards)
+  // Sauces (multi-select → kein Auto-Advance, User soll mehrere wählen können)
   root.querySelectorAll<HTMLInputElement>('[data-cfg-sauce]').forEach((cb) => {
     cb.addEventListener('change', () => {
       const id = cb.getAttribute('data-cfg-sauce') as SauceId;
@@ -183,7 +212,7 @@ if (root) {
     });
   });
 
-  // Topping cards
+  // Topping cards (multi-select → kein Auto-Advance)
   root.querySelectorAll<HTMLInputElement>('[data-cfg-topping]').forEach((cb) => {
     cb.addEventListener('change', () => {
       const id = cb.getAttribute('data-cfg-topping') as ToppingId;

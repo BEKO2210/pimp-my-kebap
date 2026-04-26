@@ -179,8 +179,8 @@ const schueler: MenuItem[] = [
 
 /* ─────────── Lahmacun ─────────── */
 const lahmacun: MenuItem[] = [
-  { id: 'lahmacun-pur', category: 'lahmacun', name: 'Lahmacun pur', priceEur: 6.0, markings: ['3', '4', 'a', 'b', 'd'], options: [OPT_SAUCEN] },
-  { id: 'lahmacun-salat', category: 'lahmacun', name: 'Lahmacun mit Salat', priceEur: 8.0, markings: ['3', '4', 'a', 'b', 'd'], options: [OPT_SAUCEN] },
+  { id: 'lahmacun-pur', category: 'lahmacun', name: 'Lahmacun pur', priceEur: 6.0, markings: ['3', '4', 'a', 'b', 'd'], options: [OPT_SAUCEN, OPT_SCHMELZKAESE] },
+  { id: 'lahmacun-salat', category: 'lahmacun', name: 'Lahmacun mit Salat', priceEur: 8.0, markings: ['3', '4', 'a', 'b', 'd'], options: [OPT_SAUCEN, OPT_SCHMELZKAESE] },
   { id: 'lahmacun-fleisch-salat', category: 'lahmacun', name: 'Lahmacun mit Fleisch & Salat', priceEur: 9.5, markings: ['3', '4', 'a', 'b', 'd'], options: [OPT_SAUCEN, OPT_SCHMELZKAESE] },
   { id: 'lahmacun-teller', category: 'lahmacun', name: 'Lahmacun-Teller', priceEur: 13.0, markings: ['3', '4', 'a', 'b', 'd'], options: [OPT_BEILAGE, OPT_SAUCEN, OPT_SCHMELZKAESE] },
 ];
@@ -194,18 +194,18 @@ const salate: MenuItem[] = [
 
 /* ─────────── Vegetarisch ─────────── */
 const vegetarisch: MenuItem[] = [
-  { id: 'veg-fladen', category: 'vegetarisch', name: 'Fladenbrot mit Salat & Weichkäse', priceEur: 7.0, markings: ['a', 'b', 'd'], tag: 'vegetarisch', options: [OPT_SAUCEN] },
-  { id: 'veg-yufka', category: 'vegetarisch', name: 'Yufka mit Salat & Weichkäse', priceEur: 8.0, markings: ['a', 'd'], tag: 'vegetarisch', options: [OPT_SAUCEN] },
-  { id: 'veg-reisbox', category: 'vegetarisch', name: 'Reisbox mit Soße', priceEur: 6.0, markings: ['d'], tag: 'vegetarisch', options: [OPT_SAUCEN] },
-  { id: 'halloumi-brot', category: 'vegetarisch', name: 'Halloumi im Brot', priceEur: 8.0, markings: ['a', 'd'], tag: 'vegetarisch', options: [OPT_SAUCEN] },
-  { id: 'halloumi-yufka', category: 'vegetarisch', name: 'Halloumi Yufka', priceEur: 9.0, markings: ['a', 'd'], tag: 'vegetarisch', options: [OPT_SAUCEN] },
-  { id: 'halloumi-box', category: 'vegetarisch', name: 'Halloumi Box', priceEur: 8.0, markings: ['d'], tag: 'vegetarisch', options: [OPT_SAUCEN] },
+  { id: 'veg-fladen', category: 'vegetarisch', name: 'Fladenbrot mit Salat & Weichkäse', priceEur: 7.0, markings: ['a', 'b', 'd'], tag: 'vegetarisch', options: [OPT_SAUCEN, OPT_SCHMELZKAESE] },
+  { id: 'veg-yufka', category: 'vegetarisch', name: 'Yufka mit Salat & Weichkäse', priceEur: 8.0, markings: ['a', 'd'], tag: 'vegetarisch', options: [OPT_SAUCEN, OPT_SCHMELZKAESE] },
+  { id: 'veg-reisbox', category: 'vegetarisch', name: 'Reisbox mit Soße', priceEur: 6.0, markings: ['d'], tag: 'vegetarisch', options: [OPT_SAUCEN, OPT_SCHMELZKAESE] },
+  { id: 'halloumi-brot', category: 'vegetarisch', name: 'Halloumi im Brot', priceEur: 8.0, markings: ['a', 'd'], tag: 'vegetarisch', options: [OPT_SAUCEN, OPT_SCHMELZKAESE] },
+  { id: 'halloumi-yufka', category: 'vegetarisch', name: 'Halloumi Yufka', priceEur: 9.0, markings: ['a', 'd'], tag: 'vegetarisch', options: [OPT_SAUCEN, OPT_SCHMELZKAESE] },
+  { id: 'halloumi-box', category: 'vegetarisch', name: 'Halloumi Box', priceEur: 8.0, markings: ['d'], tag: 'vegetarisch', options: [OPT_SAUCEN, OPT_SCHMELZKAESE] },
   { id: 'halloumi-teller', category: 'vegetarisch', name: 'Halloumi Teller', priceEur: 13.0, markings: ['d'], tag: 'vegetarisch', options: [OPT_BEILAGE, OPT_SAUCEN, OPT_SCHMELZKAESE] },
   { id: 'halloumi-6', category: 'vegetarisch', name: 'Halloumi 6 Stück', priceEur: 5.5, markings: ['d'], tag: 'vegetarisch', options: [OPT_DIPS] },
   { id: 'halloumi-12', category: 'vegetarisch', name: 'Halloumi 12 Stück', priceEur: 9.0, markings: ['d'], tag: 'vegetarisch', options: [OPT_DIPS] },
-  { id: 'falafel-brot', category: 'vegetarisch', name: 'Falafel im Brot', priceEur: 8.0, markings: ['a', 'b', 'd', 'e', 'f', 'g'], tag: 'vegetarisch', options: [OPT_SAUCEN] },
-  { id: 'falafel-yufka', category: 'vegetarisch', name: 'Falafel Yufka', priceEur: 9.0, markings: ['a', 'b', 'd', 'e', 'f', 'g'], tag: 'vegetarisch', options: [OPT_SAUCEN] },
-  { id: 'falafel-box', category: 'vegetarisch', name: 'Falafel Box', priceEur: 8.0, markings: ['a', 'b', 'd', 'e', 'f', 'g'], tag: 'vegetarisch', options: [OPT_SAUCEN] },
+  { id: 'falafel-brot', category: 'vegetarisch', name: 'Falafel im Brot', priceEur: 8.0, markings: ['a', 'b', 'd', 'e', 'f', 'g'], tag: 'vegetarisch', options: [OPT_SAUCEN, OPT_SCHMELZKAESE] },
+  { id: 'falafel-yufka', category: 'vegetarisch', name: 'Falafel Yufka', priceEur: 9.0, markings: ['a', 'b', 'd', 'e', 'f', 'g'], tag: 'vegetarisch', options: [OPT_SAUCEN, OPT_SCHMELZKAESE] },
+  { id: 'falafel-box', category: 'vegetarisch', name: 'Falafel Box', priceEur: 8.0, markings: ['a', 'b', 'd', 'e', 'f', 'g'], tag: 'vegetarisch', options: [OPT_SAUCEN, OPT_SCHMELZKAESE] },
   { id: 'falafel-teller', category: 'vegetarisch', name: 'Falafel Teller', priceEur: 13.0, markings: ['a', 'b', 'd', 'e', 'f', 'g'], tag: 'vegetarisch', options: [OPT_BEILAGE, OPT_SAUCEN, OPT_SCHMELZKAESE] },
   { id: 'falafel-6', category: 'vegetarisch', name: 'Falafel 6 Stück', priceEur: 5.5, markings: ['a', 'b', 'd', 'e', 'f', 'g'], tag: 'vegetarisch', options: [OPT_DIPS] },
   { id: 'falafel-12', category: 'vegetarisch', name: 'Falafel 12 Stück', priceEur: 9.0, markings: ['a', 'b', 'd', 'e', 'f', 'g'], tag: 'vegetarisch', options: [OPT_DIPS] },
@@ -250,34 +250,34 @@ const pizza: MenuItem[] = [
 /* ─────────── Pide (Di: 9 €) ─────────── */
 const PIDE_DI = { 2: 9.0 } as const;
 const pide: MenuItem[] = [
-  { id: 'pide-weichkaese', category: 'pide', name: 'Pide Weichkäse', priceEur: 8.5, markings: ['1', '4', 'a', 'b', 'd'], tag: 'vegetarisch', promoPriceMap: PIDE_DI, options: [OPT_SAUCEN] },
+  { id: 'pide-weichkaese', category: 'pide', name: 'Pide Weichkäse', priceEur: 8.5, markings: ['1', '4', 'a', 'b', 'd'], tag: 'vegetarisch', promoPriceMap: PIDE_DI, options: [OPT_SAUCEN, OPT_SCHMELZKAESE] },
   { id: 'pide-hackfleisch', category: 'pide', name: 'Pide Hackfleisch', priceEur: 9.5, markings: ['3', '6', 'a', 'b', 'd'], promoPriceMap: PIDE_DI, options: [OPT_SAUCEN, OPT_SCHMELZKAESE] },
-  { id: 'pide-hack-kaese', category: 'pide', name: 'Pide Hackfleisch + Weichkäse', priceEur: 10.0, markings: ['3', '6', 'a', 'b', 'd'], promoPriceMap: PIDE_DI, options: [OPT_SAUCEN] },
+  { id: 'pide-hack-kaese', category: 'pide', name: 'Pide Hackfleisch + Weichkäse', priceEur: 10.0, markings: ['3', '6', 'a', 'b', 'd'], promoPriceMap: PIDE_DI, options: [OPT_SAUCEN, OPT_SCHMELZKAESE] },
   { id: 'pide-kebap', category: 'pide', name: 'Pide Kebap', priceEur: 11.0, markings: ['3', '6', 'a', 'b', 'd'], promoPriceMap: PIDE_DI, options: [OPT_SAUCEN, OPT_SCHMELZKAESE] },
   { id: 'pide-sucuk', category: 'pide', name: 'Pide Sucuk', priceEur: 11.0, markings: ['3', '6', 'a', 'b', 'd'], promoPriceMap: PIDE_DI, options: [OPT_SAUCEN, OPT_SCHMELZKAESE] },
-  { id: 'pide-spinat-kaese', category: 'pide', name: 'Pide Spinat & Weichkäse', priceEur: 9.0, markings: ['1', '4', 'a', 'b', 'd'], tag: 'vegetarisch', promoPriceMap: PIDE_DI, options: [OPT_SAUCEN] },
-  { id: 'pide-spinat-kaese-ei', category: 'pide', name: 'Pide Spinat, Weichkäse, Ei', priceEur: 10.0, markings: ['1', '4', 'a', 'b', 'd', 'f'], tag: 'vegetarisch', promoPriceMap: PIDE_DI, options: [OPT_SAUCEN] },
+  { id: 'pide-spinat-kaese', category: 'pide', name: 'Pide Spinat & Weichkäse', priceEur: 9.0, markings: ['1', '4', 'a', 'b', 'd'], tag: 'vegetarisch', promoPriceMap: PIDE_DI, options: [OPT_SAUCEN, OPT_SCHMELZKAESE] },
+  { id: 'pide-spinat-kaese-ei', category: 'pide', name: 'Pide Spinat, Weichkäse, Ei', priceEur: 10.0, markings: ['1', '4', 'a', 'b', 'd', 'f'], tag: 'vegetarisch', promoPriceMap: PIDE_DI, options: [OPT_SAUCEN, OPT_SCHMELZKAESE] },
   { id: 'pide-sucuk-ei', category: 'pide', name: 'Pide Sucuk + Ei', priceEur: 12.0, markings: ['3', '6', 'a', 'b', 'd', 'f'], promoPriceMap: PIDE_DI, options: [OPT_SAUCEN, OPT_SCHMELZKAESE] },
-  { id: 'pide-vegetarisch', category: 'pide', name: 'Pide Vegetarisch', description: 'Spinat, Käse, Paprika, Pilz, Ei.', priceEur: 11.0, markings: ['a', 'b', 'd', 'f'], tag: 'vegetarisch', promoPriceMap: PIDE_DI, options: [OPT_SAUCEN] },
+  { id: 'pide-vegetarisch', category: 'pide', name: 'Pide Vegetarisch', description: 'Spinat, Käse, Paprika, Pilz, Ei.', priceEur: 11.0, markings: ['a', 'b', 'd', 'f'], tag: 'vegetarisch', promoPriceMap: PIDE_DI, options: [OPT_SAUCEN, OPT_SCHMELZKAESE] },
 ];
 
 /* ─────────── Seele (Sa: Spezial) ─────────── */
 const seele: MenuItem[] = [
-  { id: 'seele-weichkaese', category: 'seele', name: 'Seele Weichkäse', priceEur: 9.0, markings: ['1', '4', 'a', 'b', 'd'], tag: 'vegetarisch', options: [OPT_SAUCEN] },
-  { id: 'seele-spinat-kaese', category: 'seele', name: 'Seele Spinat & Weichkäse', priceEur: 10.0, markings: ['1', '4', 'a', 'b', 'd'], tag: 'vegetarisch', options: [OPT_SAUCEN] },
-  { id: 'seele-spinat-kaese-ei', category: 'seele', name: 'Seele Spinat, Weichkäse, Ei', priceEur: 10.0, markings: ['1', '4', 'a', 'b', 'd', 'f'], tag: 'vegetarisch', options: [OPT_SAUCEN] },
+  { id: 'seele-weichkaese', category: 'seele', name: 'Seele Weichkäse', priceEur: 9.0, markings: ['1', '4', 'a', 'b', 'd'], tag: 'vegetarisch', options: [OPT_SAUCEN, OPT_SCHMELZKAESE] },
+  { id: 'seele-spinat-kaese', category: 'seele', name: 'Seele Spinat & Weichkäse', priceEur: 10.0, markings: ['1', '4', 'a', 'b', 'd'], tag: 'vegetarisch', options: [OPT_SAUCEN, OPT_SCHMELZKAESE] },
+  { id: 'seele-spinat-kaese-ei', category: 'seele', name: 'Seele Spinat, Weichkäse, Ei', priceEur: 10.0, markings: ['1', '4', 'a', 'b', 'd', 'f'], tag: 'vegetarisch', options: [OPT_SAUCEN, OPT_SCHMELZKAESE] },
   { id: 'seele-kebap-tomaten-zwiebel', category: 'seele', name: 'Seele Kebap, Tomaten & Zwiebel', priceEur: 12.0, markings: ['3', '6', 'a', 'b', 'd'], options: [OPT_SAUCEN, OPT_SCHMELZKAESE] },
 ];
 
 /* ─────────── Burger Kebap ─────────── */
 const burger_kebap: MenuItem[] = [
   { id: 'burger-standard', category: 'burger_kebap', name: 'Burger Kebap', priceEur: 4.0, markings: ['3', '6', 'a', 'b'], options: [OPT_SAUCEN, OPT_SCHMELZKAESE] },
-  { id: 'burger-cheese', category: 'burger_kebap', name: 'Cheeseburger Kebap', priceEur: 5.0, markings: ['3', '6', 'a', 'b', 'd'], options: [OPT_SAUCEN] },
-  { id: 'burger-chili-cheese', category: 'burger_kebap', name: 'Chili-Cheeseburger Kebap', priceEur: 6.0, markings: ['3', '6', 'a', 'b', 'd'], tag: 'scharf', options: [OPT_SAUCEN] },
+  { id: 'burger-cheese', category: 'burger_kebap', name: 'Cheeseburger Kebap', priceEur: 5.0, markings: ['3', '6', 'a', 'b', 'd'], options: [OPT_SAUCEN, OPT_SCHMELZKAESE] },
+  { id: 'burger-chili-cheese', category: 'burger_kebap', name: 'Chili-Cheeseburger Kebap', priceEur: 6.0, markings: ['3', '6', 'a', 'b', 'd'], tag: 'scharf', options: [OPT_SAUCEN, OPT_SCHMELZKAESE] },
   { id: 'burger-falafel', category: 'burger_kebap', name: 'Falafel-Burger', priceEur: 5.0, markings: ['a', 'b', 'e', 'f', 'g'], tag: 'vegetarisch', options: [OPT_SAUCEN, OPT_SCHMELZKAESE] },
-  { id: 'burger-falafel-cheese', category: 'burger_kebap', name: 'Falafel-Burger mit Cheese', priceEur: 6.0, markings: ['a', 'b', 'd', 'e', 'f', 'g'], tag: 'vegetarisch', options: [OPT_SAUCEN] },
+  { id: 'burger-falafel-cheese', category: 'burger_kebap', name: 'Falafel-Burger mit Cheese', priceEur: 6.0, markings: ['a', 'b', 'd', 'e', 'f', 'g'], tag: 'vegetarisch', options: [OPT_SAUCEN, OPT_SCHMELZKAESE] },
   { id: 'burger-nuggets', category: 'burger_kebap', name: 'Chicken-Nuggets-Burger', priceEur: 5.0, markings: ['a', 'b', 'f'], options: [OPT_SAUCEN, OPT_SCHMELZKAESE] },
-  { id: 'burger-nuggets-cheese', category: 'burger_kebap', name: 'Chicken-Nuggets-Burger mit Cheese', priceEur: 6.0, markings: ['a', 'b', 'd', 'f'], options: [OPT_SAUCEN] },
+  { id: 'burger-nuggets-cheese', category: 'burger_kebap', name: 'Chicken-Nuggets-Burger mit Cheese', priceEur: 6.0, markings: ['a', 'b', 'd', 'f'], options: [OPT_SAUCEN, OPT_SCHMELZKAESE] },
   { id: 'chili-cheese-pommes-burger', category: 'burger_kebap', name: 'Chili Cheese (Pommes/Schmelzkäse/Jalapeños)', priceEur: 6.5, markings: ['a', 'b', 'd'], tag: 'scharf', options: [OPT_DIPS] },
 ];
 

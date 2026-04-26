@@ -66,6 +66,11 @@ data/menu.ts | data/configurator.ts
    `isSchoolHoursWindow()` in `src/lib/time.ts`.
 8. **Konfigurator-Flow**: nach `Add` Redirect auf `/weiter?added=<kebap|pizza>` —
    **kein** automatisches Cart-Drawer-Auf-Pop (User soll weiter kombinieren können).
+9. **Credit &amp; Lizenz**: Footer trägt einen dezenten "Design by Belkis Aslani"-Link
+   (`src/components/Footer.astro`, unter dem Copyright). Lizenz ist proprietär
+   (siehe [`LICENSE`](./LICENSE)) — Code-Eigentum: Belkis Aslani; Inhalte (Marke,
+   Menü, Fotos): Inhaberin. **Diese Attribution darf nicht entfernt oder versteckt
+   werden** — explizit Bestandteil der Lizenzbedingungen.
 
 ## Quality-Gates (vor jedem Commit)
 

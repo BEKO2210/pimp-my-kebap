@@ -16,12 +16,12 @@ import Icon from '../Icon.astro';
   <div class="mx-auto max-w-5xl">
     <header class="mb-8 flex items-end justify-between gap-4 flex-wrap">
       <div>
-        <p class="eyebrow">3 Schritte zu deinem Kebap</p>
+        <p class="eyebrow">Schritt für Schritt zu deinem Kebap</p>
         <h1 id="cfg-heading" class="display text-3xl sm:text-4xl lg:text-5xl text-brand-cream mt-2">
           Pimp my <span class="text-brand-gold italic">Kebap</span>
         </h1>
         <p class="text-brand-cream/70 mt-2 max-w-2xl">
-          Wähle Brot, Basis, Drehspieß und Toppings — Live-Summe aktualisiert sich bei jeder Änderung.
+          Wähle Basis, Spieß, Brot, Soßen und Toppings — die Live-Summe rechts unten aktualisiert sich bei jeder Änderung.
         </p>
       </div>
       <button
@@ -36,11 +36,11 @@ import Icon from '../Icon.astro';
     </header>
 
     <div data-cfg-root class="space-y-10" aria-live="polite">
-      <!-- Step 1: Base + Spieß -->
-      <fieldset data-cfg-step="base">
+      <!-- Step 1 — Basis -->
+      <fieldset data-cfg-step="base" class="scroll-mt-20">
         <legend class="display text-2xl text-brand-cream mb-4 flex flex-wrap items-baseline gap-x-3 gap-y-1">
           <span>
-            <span class="text-brand-gold mr-2" data-cfg-step-num>①</span>Wähle deine Basis
+            <span class="text-brand-gold mr-2 num">1.</span>Wähle deine Basis
           </span>
           <span
             data-cfg-step-hint
@@ -68,34 +68,37 @@ import Icon from '../Icon.astro';
             </button>
           ))}
         </div>
+      </fieldset>
 
-        <div class="mt-6">
-          <p class="text-sm font-semibold text-brand-cream mb-2">Welcher Spieß?</p>
-          <div role="radiogroup" aria-label="Drehspieß-Sorte" class="grid sm:grid-cols-3 gap-2">
-            {MEATS.map((m, i) => (
-              <button
-                type="button"
-                role="radio"
-                aria-checked={i === 0 ? 'true' : 'false'}
-                data-active={i === 0 ? 'true' : 'false'}
-                class="btn-secondary !py-3 flex-col !items-start text-left"
-                data-cfg-meat={m.id}
-              >
-                <span class="display text-base text-brand-cream">{m.name}</span>
-                <span class="text-xs text-brand-cream/60 num">
-                  {m.upchargeEur > 0 ? `+${formatEUR(m.upchargeEur)} auf den Grundpreis` : 'kein Aufpreis'}
-                </span>
-              </button>
-            ))}
-          </div>
+      <!-- Step 1.5 — Spieß -->
+      <fieldset data-cfg-step="meat" class="scroll-mt-20">
+        <legend class="display text-2xl text-brand-cream mb-4">
+          <span class="text-brand-gold mr-2 num">1.5</span>Welcher Spieß?
+        </legend>
+        <div role="radiogroup" aria-label="Drehspieß-Sorte" class="grid sm:grid-cols-3 gap-2">
+          {MEATS.map((m, i) => (
+            <button
+              type="button"
+              role="radio"
+              aria-checked={i === 0 ? 'true' : 'false'}
+              data-active={i === 0 ? 'true' : 'false'}
+              class="btn-secondary !py-3 flex-col !items-start text-left"
+              data-cfg-meat={m.id}
+            >
+              <span class="display text-base text-brand-cream">{m.name}</span>
+              <span class="text-xs text-brand-cream/60 num">
+                {m.upchargeEur > 0 ? `+${formatEUR(m.upchargeEur)} auf den Grundpreis` : 'kein Aufpreis'}
+              </span>
+            </button>
+          ))}
         </div>
       </fieldset>
 
-      <!-- Step 2: Bread — only relevant for Kebap Basic (im Brot) -->
-      <fieldset data-cfg-step="bread" hidden>
+      <!-- Step 2 — Brot (only Kebap Basic) -->
+      <fieldset data-cfg-step="bread" class="scroll-mt-20" hidden>
         <legend class="display text-2xl text-brand-cream mb-4 flex flex-wrap items-baseline gap-x-3 gap-y-1">
           <span>
-            <span class="text-brand-gold mr-2" data-cfg-step-num>②</span>Wähle dein Brot
+            <span class="text-brand-gold mr-2 num">2.</span>Wähle dein Brot
           </span>
           <span
             data-cfg-step-hint
@@ -124,91 +127,94 @@ import Icon from '../Icon.astro';
         </div>
       </fieldset>
 
-      <!-- Step 3: Pimp — hidden for Kebap Box (only Salad + 2 Soßen, no extras) -->
-      <fieldset data-cfg-step="pimp">
+      <!-- Step 3 — Soßen (multi) -->
+      <fieldset data-cfg-step="sauces" class="scroll-mt-20" data-cfg-pimp-section>
         <legend class="display text-2xl text-brand-cream mb-4">
-          <span class="text-brand-gold mr-2" data-cfg-step-num>③</span>Pimp deinen Kebap
+          <span class="text-brand-gold mr-2 num">3.</span>Wähle deine Soßen
         </legend>
-
-        <div class="grid lg:grid-cols-2 gap-6">
-          <div>
-            <p class="text-sm font-semibold text-brand-cream mb-3">Soßen ({FREE_SAUCE_COUNT} inklusive, weitere +0,50 €)</p>
-            <div class="grid grid-cols-2 gap-2">
-              {SAUCES.map((s) => (
-                <label class="card card-selectable p-3 flex items-center gap-3 cursor-pointer" data-cfg-sauce-card={s.id}>
-                  <input
-                    type="checkbox"
-                    class="sr-only"
-                    data-cfg-sauce={s.id}
-                    aria-label={s.name}
-                  />
-                  <span class="text-brand-cream text-sm flex items-center gap-1">
-                    {s.name}
-                    {s.spicy && <Icon name="flame" size={12} class="text-brand-red-fire" ariaLabel="scharf" />}
-                  </span>
-                </label>
-              ))}
-            </div>
-          </div>
-
-          <div>
-            <p class="text-sm font-semibold text-brand-cream mb-3">Extras</p>
-            <div class="space-y-2">
-              <label class="card flex items-center justify-between gap-4 p-3 cursor-pointer" data-cfg-extra="schmelzkaese">
-                <span class="text-brand-cream text-sm">Schmelzkäse</span>
-                <span class="flex items-center gap-3">
-                  <span class="text-brand-gold text-sm num">+1,00 €</span>
-                  <input type="checkbox" data-cfg-flag="schmelzkaese" />
-                </span>
-              </label>
-              <div class="card p-3 flex items-center justify-between gap-3">
-                <span class="text-brand-cream text-sm">Mehr Fleisch (50 g)</span>
-                <div class="flex items-center gap-3">
-                  <span class="text-brand-gold text-sm num">+1,50 €</span>
-                  <div class="flex items-center gap-1" role="group" aria-label="Mehr Fleisch Stepper">
-                    <button type="button" class="btn-secondary !px-3 !py-1 text-base" data-cfg-extra-meat="dec" aria-label="Weniger">−</button>
-                    <output data-cfg-extra-meat-value class="text-brand-cream w-6 text-center num">0</output>
-                    <button type="button" class="btn-secondary !px-3 !py-1 text-base" data-cfg-extra-meat="inc" aria-label="Mehr">+</button>
-                  </div>
-                </div>
-              </div>
-              <p class="text-xs text-brand-cream/50 px-1">
-                Steak: +1,00 € auf den Grundpreis (oben in Schritt 2 wählen). Extra Fleisch (50 g) kostet bei jedem Fleisch 1,50 €.
-              </p>
-            </div>
-          </div>
-        </div>
-
-        <div class="mt-8">
-          <p class="text-sm font-semibold text-brand-cream mb-3">
-            Toppings <span class="text-brand-cream/55 font-normal">(je +0,50 € · grün markierte sind kostenlos in Basis dabei)</span>
-          </p>
-          <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2">
-            {TOPPINGS.map((t) => (
-              <label
-                class={`card card-selectable p-2 flex items-center justify-center gap-1 text-center cursor-pointer min-h-[3rem] ${t.baseIncluded ? 'cfg-topping-base-included' : ''}`}
-                data-cfg-topping-card={t.id}
-                data-active={t.baseIncluded ? 'true' : 'false'}
-              >
-                <input
-                  type="checkbox"
-                  class="sr-only"
-                  data-cfg-topping={t.id}
-                  aria-label={t.name}
-                  checked={t.baseIncluded}
-                />
-                <span class="text-brand-cream text-xs inline-flex items-center justify-center gap-1 flex-wrap">
-                  <span>{t.name}</span>
-                  {t.spicy && <Icon name="flame" size={10} class="text-brand-red-fire" ariaLabel="scharf" />}
-                  {t.baseIncluded && <span class="text-brand-green-leaf block text-[10px] basis-full font-semibold">in Basis · kostenlos</span>}
-                </span>
-              </label>
-            ))}
-          </div>
+        <p class="text-sm text-brand-cream/70 mb-4">
+          {FREE_SAUCE_COUNT} Soßen sind in der Basis dabei — jede weitere kostet +0,50 €.
+        </p>
+        <div class="grid grid-cols-2 sm:grid-cols-3 gap-2">
+          {SAUCES.map((s) => (
+            <label class="card card-selectable p-3 flex items-center gap-3 cursor-pointer" data-cfg-sauce-card={s.id}>
+              <input
+                type="checkbox"
+                class="sr-only"
+                data-cfg-sauce={s.id}
+                aria-label={s.name}
+              />
+              <span class="text-brand-cream text-sm flex items-center gap-1">
+                {s.name}
+                {s.spicy && <Icon name="flame" size={12} class="text-brand-red-fire" ariaLabel="scharf" />}
+              </span>
+            </label>
+          ))}
         </div>
       </fieldset>
 
-      <!-- Box hint — replaces the Pimp step when Kebap Box is selected -->
+      <!-- Step 4 — Toppings (multi) -->
+      <fieldset data-cfg-step="toppings" class="scroll-mt-20" data-cfg-pimp-section>
+        <legend class="display text-2xl text-brand-cream mb-4">
+          <span class="text-brand-gold mr-2 num">4.</span>Wähle deine Toppings
+          <span class="block sm:inline text-sm font-normal text-brand-cream/55">je +0,50 € · grün markierte sind kostenlos in Basis dabei</span>
+        </legend>
+        <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2">
+          {TOPPINGS.map((t) => (
+            <label
+              class={`card card-selectable p-2 flex items-center justify-center gap-1 text-center cursor-pointer min-h-[3rem] ${t.baseIncluded ? 'cfg-topping-base-included' : ''}`}
+              data-cfg-topping-card={t.id}
+              data-active={t.baseIncluded ? 'true' : 'false'}
+            >
+              <input
+                type="checkbox"
+                class="sr-only"
+                data-cfg-topping={t.id}
+                aria-label={t.name}
+                checked={t.baseIncluded}
+              />
+              <span class="text-brand-cream text-xs inline-flex items-center justify-center gap-1 flex-wrap">
+                <span>{t.name}</span>
+                {t.spicy && <Icon name="flame" size={10} class="text-brand-red-fire" ariaLabel="scharf" />}
+                {t.baseIncluded && <span class="text-brand-green-leaf block text-[10px] basis-full font-semibold">in Basis · kostenlos</span>}
+              </span>
+            </label>
+          ))}
+        </div>
+      </fieldset>
+
+      <!-- Step 5 — Extras -->
+      <fieldset data-cfg-step="extras" class="scroll-mt-20" data-cfg-pimp-section>
+        <legend class="display text-2xl text-brand-cream mb-4">
+          <span class="text-brand-gold mr-2 num">5.</span>Extras (optional)
+        </legend>
+        <div class="space-y-2 max-w-xl">
+          <label class="card flex items-center justify-between gap-4 p-3 cursor-pointer" data-cfg-extra="schmelzkaese">
+            <span class="text-brand-cream text-sm">Schmelzkäse</span>
+            <span class="flex items-center gap-3">
+              <span class="text-brand-gold text-sm num">+1,00 €</span>
+              <input type="checkbox" data-cfg-flag="schmelzkaese" />
+            </span>
+          </label>
+          <div class="card p-3 flex items-center justify-between gap-3">
+            <span class="text-brand-cream text-sm">Mehr Fleisch (50 g)</span>
+            <div class="flex items-center gap-3">
+              <span class="text-brand-gold text-sm num">+1,50 €</span>
+              <div class="flex items-center gap-1" role="group" aria-label="Mehr Fleisch Stepper">
+                <button type="button" class="btn-secondary !px-3 !py-1 text-base" data-cfg-extra-meat="dec" aria-label="Weniger">−</button>
+                <output data-cfg-extra-meat-value class="text-brand-cream w-6 text-center num">0</output>
+                <button type="button" class="btn-secondary !px-3 !py-1 text-base" data-cfg-extra-meat="inc" aria-label="Mehr">+</button>
+              </div>
+            </div>
+          </div>
+          <p class="text-xs text-brand-cream/60 px-1">
+            Steak: +1,00 € auf den Grundpreis (oben in Schritt 1.5 wählen).
+            Extra Fleisch (50 g) kostet bei jeder Spieß-Sorte 1,50 €.
+          </p>
+        </div>
+      </fieldset>
+
+      <!-- Box hint — replaces Steps 3/4/5 when Kebap Box is selected -->
       <aside
         data-cfg-box-hint
         hidden

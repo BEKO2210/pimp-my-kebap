@@ -20,7 +20,8 @@
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",
     "test:e2e": "playwright test",
-    "audit": "npm audit --omit=dev --audit-level=high"
+    "audit": "npm audit --omit=dev --audit-level=high",
+    "postbuild": "node scripts/version-stamp.mjs"
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.2.4",

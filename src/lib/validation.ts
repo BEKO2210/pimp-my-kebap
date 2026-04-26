@@ -21,7 +21,7 @@ const KebabConfigSchema = z.object({
   extraMeat50g: z.number().int().min(0).max(3),
   schmelzkaese: z.boolean(),
   sauces: z.array(z.string()).max(6),
-  toppings: z.array(z.string()).max(18),
+  toppings: z.array(z.string()).max(19),
 }).passthrough();
 // .passthrough() lets old persisted carts (with a stale `meatUpgradeSteak`
 // field) hydrate without erroring. The field is then ignored.

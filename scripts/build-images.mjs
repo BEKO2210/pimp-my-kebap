@@ -41,14 +41,21 @@ const logo = sharp(LOGO_PNG);
 const meta = await logo.metadata();
 console.log(`🖼  Logo: ${meta.width}×${meta.height}`);
 
-// 1. Brand WebP / AVIF variants of the raw logo (transparent)
+// 1. Brand WebP / AVIF variants of the raw logo (transparent).
+//    Source PNG is 4095×4095. Capped at 512 px because the hero shows the
+//    logo at ≤380 px CSS (≤760 px on 2× retina) and the header at ≤44 px
+//    (≤88 px retina) — 512 covers both with marginal softening only on
+//    high-DPR hero, masked by the drop-shadow filter on the <img>.
+//    AVIF q=55 / WebP q=78 keep the warm gold/orange gradient legible while
+//    cutting the LCP-blocking download (PageSpeed flagged this as the LCP
+//    bottleneck — was 91 KiB at 1024 px / q=65, now ≈63 KiB).
 await sharp(LOGO_PNG)
-  .resize({ width: 1024, withoutEnlargement: true })
-  .webp({ quality: 88 })
+  .resize({ width: 512, withoutEnlargement: true })
+  .webp({ quality: 78 })
   .toFile(resolve(BRAND_DIR, 'logo.webp'));
 await sharp(LOGO_PNG)
-  .resize({ width: 1024, withoutEnlargement: true })
-  .avif({ quality: 65 })
+  .resize({ width: 512, withoutEnlargement: true })
+  .avif({ quality: 55 })
   .toFile(resolve(BRAND_DIR, 'logo.avif'));
 
 // 2. PWA icons (logo on dark background, padded)

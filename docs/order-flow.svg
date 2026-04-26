@@ -1,0 +1,105 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 880 380" role="img" aria-labelledby="flowTitle flowDesc" font-family="ui-sans-serif, system-ui, sans-serif">
+  <title id="flowTitle">Pimp My Kebap — Bestell-Flow</title>
+  <desc id="flowDesc">User wählt Speise im Konfigurator oder der Speisekarte, Cart wird im LocalStorage persistiert, finaler Klick öffnet WhatsApp mit fertigem Bestelltext.</desc>
+
+  <defs>
+    <linearGradient id="bg2" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#0f0f0f"/>
+      <stop offset="100%" stop-color="#0a0a0a"/>
+    </linearGradient>
+    <linearGradient id="goldFade2" x1="0" x2="1" y1="0" y2="0">
+      <stop offset="0%" stop-color="#d4af37" stop-opacity="0"/>
+      <stop offset="50%" stop-color="#d4af37" stop-opacity=".7"/>
+      <stop offset="100%" stop-color="#d4af37" stop-opacity="0"/>
+    </linearGradient>
+    <marker id="arrow2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M0 0 L10 5 L0 10 z" fill="#d4af37"/>
+    </marker>
+    <style>
+      .step { fill: #1a1a1a; stroke: rgba(212,175,55,.32); stroke-width: 1; }
+      .step-final { fill: #232323; stroke: #ff6b1a; stroke-width: 1.5; }
+      .label { fill: #d4af37; font-size: 10.5px; font-weight: 700; letter-spacing: 1.6px; text-transform: uppercase; }
+      .step-title { fill: #f8f3e6; font-size: 14px; font-weight: 700; }
+      .step-body { fill: #f8f3e6; font-size: 11.5px; opacity: .78; }
+      .arrow { stroke: #d4af37; stroke-width: 1.6; fill: none; opacity: .85; }
+      .annotation { fill: #f8f3e6; font-size: 10.5px; opacity: .55; font-style: italic; }
+      .data-tag { fill: #d4af37; font-size: 10.5px; font-weight: 700; }
+    </style>
+  </defs>
+
+  <rect width="880" height="380" fill="url(#bg2)"/>
+  <rect x="40" y="20" width="800" height="2" fill="url(#goldFade2)"/>
+  <rect x="40" y="358" width="800" height="2" fill="url(#goldFade2)"/>
+
+  <text x="440" y="50" text-anchor="middle" font-family="ui-serif, 'Playfair Display', Georgia, serif" font-size="22" font-weight="700" fill="#f8f3e6">
+    Bestell-Flow <tspan fill="#d4af37" font-style="italic">·</tspan> Vom Klick zum WhatsApp-Send
+  </text>
+
+  <!-- Step 1 — Choice -->
+  <g transform="translate(50,95)">
+    <text x="0" y="-8" class="label">Schritt 1</text>
+    <rect width="180" height="160" rx="10" class="step"/>
+    <text x="14" y="26" class="step-title">Auswahl</text>
+    <text x="14" y="48" class="step-body">• Konfigurator (Kebap)</text>
+    <text x="14" y="66" class="step-body">  Basis · Brot · Fleisch ·</text>
+    <text x="14" y="80" class="step-body">  Salat · Saucen · Toppings</text>
+    <text x="14" y="102" class="step-body">• Pizza-Konfigurator</text>
+    <text x="14" y="124" class="step-body">• Speisekarte (+ direkt)</text>
+    <text x="14" y="146" class="step-body">• Drinks &amp; Aktion</text>
+  </g>
+
+  <!-- Step 2 — Pricing -->
+  <g transform="translate(260,95)">
+    <text x="0" y="-8" class="label">Schritt 2</text>
+    <rect width="180" height="160" rx="10" class="step"/>
+    <text x="14" y="26" class="step-title">Pricing</text>
+    <text x="14" y="48" class="step-body">lib/pricing.ts</text>
+    <text x="14" y="68" class="step-body">priceKebab(KebabConfig)</text>
+    <text x="14" y="82" class="step-body">→ Breakdown</text>
+    <text x="14" y="106" class="step-body">Promo-Tage Mo/Di/Mi/Sa</text>
+    <text x="14" y="120" class="step-body">via promoPriceMap</text>
+    <text x="14" y="146" class="step-body">Schüler-Preise nach Zeit</text>
+  </g>
+
+  <!-- Step 3 — Cart -->
+  <g transform="translate(470,95)">
+    <text x="0" y="-8" class="label">Schritt 3</text>
+    <rect width="180" height="160" rx="10" class="step"/>
+    <text x="14" y="26" class="step-title">Cart</text>
+    <text x="14" y="48" class="step-body">nanostores: $cart</text>
+    <text x="14" y="62" class="step-body">addLine / removeLine /</text>
+    <text x="14" y="76" class="step-body">setQuantity / clear</text>
+    <text x="14" y="100" class="data-tag">↕ localStorage</text>
+    <text x="14" y="116" class="step-body">key: pmk-cart-v1</text>
+    <text x="14" y="130" class="step-body">Zod-validiert</text>
+    <text x="14" y="146" class="step-body">TTL 24 h</text>
+  </g>
+
+  <!-- Step 4 — WhatsApp -->
+  <g transform="translate(680,95)">
+    <text x="0" y="-8" class="label">Schritt 4</text>
+    <rect width="160" height="160" rx="10" class="step-final"/>
+    <text x="14" y="26" class="step-title">WhatsApp-Send</text>
+    <text x="14" y="48" class="step-body">lib/whatsapp.ts</text>
+    <text x="14" y="68" class="step-body">renderMessage(Cart)</text>
+    <text x="14" y="82" class="step-body">→ Text</text>
+    <text x="14" y="106" class="step-body">URL-Limit 6500 Z.</text>
+    <text x="14" y="120" class="step-body">Anti-Spam: 1×/5 s</text>
+    <text x="14" y="146" class="step-body">Click → wa.me</text>
+  </g>
+
+  <!-- Arrows -->
+  <path d="M230,175 L260,175" class="arrow" marker-end="url(#arrow)"/>
+  <path d="M440,175 L470,175" class="arrow" marker-end="url(#arrow)"/>
+  <path d="M650,175 L680,175" class="arrow" marker-end="url(#arrow)"/>
+
+  <!-- Bottom annotation -->
+  <text x="140" y="305" text-anchor="middle" class="annotation">data/menu.ts · data/configurator.ts</text>
+  <text x="350" y="305" text-anchor="middle" class="annotation">lib/pricing.ts</text>
+  <text x="560" y="305" text-anchor="middle" class="annotation">lib/cart.ts</text>
+  <text x="760" y="305" text-anchor="middle" class="annotation">lib/whatsapp.ts</text>
+
+  <text x="440" y="338" text-anchor="middle" fill="#d4af37" font-size="11.5" font-weight="600" letter-spacing="1.5">
+    Single Source of Truth: data/* · Reine Logik: lib/* · Hydrate: components/*.client.ts
+  </text>
+</svg>

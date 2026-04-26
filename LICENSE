@@ -1,0 +1,48 @@
+PROPRIETARY LICENSE
+===================
+
+Copyright © 2026 Belkis Aslani — all rights reserved.
+
+Web concept, design, source code and build pipeline of this repository
+("the Software") are the intellectual property of Belkis Aslani.
+
+Restaurant content (brand, logo, menu data, food photography, address
+information) is the property of Pimp My Kebap / Fatma Tasocak-Savci and is
+not covered by this license.
+
+PERMITTED USE
+-------------
+Operation of this Software for the public Pimp My Kebap restaurant website
+(beko2210.github.io/pimp-my-kebap and any subsequent owner-controlled domain)
+by Pimp My Kebap / Fatma Tasocak-Savci is hereby permitted as a non-exclusive,
+non-transferable, non-sublicensable license, limited to that single business.
+
+PROHIBITED USE
+--------------
+Without prior written permission from Belkis Aslani, no party may:
+
+- copy, fork, mirror, redistribute, host, sell or sublicense the Software, in
+  whole or in part;
+- modify the Software for use outside the permitted use above;
+- reuse the Software's structure, component design, build pipeline, or other
+  non-content code as a template, boilerplate, or starting point for any other
+  project, commercial or otherwise;
+- remove, obscure, or move the "Design by Belkis Aslani" attribution in the
+  footer, the credit in the README, or this LICENSE file.
+
+THIRD-PARTY COMPONENTS
+----------------------
+Open-source dependencies (listed in package.json) retain their original
+licenses (MIT / ISC / Apache-2.0 / SIL OFL 1.1 / etc.) and are not affected
+by this license.
+
+WARRANTY DISCLAIMER
+-------------------
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NON-INFRINGEMENT.
+
+CONTACT
+-------
+For licensing inquiries, contact Belkis Aslani via:
+https://beko2210.github.io/My-table-of-contents-/

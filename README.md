@@ -122,8 +122,20 @@ Flows (Konfigurator, Speisekarte, Cart, Hamburger).
 
 Inhaberin-Checkliste: [`TODO_OWNER.md`](./TODO_OWNER.md).
 
-## Lizenz
+## Lizenz &amp; Eigentumsverhältnisse
 
-- **Code**: MIT
-- **Logo**: © Pimp My Kebap / Inhaberin Fatma Tasocak-Savci. Alle Rechte vorbehalten.
+- **Code · Web-Konzept · Design · Implementierung**:
+  © **Belkis Aslani** — Alle Rechte vorbehalten. Siehe [`LICENSE`](./LICENSE).
+  Kommerzielle oder private Wiederverwendung, Reproduktion, Modifikation oder
+  Weitergabe nur mit ausdrücklicher schriftlicher Genehmigung.
+- **Marken-, Logo-, Bild- und Menüinhalte** (Pimp My Kebap, Marktplatz 18):
+  © Pimp My Kebap / Inhaberin Fatma Tasocak-Savci. Alle Rechte vorbehalten.
 - **Schriften**: Inter und Playfair Display, jeweils SIL OFL 1.1 (selbst-gehostet in `public/fonts/`).
+- **Icons**: Lucide v1.11 (ISC, inline in `Icon.astro`).
+
+> Die Inhaberin ist Lizenznehmerin der Web-Implementierung für den Betrieb
+> der eigenen Restaurant-Website. Diese Nutzungsrechte sind nicht übertragbar.
+
+## Credits
+
+Konzept und Umsetzung der Web-Plattform: **[Belkis Aslani](https://beko2210.github.io/My-table-of-contents-/)**.

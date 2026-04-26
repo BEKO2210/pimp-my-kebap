@@ -183,9 +183,9 @@ describe('buildWhatsAppMessage', () => {
     const msg = buildWhatsAppMessage({
       cart: { lines: [kebab(1), pizza(2), cola(1)], customer },
     });
-    expect(msg).toContain('🥙 Pimp My Kebap – Neue Bestellung');
-    expect(msg).toContain('👤 Name: Max');
-    expect(msg).toContain('🛍️ Abholung: ASAP');
+    expect(msg).toContain('PIMP MY KEBAP — Neue Bestellung');
+    expect(msg).toContain('Name:    Max');
+    expect(msg).toContain('Abholung: ASAP');
     expect(msg).toContain('1x Kebap Basic (Vitalbrot)');
     expect(msg).toContain('Schmelzkäse');
     expect(msg).toContain('Toppings: Granatapfel, Rucola, Feta');
@@ -219,7 +219,7 @@ describe('buildWhatsAppMessage', () => {
     const msg = buildWhatsAppMessage({
       cart: { lines: [kebab(1)], customer: { ...customer, firstName: '   ' } },
     });
-    expect(msg).toContain('👤 Name: (ohne Name)');
+    expect(msg).toContain('Name:    (ohne Name)');
   });
 
   it('renders customer notes when present', () => {
@@ -341,7 +341,7 @@ describe('buildWhatsAppMessage — delivery', () => {
       },
     });
     expect(msg).toContain('Verzehr: Lieferung');
-    expect(msg).toContain('🛵 Lieferadresse:');
+    expect(msg).toContain('Lieferadresse:');
     expect(msg).toContain('Bahnhofstraße 5');
     expect(msg).toContain('71691 Freiberg am Neckar');
     expect(msg).toContain('2. Stock, links');
@@ -384,7 +384,7 @@ describe('buildWhatsAppUrl', () => {
   it('returns wa.me URL with default number when not overridden', () => {
     const url = buildWhatsAppUrl({ cart: { lines: [kebab(1)], customer } });
     expect(url.startsWith('https://wa.me/491742116095?text=')).toBe(true);
-    expect(url).toContain(encodeURIComponent('🥙'));
+    expect(url).toContain(encodeURIComponent('PIMP MY KEBAP'));
   });
 
   it('honors custom whatsapp number override', () => {

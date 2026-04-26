@@ -82,14 +82,18 @@ if (root) {
         const today = getCurrentWeekday();
         const eff = effectiveMenuPrice(item, today);
         if (eff !== null) {
-          // Sum option price-deltas back in (e.g. Steak +1,00 €) so reorder
-          // doesn't silently drop the upcharge the customer originally chose.
+          // Sum option price-deltas back in (e.g. Steak +1,00 €, Schmelzkäse
+          // +1,00 €) so reorder doesn't silently drop the upcharges the
+          // customer originally picked. Multi-options carry an array.
           let delta = 0;
           if (l.selectedOptions && item.options) {
             for (const opt of item.options) {
-              const choiceId = l.selectedOptions[opt.id];
-              const choice = opt.choices.find((c) => c.id === choiceId);
-              if (choice?.priceDeltaEur) delta += choice.priceDeltaEur;
+              const raw = l.selectedOptions[opt.id];
+              const ids = Array.isArray(raw) ? raw : raw ? [raw] : [];
+              for (const choiceId of ids) {
+                const choice = opt.choices.find((c) => c.id === choiceId);
+                if (choice?.priceDeltaEur) delta += choice.priceDeltaEur;
+              }
             }
           }
           const promo = item.priceEur !== null && eff < item.priceEur;

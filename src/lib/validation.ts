@@ -14,7 +14,12 @@ export function sanitizeNotes(raw: string): string {
   return stripped.slice(0, 280);
 }
 
-const KebabConfigSchema = z.object({
+// z.looseObject ist die Zod-4-Variante von z.object({...}).passthrough() —
+// laesst unbekannte Felder beim Validieren durch statt zu erroren. Wir
+// brauchen das, damit alte localStorage-Carts mit veralteten Feldern
+// (z.B. das frueher entfernte `meatUpgradeSteak`) beim Hydraten nicht
+// crashen. Solche Felder werden anschliessend einfach ignoriert.
+const KebabConfigSchema = z.looseObject({
   bread: z.enum(['klassisch', 'sesam', 'knoblauch', 'vital']),
   base: z.enum(['kebap_basic', 'yufka_basic', 'kebap_box']),
   meat: z.enum(['rinderhack', 'haehnchen', 'rindersteak']),
@@ -22,9 +27,7 @@ const KebabConfigSchema = z.object({
   schmelzkaese: z.boolean(),
   sauces: z.array(z.string()).max(6),
   toppings: z.array(z.string()).max(19),
-}).passthrough();
-// .passthrough() lets old persisted carts (with a stale `meatUpgradeSteak`
-// field) hydrate without erroring. The field is then ignored.
+});
 
 const KebabLineSchema = z.object({
   kind: z.literal('kebab'),

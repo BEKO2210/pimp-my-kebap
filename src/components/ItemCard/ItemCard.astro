@@ -15,9 +15,18 @@ interface Props {
   orderable?: boolean;
   /** Reason why the item is not orderable, displayed instead of the stepper. */
   unavailableReason?: string;
+  /** Wochentags-Kuerzel der heutigen Tages-Aktion ("Mo", "Di", "Mi", "Sa") —
+   *  wird im Promo-Sublabel auf der Card angezeigt ("Mo-Special heute · −2,00 €").
+   *  Undefined wenn heute kein Offer-Tag — dann bleibt der Sublabel aus, der
+   *  Strikethrough wird trotzdem gezeigt. */
+  dayShortLabel?: string;
 }
 
-const { item, promo, effectivePrice, orderable = true, unavailableReason } = Astro.props;
+const { item, promo, effectivePrice, orderable = true, unavailableReason, dayShortLabel } = Astro.props;
+// Promo-Anzeige: Originalpreis + Ersparnis ausrechnen (nur wenn beides bekannt).
+const showPromoCompare =
+  promo === true && item.priceEur !== null && effectivePrice !== null && effectivePrice < item.priceEur;
+const savingsEur = showPromoCompare ? (item.priceEur as number) - (effectivePrice as number) : 0;
 const slug = CATEGORY_TO_PLACEHOLDER[item.category] ?? 'doener';
 const photoBase = withBase(`/images/meals/${item.id}`);
 const placeholder = withBase(`/images/placeholders/${slug}.svg`);
@@ -96,15 +105,29 @@ const optionsPayload = hasOptions
     {item.description && (
       <p class="text-xs text-brand-cream/65 line-clamp-2" itemprop="description">{item.description}</p>
     )}
-    <div class="mt-auto flex items-center justify-between gap-2">
-      <p class="text-brand-gold display text-xl num min-w-0" itemprop="offers" itemscope itemtype="https://schema.org/Offer">
+    <div class="mt-auto flex items-end justify-between gap-2">
+      <div class="min-w-0 flex flex-col gap-0.5" itemprop="offers" itemscope itemtype="https://schema.org/Offer">
         <span itemprop="priceCurrency" hidden>EUR</span>
-        {isOnRequest ? (
-          <span class="text-sm text-brand-cream/60">Auf Anfrage</span>
-        ) : (
-          <span itemprop="price" data-content={String(effectivePrice ?? 0)}>{formatEUR(effectivePrice ?? 0)}</span>
+        <p class="text-brand-gold display text-xl num leading-tight">
+          {isOnRequest ? (
+            <span class="text-sm text-brand-cream/60">Auf Anfrage</span>
+          ) : (
+            <>
+              {showPromoCompare && item.priceEur !== null && (
+                <del class="text-brand-cream/55 text-sm num mr-1.5 font-normal align-middle">
+                  {formatEUR(item.priceEur)}
+                </del>
+              )}
+              <span itemprop="price" data-content={String(effectivePrice ?? 0)}>{formatEUR(effectivePrice ?? 0)}</span>
+            </>
+          )}
+        </p>
+        {showPromoCompare && (
+          <p class="text-[11px] text-brand-gold/90 num leading-tight font-semibold">
+            {dayShortLabel ? `${dayShortLabel}-Special` : 'Tages-Aktion'} · −{formatEUR(savingsEur)}
+          </p>
         )}
-      </p>
+      </div>
       {canOrder && (
         <div class="inline-flex items-center gap-1 shrink-0" role="group" aria-label={`Menge ${item.name}`}>
           <button

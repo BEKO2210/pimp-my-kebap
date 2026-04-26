@@ -3,6 +3,7 @@
 import type { MenuCategory } from '../../data/menu';
 import { itemsByCategory, CATEGORY_LABEL } from '../../data/menu';
 import { effectiveMenuPrice } from '../../lib/pricing';
+import { offerForDay } from '../../data/weeklyOffers';
 import ItemCard from '../ItemCard/ItemCard.astro';
 import Icon from '../Icon.astro';
 import { withBase } from '../../lib/url';
@@ -37,6 +38,11 @@ const items = itemsByCategory(category);
 const isSchoolSection = category === 'schueler';
 const sectionDimmed = isSchoolSection && !schoolHoursOpen;
 const count = itemCount ?? items.length;
+// Tages-Aktion (z.B. "Mo", "Di") fuer den Sublabel auf Promo-Cards. Wenn der
+// aktuelle Wochentag kein WeeklyOffer-Special hat (Do/Fr/So), bleibt das hier
+// undefined — Cards zeigen dann zwar evtl. einen Promo-Preis (falls
+// promoPriceMap separat gepflegt), aber ohne Day-Sublabel.
+const todayShortLabel = offerForDay(weekday)?.shortLabel;
 ---
 
 <section
@@ -106,7 +112,7 @@ const count = itemCount ?? items.length;
           const unavailableReason = item.schoolHoursOnly && !schoolHoursOpen
             ? 'Nur Mo–Fr bis 16:00 Uhr'
             : undefined;
-          return <ItemCard item={item} promo={promo} effectivePrice={eff} orderable={orderable} unavailableReason={unavailableReason} />;
+          return <ItemCard item={item} promo={promo} effectivePrice={eff} orderable={orderable} unavailableReason={unavailableReason} dayShortLabel={todayShortLabel} />;
         })}
       </div>
     </details>

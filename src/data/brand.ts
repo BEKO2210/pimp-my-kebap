@@ -32,10 +32,13 @@ export const BRAND = {
 
   geo: {
     // Marktplatz 18, 71691 Freiberg am Neckar (Ortsteil Beihingen) —
-    // 2026-04-26 vom Eigentuemer per Google Maps verifiziert.
-    // Vorherige Werte (48.9333 / 9.215) waren ~1.7 km oestlich daneben.
-    latitude: 48.9354395,
-    longitude: 9.1926226,
+    // OSM-Adress-Datenbank-Wert fuer "18, Marktplatz" (Building-Centroid).
+    // Liegt ~14 m noerdoestlich der Pimp-my-Kebap-Google-Listing-Position
+    // — Letztere markiert die Eingangs-Tuer, Erstere die Adresse selbst.
+    // Wir nehmen die Adresse, weil das Schema.org-JSON-LD und die OSM-Karte
+    // die Adress-Position erwarten.
+    latitude: 48.9355094,
+    longitude: 9.1927770,
   },
 
   openingHours: {

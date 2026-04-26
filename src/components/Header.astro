@@ -9,14 +9,20 @@ import Icon from './Icon.astro';
 
 const status = getCurrentOpeningStatus();
 
+// Farbschema:
+// - dotColor (klein, dekorativ, aria-hidden): kraeftige Brand-Farben fuer
+//   schnelles visuelles Signal.
+// - toneClass (Text "Mo wieder", "bis 22:00" etc.): "Soft"-Varianten, weil
+//   die kraeftigen Brand-Reds/Greens auf dem dunklen Header nur ~3.9:1
+//   Kontrast erreichen (faellt unter WCAG-AA fuer Normal-Text).
 let dotColor = 'bg-brand-red-fire';
 let shortLabel = 'Geschlossen';
 let fullLabel = 'Geschlossen';
-let toneClass = 'text-brand-red-fire';
+let toneClass = 'text-brand-red-soft';
 
 if (status.isOpen && status.reason === 'regular') {
   dotColor = 'bg-brand-green-leaf';
-  toneClass = 'text-brand-green-leaf';
+  toneClass = 'text-brand-green-soft';
   shortLabel = `bis ${status.todayClose}`;
   fullLabel = `Jetzt geöffnet — bis ${status.todayClose} Uhr`;
 } else if (status.isOpen && status.reason === 'holiday') {

@@ -12,6 +12,15 @@
   --color-brand-cream: #f8f3e6;
   --color-brand-green-leaf: #2e7d32;
   --color-brand-red-fire: #d32f2f;
+  /* "Soft"-Varianten ausschliesslich fuer Text auf dunklem Background.
+   * brand-green-leaf / brand-red-fire haben auf #0a0a0a nur ~3.9:1 Kontrast
+   * und fallen damit unter den WCAG-AA-Threshold (4.5:1 fuer Normal-Text).
+   * Die helleren Varianten erreichen 9.6:1 / 7.9:1 (AAA). Verwendet im
+   * Header-Status-Pill und in den .badge-*-Utilities (siehe global.css).
+   * Die kraeftigeren Brand-Farben bleiben fuer Hintergruende, Borders,
+   * Iconfarben und dekorative Dots in Verwendung. */
+  --color-brand-green-soft: #6dc873;
+  --color-brand-red-soft: #ff7b7b;
 
   --font-ui: 'Space Grotesk', ui-sans-serif, system-ui, -apple-system, sans-serif;
   --font-display: 'Playfair Display', ui-serif, 'Times New Roman', Georgia, serif;

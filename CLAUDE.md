@@ -1,208 +1,107 @@
-# Masterplan — Polishing & Debugging Pimp My Kebap
+# CLAUDE.md — Projekt-Brief für KI-Sessions
 
-> Wir arbeiten **einen Punkt nach dem anderen** ab. Pro Punkt: Fix → typecheck/lint/vitest/build → Commit → Push → kurzer Status, dann nächster Schritt.
->
-> Reihenfolge gewählt nach Endnutzer-Wirkung: erst Dinge die Aktionen blockieren oder Bestellungen verfälschen, dann Form-UX, dann Polish, zum Schluss Aufräumen.
+> Kompakter Einstieg, damit kommende Sessions ohne Re-Reading der gesamten Codebase
+> arbeiten können. Architektur-Diagramme: [`docs/`](./docs/). Setup &amp; Scripts: [`README.md`](./README.md).
 
-## Status-Legende
-- [x] erledigt (Commit-SHA in Klammern)
-- [ ] offen
-- [→] aktuell in Arbeit
+## Was ist das?
 
----
+Statische Astro-Site für **Pimp My Kebap** (Marktplatz 18, Freiberg am Neckar).
+Bestellung läuft komplett über **WhatsApp Click-to-Chat** — kein Backend, keine API,
+keine DB, keine Cookies, keine Tracker. DSGVO-konform.
 
-## Plan
+Hosting: **GitHub Pages** (`beko2210.github.io/pimp-my-kebap`).
+Cloudflare-Pages-Setup ist via `wrangler.toml` ebenfalls vorbereitet.
 
-### 1. Konfigurator-Empty-State klar [x] (08e027c)
-"6,50 € + Add disabled" war widersprüchlich. Footer zeigt jetzt
-"Schritt 1 · Wähle deine Basis" / "Schritt 2 · Wähle dein Brot",
-echter Preis erst wenn beides gewählt.
+## Stack (Stand 2026-04-26)
 
-### 2. Sticky-Cart-Bar überdeckt Konfigurator-Footer auf Mobile [x]
-Body bekommt jetzt eine Klasse `has-cart-bar` sobald der Cart Items
-enthält; CSS hebt die Sticky-Konfigurator-Summary auf Mobile auf
-`bottom: 5.25rem`, sodass sie über der ~60px hohen Cart-Bar sitzt.
-Auf Desktop (Cart-Bar ist eh `lg:hidden`) Reset auf `1rem`. Beide
-Konfigurator-Footer (Kebap + Pizza) sind über die Klasse
-`.cfg-sticky-footer` markiert.
+- **Astro 5.18.1** (static, Islands-Hydration) · **TypeScript strict**
+- **Tailwind v4** (`@tailwindcss/vite`) · eigene Tokens in `src/styles/tokens.css`
+- **nanostores** (Cart) · **Zod** (localStorage-Validation)
+- **Vitest** Unit · **Playwright** E2E (lokal, nicht in CI)
+- **sharp** für Build-Image-Pipeline (AVIF/WebP/PWA-Icons)
 
-### 3. Pickup-Zeiten beim Cart-Öffnen neu generieren [x]
-Slots werden jetzt jedes Mal beim Öffnen des Drawers (`setOpen(true)`)
-neu erzeugt. Vorherige Auswahl wird übernommen, falls sie noch in der
-Liste steht — sonst Reset auf ASAP und Store-Sync, damit die
-WhatsApp-Nachricht keinen veralteten ISO trägt.
+## Architektur-Konventionen (wichtig!)
 
-### 4. PLZ visuell als invalid markieren [x]
-PLZ + Straße bekommen jetzt `aria-invalid="true"` sobald Lieferung
-gewählt ist UND der User das Feld bereits berührt hat (Input-Event)
-UND der Wert nicht passt (leer / nicht 5 Ziffern). CSS-Regel auf
-`input[aria-invalid='true']` setzt dann roten Border + roten
-Box-Shadow-Ring. Auf der ersten Anzeige der leeren Form bleibt alles
-neutral, damit niemand angeschrien wird, der gerade erst öffnet.
+| Schicht | Pfad | Regel |
+|---|---|---|
+| **Data** | `src/data/*.ts` | Single Source of Truth — alles Käuferische (Preise, Items, Zonen) lebt hier. |
+| **Logic** | `src/lib/*.ts` | Reine Funktionen, framework-frei, vollständig unit-testbar. Kein DOM. |
+| **Components** | `src/components/**/*.astro` | Server-Render. Hydration-Logik sitzt **nur** in `*.client.ts` daneben. |
+| **Pages** | `src/pages/*.astro` | Routes-only, keine Business-Logik. |
+| **Styles** | `src/styles/{tokens,global}.css` | Tokens via `@theme`-Block für Tailwind v4. |
 
-**Bonus**: Die Google-Maps-Vorschau zeigt jetzt unter dem Karten-Bild
-die volle Anschrift (Marktplatz 18 · 71691 Freiberg am Neckar) plus
-"Route in Google Maps öffnen →". Klick irgendwo in die Karte oder
-Adresse öffnet Google Maps.
+**Stilregeln** (alle bestehenden Files folgen dem):
+- Kommentare auf Deutsch (Inhaltsdomäne ist deutsch).
+- Datei-Header `// Powered by skill: <name>` ist legacy aus `.skills/`-Phase — bleibt drin, neue Files **müssen** ihn nicht setzen.
+- Keine Multi-Paragraph-Doc-Strings. Inline-Comments nur, wenn das **Warum** nicht offensichtlich ist.
 
-### 5. "Auf Anfrage"-Items: Telefon-Action [x]
-Erübrigt sich — die zwei betroffenen Pommes haben jetzt feste Preise:
-Chili Cheese Pommes 6,50 €, mit Sucuk 8,00 € (Pommes selbst stehen
-wie gehabt mit 5,00 € in der Nuggets-Kategorie). Damit gibt es im
-ganzen Menü kein `priceEur: null` mehr und der Stepper ist überall
-nutzbar. Markings ergänzt (a/b/d Boden, plus 3/6 für Sucuk).
+## Datenfluss (Bestellung)
 
-### 5b. Konfigurator-Flow: keine Auto-Cart-Öffnung mehr [x]
-Bisher haben beide Konfiguratoren am Ende `openCart()` aufgerufen, was
-den User aus seinem Bestellprozess riss. Jetzt: Add → Redirect auf
-`/weiter?added=kebap` (bzw. `?added=pizza`). Die neue Seite zeigt eine
-grüne Bestätigung, drei große CTA-Karten ("Noch einen Kebap pimpen" /
-"Pizza pimpen" / "Speisekarte") und unten einen Cart-Status mit
-"Bestellung abschließen"-Button, der den Drawer öffnet. So kann der
-User beliebig kombinieren, ohne in den Drawer gezwungen zu werden.
+```
+data/menu.ts | data/configurator.ts
+   → UI (Configurator / Speisekarte)
+   → lib/pricing.ts (KebabConfig → Breakdown)
+   → nanostores $cart  ⇄  localStorage (Zod, key=pmk-cart-v1, TTL 24h)
+   → lib/whatsapp.ts (Cart → Text + wa.me URL)
+   → window.location = wa.me/...
+```
 
-### 6. WhatsApp-URL-Längenlimit absichern [x]
-Im Checkout-Click wird die wa.me-URL jetzt VOR dem Confirm-Dialog
-gebaut. Schwelle `WHATSAPP_URL_SAFE_LIMIT = 6500` (Zeichen, encoded).
-Bei Überschreitung erscheint ein "Hinweis"-Block oberhalb der
-Vorschau im selben Dialog, der die ungefähre Größe in KB nennt und
-die Restaurant-Telefonnummer als sicheren Alternativweg anbietet.
-Mehrere Hinweise (geschlossener Laden + langer Link) werden in einen
-einzigen Confirm-Dialog konsolidiert, statt den User durch zwei
-hintereinander zu schicken.
+## Kritische Invarianten / Gotchas
 
-### 7. Konfigurator: Default-Spieß deutlicher hervorheben [x]
-Zwei Probleme: (1) der Active-Selector `.btn-secondary[aria-pressed="true"]`
-griff nicht auf die Spieß-Buttons, weil sie `role="radio"` mit
-`aria-checked` benutzen, nicht `aria-pressed`. (2) Der Active-Look war
-sowieso zu zurückhaltend (nur Tönung).
-Fix: Selektor um `[aria-checked="true"]` erweitert, Active-Variante
-verstärkt um einen Gold-Ring + soften Glow (`box-shadow: 0 0 0 1px
-gold, 0 4px 14px gold/.18`). Server-side wird der erste MEAT jetzt
-schon mit `data-active="true"` ausgeliefert, also ist der Highlight
-sofort sichtbar — auch ohne JS-Hydrate. Nebeneffekt: Filter-Buttons
-in der Speisekarte und der Bestellart-Toggle im Cart bekommen den
-gleichen klaren Active-Look — konsistent durch die App.
+1. **`define:vars` nicht benutzen** — wegen GHSA-jh87-52p2-xcff (XSS in Astro <6.1.6).
+   Wir sind auf 5.18.1 = nicht-exploitabel solange die Direktive ungenutzt bleibt.
+2. **`siteUrl` enthält bereits `base`-Pfad.** OG-Image-URLs **nie** zusätzlich durch `withBase()`
+   schicken. Siehe Fix in `Base.astro` (CLAUDE-History-Schritt 11).
+3. **GitHub Pages ignoriert `public/_headers`.** Production-CSP läuft nur über
+   `<meta http-equiv="Content-Security-Policy">` in `Base.astro`. Meta-CSP kann **kein**
+   `frame-ancestors` setzen — Click-Jacking-Schutz erst bei Wechsel zu CF/Netlify.
+4. **Service-Worker-Cache-Bust**: `scripts/version-stamp.mjs` (postbuild) hängt `?v=<git-sha>`
+   an lokale CSS/JS und schreibt `<meta name="app-version">` ein. Dadurch invalidiert der
+   SW alte Caches automatisch. Niemals manuell SW-Cache-Namen anfassen.
+5. **Preflight blockt Build**, wenn die Wohnanschrift der Inhaberin im Repo auftaucht
+   (`scripts/preflight.mjs`). Plus: Logo muss vorhanden sein.
+6. **WhatsApp-URL-Limit**: 6500 Zeichen (encoded). Über dem Limit zeigt der Checkout einen
+   Hinweis-Block + Telefon-Fallback statt der WA-Vorschau.
+7. **Schüler-Items**: Stepper nur **werktags ≤ 16:00**. Filter via `isSchoolDay()` und
+   `isSchoolHoursWindow()` in `src/lib/time.ts`.
+8. **Konfigurator-Flow**: nach `Add` Redirect auf `/weiter?added=<kebap|pizza>` —
+   **kein** automatisches Cart-Drawer-Auf-Pop (User soll weiter kombinieren können).
 
-### 8. Filter-Dropdown: Auto-Close bei Allergen-Reset [x]
-Reset-Handler in `menuFilter.client.ts` schließt den
-`data-menu-filter-dropdown` (`<details>`) jetzt zusätzlich nach dem
-`apply()`. Action abgeschlossen → Panel zu, User sieht direkt die
-ungefilterte Liste.
+## Quality-Gates (vor jedem Commit)
 
-### 9. Schüler-Section am Sonntag/Feiertag verstecken [x]
-Neuer Helper `isSchoolDay()` in `lib/time.ts` (Mo–Fr, kein Feiertag —
-unabhängig von der Uhrzeit, im Gegensatz zum bestehenden
-`isSchoolHoursWindow`). `Speisekarte.astro` filtert die Kategorien-
-Liste mit ihm: an Sa/So/Feiertagen verschwinden sowohl die
-Quick-Jump-Nav-Pille als auch die ganze Schüler-Sektion. An
-Mo–Fr ≤16 bleibt sie voll funktional, an Mo–Fr nach 16 zeigt sie
-weiter den "außerhalb Schulzeit"-Hinweis (kein Stepper, wie L1).
-Tests: 4 neue Cases für `isSchoolDay`.
+```bash
+npm run typecheck && npm run lint && npm test && npm run build
+```
 
-### 10. Konfigurator-Footer-Hint inline am Step [x]
-Jede Step-Legend (Basis, Brot) trägt jetzt einen `data-cfg-step-hint`
-mit "← hier starten" / "← hier weitermachen". Der Client-Controller
-setzt aktiv: `base` wenn baseChosen=false, `bread` wenn baseChosen
-aber breadOk=false, sonst `null` (alle Hints aus). Sanfte
-`cfg-pulse` Animation bewegt den Pfeil 2 px hin- und her, damit das
-Auge ihn findet — abgeschaltet bei `prefers-reduced-motion`.
+CI macht genau das (`.github/workflows/ci.yml`). E2E (`npm run test:e2e`) läuft nur lokal.
 
-### 11. Page-Title je Route + OG-Image für WhatsApp [x]
-Konsistentes Title-Schema umgesetzt: Konfiguratoren tragen
-`<Brand> — Konfigurator · Freiberg`, neutrale Routen
-`<Spezifisch> · Pimp My Kebap Freiberg`. Brand am Ende
-(Browser-Tab + SEO), middle-dot als Trenner, "Freiberg"
-durchgehend für Geo-SEO.
+## Branch- &amp; Workflow-Policy
 
-**Bonus / echter Bug**: `Base.astro:25` hat die OG-Image-URL gebaut
-mit `${siteUrl}${withBase(ogImage)}`. Da `siteUrl` bereits den
-Project-Pages-Sub-Path enthält und `withBase()` ihn nochmal
-prependet, ergab sich
-`https://…/pimp-my-kebap/pimp-my-kebap/brand/og-image.jpg` →
-404 → keine WhatsApp-Link-Vorschau. Jetzt
-`${siteUrl}${ogImage}` direkt — verifiziert im Build:
-`og:image` zeigt auf die echte URL und `dist/brand/og-image.jpg`
-existiert.
+- **Niemals direkt auf `main` committen.** Feature-Branches prefix `claude/<descriptor>` oder `feat/...`.
+- **Nie hooks skippen** (kein `--no-verify`, kein `--no-gpg-sign`).
+- Vor Push immer alle Quality-Gates lokal grün haben.
+- Commit-Messages auf Deutsch oder Englisch, beides OK; Konvention: `<scope>(<area>): <imperativ>`.
 
-### 12. Footer: Links sauber ausrichten [x]
-Drei Polishings:
-1. Section-Headers konsistent — alle drei Spalten benutzen jetzt
-   `.eyebrow` (Brand-Spalte mit zusätzlichem display-Headline für
-   den Brand-Namen).
-2. Allergene-Akkordeon: Default-Browser-Triangle entfernt, durch
-   Lucide-Chevron mit 180°-Rotation ersetzt (gleicher Stil wie
-   Speisekarten-Akkordeons).
-3. Mobile-Layout: Grid `sm:grid-cols-2 lg:grid-cols-3` — auf Tablet
-   sind Kontakt + Rechtliches nebeneinander, Allergene voll breit.
-Hover-States der Links auf gold mit Transition für klares Feedback.
+## Häufige Aufgaben (Quick-Start)
 
-### 13. Toast-Stack auf Mobile [x]
-Drei Verbesserungen in `lib/toast.ts` und `global.css`:
-1. **Stack-Limit**: max 3 sichtbare Toasts. Bei viertem Toast wird
-   der älteste sofort dismissed — keine Endlos-Schlange mehr.
-2. **Dedupe-Window**: identische Message innerhalb 600 ms wird
-   verworfen. Rapid + Klicks am gleichen Item spammen den Toast
-   nicht mehr.
-3. **Position folgt Cart-Bar**: ohne Cart-Bar `bottom: 1rem`, mit
-   sichtbarer Cart-Bar `bottom: 5.25rem` (über die ~60 px Bar
-   gehoben). Auf Desktop ist die Bar `lg:hidden`, da bleibt Toast
-   bottom-right `1.5rem` egal welcher Body-State.
+| Aufgabe | Files |
+|---|---|
+| Neuer Menüpunkt | `src/data/menu.ts` (+ ggf. `tests/unit/pricing.test.ts`) |
+| Aktionspreis | `promoPriceMap` des Items in `menu.ts` |
+| Neues Topping | `src/data/ingredients.ts` (+ `pricing.ts`-Test) |
+| Liefergebühr / Zone | `src/data/delivery.ts` |
+| Öffnungszeit | `src/data/brand.ts` |
+| Feiertag | `src/lib/holidays.ts` (Anonymous-Gregorian-Easter ist berechnet, nicht hartcodiert) |
+| Logo tauschen | `public/brand/logo.png` (Source) → `npm run build:images` baut alle Varianten |
+| Real-Foto für ein Item | `public/images/meals/<item-id>.jpg` (id aus `menu.ts`); AVIF/WebP werden gebaut |
 
-`dismiss()`-Helper extrahiert, double-dismiss durch `data-leaving`
-Guard verhindert.
+## Bekannte offene Punkte
 
-### 14. Veraltete E2E-Tests aufräumen [x]
-`tests/e2e/konfigurator.spec.ts` komplett neu geschrieben für den
-aktuellen Flow. Alte Tests zielten auf `/` (Konfigurator war dort),
-erwarteten Bread vor Basis und automatisches Cart-Drawer-Auf-Pop —
-alles drei stimmt nicht mehr. Neue Tests:
-- Kebap Basic: Basis → Brot → /weiter (kein Drawer-Pop).
-- Yufka Basic: kein Bread-Step sichtbar.
-- Kebap Box: Bread + Pimp hidden, Box-Hint sichtbar.
-- Speisekarte +: Drawer bleibt zu, Cart-Bar zeigt 1 Item.
-- Hamburger (mobile-only via viewport-Skip): Click öffnet, ESC schließt.
+Siehe [`TODO_OWNER.md`](./TODO_OWNER.md) — Inhaberin-Aufgaben (1-Klick-GH-Pages-Setup,
+WhatsApp-Test-Bestellung, optional Domain).
 
-E2E ist nicht in CI (CI macht typecheck/lint/vitest/build), läuft
-aber lokal über `npm run test:e2e`.
-
-### 15. CSP/Security-Header Sichtprüfung [x]
-Sichtprüfung im Build, alles passt:
-
-**Externe Resources im Build:**
-- `tile.openstreetmap.org` (`<img>` in Standort) → `img-src` deckt's ✓
-- `data:`-SVG-Placeholders → `img-src data:` ✓
-- `wa.me/...`, `google.com/maps/...`, `instagram.com/...` →
-  Top-Level-Navigation, nicht CSP-relevant ✓
-
-**Inline-Audit auf jeder gebauten Seite:**
-- Inline-Scripts ohne nonce: **0**
-- 3× `<script type="application/ld+json">` (Restaurant + Menu +
-  Breadcrumb JSON-LD). Per CSP3 Spec sind data-blocks (LD+JSON,
-  application/json) NICHT durch `script-src` reglementiert.
-- 4× `<script type="module" src="/assets/...">` — alle eigener Origin,
-  passt zu `script-src 'self'`.
-- 2× Astro-Component-`<style>`-Blöcke + 3× `style="..."` im
-  `#print-receipt`-Block: erlaubt durch `style-src 'self'
-  'unsafe-inline'`. Inline-Style ist für Print-Engines gerechtfertigt
-  (manche ignorieren externe Stylesheets).
-
-**Deployment-Limit dokumentiert:**
-GitHub Pages ignoriert `public/_headers` (Cloudflare/Netlify-Format).
-In Production kommt nur die Meta-CSP zum Tragen — und Meta-CSP kann
-laut HTML-Spec kein `frame-ancestors` setzen. Folge: kein iframe-
-Click-Jacking-Schutz auf GH-Pages. Beim Wechsel auf Cloudflare Pages
-oder Netlify wird `public/_headers` automatisch HTTP-Header und
-`frame-ancestors 'none'` greift.
-
-Keine Code-Änderung nötig.
-
----
-
-## Workflow pro Schritt
-1. Schritt aus dem Plan herausgreifen, [→] markieren
-2. Fix umsetzen
-3. `npx astro check && npx eslint . --ext .js,.mjs,.ts,.astro && npx vitest run && npx astro build`
-4. `git add -A && git commit -m "…" && git push -u origin claude/fix-hamburger-menu-hVO2d`
-5. In CLAUDE.md auf [x] mit Commit-SHA setzen
-6. Im Chat: "Schritt N erledigt — als Nächstes Schritt N+1: …"
+Dependabot-Alert **GHSA-jh87-52p2-xcff** (Astro &lt;6.1.6 XSS via `define:vars`):
+Wir sind nicht exploitabel (kein `define:vars`-Use). Major-Bump auf Astro 6 wurde im
+Branch `claude/test-astro-6-bump` erfolgreich getestet (typecheck/lint/vitest/build/preview alle grün),
+braucht nur einen `"overrides": {"vite": "7.3.2"}`-Eintrag wegen Vitest-vs-Tailwind-Vite-Mismatch.
+Merge erst nach Browser-QA + E2E-Run in einer Wartungsfenster-Session.

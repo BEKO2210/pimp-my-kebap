@@ -1,0 +1,127 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 880 420" role="img" aria-labelledby="bldTitle bldDesc" font-family="ui-sans-serif, system-ui, sans-serif">
+  <title id="bldTitle">Pimp My Kebap — Build &amp; Deploy</title>
+  <desc id="bldDesc">Push auf main triggert GitHub Actions: preflight, image-pipeline (sharp), Astro-Build, Version-Stamp, Deploy auf GitHub Pages.</desc>
+
+  <defs>
+    <linearGradient id="bg3" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#0f0f0f"/>
+      <stop offset="100%" stop-color="#0a0a0a"/>
+    </linearGradient>
+    <linearGradient id="goldFade3" x1="0" x2="1" y1="0" y2="0">
+      <stop offset="0%" stop-color="#d4af37" stop-opacity="0"/>
+      <stop offset="50%" stop-color="#d4af37" stop-opacity=".7"/>
+      <stop offset="100%" stop-color="#d4af37" stop-opacity="0"/>
+    </linearGradient>
+    <marker id="arrow3" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M0 0 L10 5 L0 10 z" fill="#d4af37"/>
+    </marker>
+    <style>
+      .stage { fill: #1a1a1a; stroke: rgba(212,175,55,.32); stroke-width: 1; }
+      .stage-trigger { fill: #232323; stroke: #d4af37; stroke-width: 1.5; }
+      .stage-deploy { fill: #232323; stroke: #ff6b1a; stroke-width: 1.5; }
+      .label { fill: #d4af37; font-size: 10.5px; font-weight: 700; letter-spacing: 1.6px; text-transform: uppercase; }
+      .stage-title { fill: #f8f3e6; font-size: 13.5px; font-weight: 700; }
+      .stage-body { fill: #f8f3e6; font-size: 11.5px; opacity: .82; }
+      .arrow { stroke: #d4af37; stroke-width: 1.6; fill: none; opacity: .85; }
+      .check { fill: #d4af37; font-size: 12px; font-weight: 700; }
+      .annotation { fill: #f8f3e6; font-size: 10.5px; opacity: .55; }
+    </style>
+  </defs>
+
+  <rect width="880" height="420" fill="url(#bg3)"/>
+  <rect x="40" y="20" width="800" height="2" fill="url(#goldFade3)"/>
+  <rect x="40" y="398" width="800" height="2" fill="url(#goldFade3)"/>
+
+  <text x="440" y="50" text-anchor="middle" font-family="ui-serif, 'Playfair Display', Georgia, serif" font-size="22" font-weight="700" fill="#f8f3e6">
+    Build <tspan fill="#d4af37" font-style="italic">&amp;</tspan> Deploy <tspan fill="#d4af37" font-style="italic">·</tspan> Pipeline
+  </text>
+  <text x="440" y="72" text-anchor="middle" class="annotation">npm run build = preflight + build:images + astro build + version-stamp</text>
+
+  <!-- Trigger -->
+  <g transform="translate(50,110)">
+    <text x="0" y="-8" class="label">Trigger</text>
+    <rect width="160" height="80" rx="10" class="stage-trigger"/>
+    <text x="14" y="26" class="stage-title">git push → main</text>
+    <text x="14" y="48" class="stage-body">.github/workflows/</text>
+    <text x="14" y="62" class="stage-body">deploy.yml startet</text>
+  </g>
+
+  <!-- Preflight -->
+  <g transform="translate(240,110)">
+    <text x="0" y="-8" class="label">CI Schritt 1</text>
+    <rect width="180" height="80" rx="10" class="stage"/>
+    <text x="14" y="26" class="stage-title">preflight.mjs</text>
+    <text x="14" y="48" class="stage-body">✓ Owner-Adresse nicht im Repo</text>
+    <text x="14" y="62" class="stage-body">✓ logo.png vorhanden</text>
+  </g>
+
+  <!-- Image build -->
+  <g transform="translate(450,110)">
+    <text x="0" y="-8" class="label">CI Schritt 2</text>
+    <rect width="180" height="80" rx="10" class="stage"/>
+    <text x="14" y="26" class="stage-title">build:images (sharp)</text>
+    <text x="14" y="48" class="stage-body">Logo · OG · Favicons · PWA</text>
+    <text x="14" y="62" class="stage-body">Meals → AVIF/WebP</text>
+  </g>
+
+  <!-- Astro build -->
+  <g transform="translate(660,110)">
+    <text x="0" y="-8" class="label">CI Schritt 3</text>
+    <rect width="170" height="80" rx="10" class="stage"/>
+    <text x="14" y="26" class="stage-title">astro build</text>
+    <text x="14" y="48" class="stage-body">8 statische Seiten</text>
+    <text x="14" y="62" class="stage-body">Tailwind v4 → Footer.css</text>
+  </g>
+
+  <!-- Stamp -->
+  <g transform="translate(50,240)">
+    <text x="0" y="-8" class="label">CI Schritt 4</text>
+    <rect width="180" height="80" rx="10" class="stage"/>
+    <text x="14" y="26" class="stage-title">version-stamp.mjs</text>
+    <text x="14" y="48" class="stage-body">app-version Meta · ?v=&lt;sha&gt;</text>
+    <text x="14" y="62" class="stage-body">Service-Worker-Cache-Bust</text>
+  </g>
+
+  <!-- Quality gates -->
+  <g transform="translate(260,240)">
+    <text x="0" y="-8" class="label">CI Schritt 5</text>
+    <rect width="180" height="80" rx="10" class="stage"/>
+    <text x="14" y="26" class="stage-title">Quality-Gates</text>
+    <text x="14" y="48" class="stage-body">typecheck · lint · vitest</text>
+    <text x="14" y="62" class="stage-body">npm audit (high blockt)</text>
+  </g>
+
+  <!-- Deploy -->
+  <g transform="translate(470,240)">
+    <text x="0" y="-8" class="label">Deploy</text>
+    <rect width="360" height="80" rx="10" class="stage-deploy"/>
+    <text x="14" y="26" class="stage-title">GitHub Pages · oder · Cloudflare Pages</text>
+    <text x="14" y="48" class="stage-body">dist/ → CDN · public/_headers (CF/Netlify)</text>
+    <text x="14" y="62" class="stage-body">Sitemap, robots.txt, manifest, sw.js inkl.</text>
+  </g>
+
+  <!-- Arrows: top row -->
+  <path d="M210,150 L240,150" class="arrow" marker-end="url(#arrow3)"/>
+  <path d="M420,150 L450,150" class="arrow" marker-end="url(#arrow3)"/>
+  <path d="M630,150 L660,150" class="arrow" marker-end="url(#arrow3)"/>
+
+  <!-- Wrap arrow from Astro down to stamp -->
+  <path d="M745,190 L745,215 L140,215 L140,240" class="arrow" marker-end="url(#arrow3)"/>
+
+  <!-- Bottom row arrows -->
+  <path d="M230,280 L260,280" class="arrow" marker-end="url(#arrow3)"/>
+  <path d="M440,280 L470,280" class="arrow" marker-end="url(#arrow3)"/>
+
+  <!-- Local commands -->
+  <text x="60" y="358" class="label">Lokal</text>
+  <rect x="60" y="368" width="760" height="22" rx="6" class="stage"/>
+  <text x="74" y="384" class="stage-body">
+    <tspan fill="#d4af37" font-weight="700">npm run dev</tspan> ·
+    <tspan fill="#d4af37" font-weight="700">npm test</tspan> ·
+    <tspan fill="#d4af37" font-weight="700">npm run typecheck</tspan> ·
+    <tspan fill="#d4af37" font-weight="700">npm run lint</tspan> ·
+    <tspan fill="#d4af37" font-weight="700">npm run build</tspan> ·
+    <tspan fill="#d4af37" font-weight="700">npm run preview</tspan> ·
+    <tspan fill="#d4af37" font-weight="700">npm run test:e2e</tspan>
+  </text>
+</svg>

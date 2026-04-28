@@ -1,17 +1,25 @@
 ---
 // Powered by skill: frontend-design
-import { offerForDay } from '../data/weeklyOffers';
-import { getCurrentWeekday } from '../lib/time';
+//
+// Statisch deployt — also wird der Tag NICHT zur Build-Zeit eingefroren
+// (sonst blieb "Mo-Special" auch am Dienstag stehen). Der Banner rendert
+// hidden; weeklyBanner.client.ts liest getCurrentWeekday() im Browser und
+// blendet ggf. den passenden Eintrag ein.
+import { WEEKLY_OFFERS } from '../data/weeklyOffers';
 
-const day = getCurrentWeekday();
-const offer = offerForDay(day);
+const offersJson = JSON.stringify(WEEKLY_OFFERS);
 ---
 
-{offer && (
-  <aside
-    class="bg-gradient-to-r from-brand-gold to-brand-orange text-black px-4 py-2 text-center text-sm font-semibold"
-    role="status"
-  >
-    <strong>{offer.shortLabel}-Special:</strong>{' '}{offer.title} · {offer.description}
-  </aside>
-)}
+<aside
+  class="bg-gradient-to-r from-brand-gold to-brand-orange text-black px-4 py-2 text-center text-sm font-semibold"
+  data-weekly-banner
+  data-offers={offersJson}
+  role="status"
+  hidden
+>
+  <strong data-weekly-prefix></strong>{' '}<span data-weekly-text></span>
+</aside>
+
+<script>
+  import './weeklyBanner.client.ts';
+</script>

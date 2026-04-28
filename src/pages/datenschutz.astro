@@ -18,8 +18,9 @@ import { BRAND } from '../data/brand';
     <h1 class="display text-3xl text-brand-cream mb-6">Datenschutzerklärung</h1>
 
     <p>
-      <strong>Verantwortlich</strong><br />
-      {BRAND.ownerName}<br />
+      <strong>Verantwortliche Stelle</strong> im Sinne von Art. 4 Nr. 7 DSGVO:<br />
+      {BRAND.ownerName} ({BRAND.ownerLabel})<br />
+      Gewerblich angemeldet als: {BRAND.legalName} ({BRAND.legalForm})<br />
       {BRAND.address.street}, {BRAND.address.postalCode} {BRAND.address.city}<br />
       E-Mail: <a class="underline" href={`mailto:${BRAND.contact.email}`}>{BRAND.contact.email}</a>
     </p>
@@ -48,23 +49,57 @@ import { BRAND } from '../data/brand';
       <strong>{BRAND.contact.whatsappDisplay}</strong> und verarbeiten die übermittelten Daten
       (Name, Bestellinhalt, Abholzeit, ggf. Notiz, ggf. Lieferadresse) ausschließlich zum Zweck
       der Bestellabwicklung. Rechtsgrundlage: Art. 6 Abs. 1 lit. b DSGVO (Vertragsanbahnung).
-      Speicherdauer: bis zur Erfüllung der Bestellung, danach Löschung im Rahmen handelsrechtlicher Aufbewahrungsfristen, soweit anwendbar.
+    </p>
+    <p>
+      <strong>Speicherdauer:</strong> Bestellnachrichten werden unmittelbar nach Erfüllung der
+      Bestellung gelöscht. Soweit Bestellnachrichten als Buchungsbeleg dienen (z.&nbsp;B. bei
+      Lieferungen mit Rechnungsstellung), bewahren wir sie gemäß § 147 AO und § 257 HGB
+      bis zu 10 Jahre auf.
     </p>
 
-    <h2 class="display text-xl text-brand-cream mt-8 mb-3">3. Server-Logs</h2>
+    <h2 class="display text-xl text-brand-cream mt-8 mb-3">3. Hosting (GitHub Pages) &amp; Server-Logs</h2>
     <p>
-      Beim Aufruf dieser Website werden durch unseren Hosting-Anbieter (Cloudflare bzw. GitHub) technisch notwendige Server-Logs erstellt
-      (IP-Adresse anonymisiert, Zeitstempel, abgerufene Datei). Rechtsgrundlage: Art. 6 Abs. 1 lit. f DSGVO (berechtigtes Interesse an Betriebssicherheit).
-      Speicherdauer: max. 30 Tage.
+      Diese Website wird auf <strong>GitHub Pages</strong> gehostet (Anbieter:
+      GitHub, Inc., 88 Colin P Kelly Jr St, San Francisco, CA 94107, USA — eine
+      Tochter der Microsoft Corporation). Beim Aufruf der Seite überträgt
+      Ihr Browser technisch notwendige Daten an GitHub-Server (IP-Adresse,
+      Zeitstempel, abgerufene Datei, User-Agent). GitHub erstellt daraus
+      Server-Logs für den Betrieb und die Sicherheit der Plattform.
+    </p>
+    <p>
+      Rechtsgrundlage: Art. 6 Abs. 1 lit. f DSGVO (berechtigtes Interesse an
+      Auslieferung und Betriebssicherheit der Website).
+    </p>
+    <p>
+      <strong>Drittlandübermittlung:</strong> GitHub kann Daten in den USA
+      verarbeiten. Der Datentransfer ist über das <em>EU-US Data Privacy
+      Framework</em> abgesichert (Angemessenheitsbeschluss der EU-Kommission
+      vom 10.07.2023). GitHub-Datenschutz:
+      <a href="https://docs.github.com/site-policy/privacy-policies/github-general-privacy-statement" target="_blank" rel="noopener noreferrer" class="underline">docs.github.com/site-policy/privacy-policies</a>.
     </p>
 
     <h2 class="display text-xl text-brand-cream mt-8 mb-3">4. Karte (OpenStreetMap)</h2>
     <p>
-      Die Standortkarte wird als statische Bildkachel von <a href="https://www.openstreetmap.org" target="_blank" rel="noopener noreferrer" class="underline">openstreetmap.org</a>
-      geladen. Dabei wird Ihre IP-Adresse an die OpenStreetMap Foundation übermittelt. Es findet kein interaktives Karten-Skript statt.
+      Die Standortkarte wird als statische Bildkachel von
+      <a href="https://www.openstreetmap.org" target="_blank" rel="noopener noreferrer" class="underline">openstreetmap.org</a>
+      geladen (OpenStreetMap Foundation, St John's Innovation Centre, Cowley Road,
+      Cambridge, CB4 0WS, Vereinigtes Königreich). Dabei wird Ihre IP-Adresse an
+      die OSMF übermittelt. Rechtsgrundlage: Art. 6 Abs. 1 lit. f DSGVO. Es findet
+      kein interaktives Karten-Skript und kein Tracking statt.
     </p>
 
-    <h2 class="display text-xl text-brand-cream mt-8 mb-3">5. Ihre Rechte</h2>
+    <h2 class="display text-xl text-brand-cream mt-8 mb-3">5. Routenplanung (Google Maps)</h2>
+    <p>
+      Der Button <em>„Route in Google Maps öffnen"</em> ist ein einfacher Link, der erst beim Klick
+      Google Maps in einem neuen Tab öffnet (Anbieter: Google Ireland Limited,
+      Gordon House, Barrow Street, Dublin 4, Irland; bei Drittlandtransfer:
+      Google LLC, USA — abgesichert über das EU-US Data Privacy Framework).
+      Vor dem Klick werden keine Daten an Google übermittelt. Mit Klick gilt
+      die Datenschutzerklärung von Google:
+      <a href="https://policies.google.com/privacy" target="_blank" rel="noopener noreferrer" class="underline">policies.google.com/privacy</a>.
+    </p>
+
+    <h2 class="display text-xl text-brand-cream mt-8 mb-3">6. Ihre Rechte</h2>
     <p>Sie haben jederzeit das Recht auf:</p>
     <ul class="list-disc ml-6 my-3 space-y-1">
       <li>Auskunft (Art. 15 DSGVO)</li>

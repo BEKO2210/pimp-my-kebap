@@ -40,10 +40,8 @@ import { BRAND } from '../data/brand';
     <h2 class="display text-xl text-brand-cream mt-8 mb-3">Verantwortlich für den Inhalt nach § 18 Abs. 2 MStV</h2>
     <p>{BRAND.ownerName}<br />Anschrift wie oben</p>
 
-    {/* TODO Owner: Steuernummer ist im Impressum nicht verpflichtend.
-        Falls gewünscht, hier einblenden:
-        Steuernummer: 71256/43693
-        Empfehlung: weglassen, sofern keine USt-IdNr. besteht. */}
+    <h2 class="display text-xl text-brand-cream mt-8 mb-3">Steuernummer</h2>
+    <p>{BRAND.taxNumber}</p>
 
     <h2 class="display text-xl text-brand-cream mt-8 mb-3">Verbraucherstreitbeilegung</h2>
     <p>Wir sind nicht bereit oder verpflichtet, an Streitbeilegungsverfahren vor einer Verbraucherschlichtungsstelle teilzunehmen.</p>

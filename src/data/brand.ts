@@ -39,6 +39,12 @@ export const BRAND = {
     email: 'Zentrumdoener@outlook.com',
   },
 
+  // Steuernummer (vergeben vom Finanzamt nach Gewerbeanmeldung).
+  // Die Angabe im Impressum ist nicht zwingend, aber zulässig — § 5 Abs. 1
+  // Nr. 6 DDG verlangt sie nur bei umsatzsteuerpflichtigen Anbietern in
+  // Form der USt-IdNr. Eine "normale" Steuernummer schadet nicht.
+  taxNumber: '71256/43693',
+
   geo: {
     // Marktplatz 18, 71691 Freiberg am Neckar (Ortsteil Beihingen) —
     // OSM-Adress-Datenbank-Wert fuer "18, Marktplatz" (Building-Centroid).

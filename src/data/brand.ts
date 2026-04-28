@@ -5,13 +5,19 @@
 
 export const BRAND = {
   marketingName: 'Pimp My Kebap',
-  legalName: 'Zentrum Pizza und Kebaphaus',
+  // Gewerblich angemeldeter Name (Gewerbeschein, § 5 TMG/DDG-pflichtig im
+  // Impressum). "Pimp My Kebap" ist nur die Geschäftsbezeichnung/Marke.
+  legalName: 'Zentrum Döner',
   legalForm: 'Einzelunternehmen',
 
   ownerName: 'Fatma Tasocak-Savci',
   ownerLabel: 'Inhaberin',
+  // Bei einem Einzelunternehmen gibt es rechtlich KEINEN "Geschäftsführer"
+  // (das ist ein Begriff des GmbHG). Ali ist faktisch Betriebsleiter und
+  // darf das Geschäft im Tagesgeschäft vertreten — diese Bezeichnung ist
+  // rechtlich sauber und vermeidet Abmahn-Angriffsfläche.
   managerName: 'Ali Murat Tasocak',
-  managerLabel: 'Geschäftsführer',
+  managerLabel: 'Betriebsleiter',
 
   address: {
     street: 'Marktplatz 18',

@@ -2,44 +2,16 @@
 // Powered by skill: frontend-design, accessibility
 // Mobile-first: ein einziger Row mit Logo, Status-Dot, Anruf-Icon. Volle Texte
 // und CTAs erst ab `sm` (≥640 px).
+//
+// HINWEIS: Der Status-Pill wird absichtlich NICHT zur Build-Zeit berechnet.
+// Die Site ist statisch (GitHub Pages) — ein build-time Wert wuerde fuer
+// alle Besucher bis zum naechsten Build eingefroren bleiben (z.B. "Mo-Special"
+// am Dienstag). Stattdessen rendert hier ein neutraler Skeleton-Pill, und
+// header.client.ts setzt nach DOM-Ready den korrekten Status (und re-evaluiert
+// minuetlich, damit "bis 21:00" → "Geschlossen" beim Schliessen automatisch flippt).
 import { BRAND } from '../data/brand';
-import { getCurrentOpeningStatus } from '../lib/time';
 import { withBase } from '../lib/url';
 import Icon from './Icon.astro';
-
-const status = getCurrentOpeningStatus();
-
-// Farbschema:
-// - dotColor (klein, dekorativ, aria-hidden): kraeftige Brand-Farben fuer
-//   schnelles visuelles Signal.
-// - toneClass (Text "Mo wieder", "bis 22:00" etc.): "Soft"-Varianten, weil
-//   die kraeftigen Brand-Reds/Greens auf dem dunklen Header nur ~3.9:1
-//   Kontrast erreichen (faellt unter WCAG-AA fuer Normal-Text).
-let dotColor = 'bg-brand-red-fire';
-let shortLabel = 'Geschlossen';
-let fullLabel = 'Geschlossen';
-let toneClass = 'text-brand-red-soft';
-
-if (status.isOpen && status.reason === 'regular') {
-  dotColor = 'bg-brand-green-leaf';
-  toneClass = 'text-brand-green-soft';
-  shortLabel = `bis ${status.todayClose}`;
-  fullLabel = `Jetzt geöffnet — bis ${status.todayClose} Uhr`;
-} else if (status.isOpen && status.reason === 'holiday') {
-  dotColor = 'bg-brand-gold';
-  toneClass = 'text-brand-gold';
-  shortLabel = `bis ${status.todayClose}`;
-  fullLabel = `Heute Feiertag — bis ${status.todayClose} Uhr`;
-} else if (status.reason === 'closed_sunday') {
-  shortLabel = status.nextOpenShortLabel ?? 'Mo wieder';
-  fullLabel = `Heute geschlossen (So) — ${status.nextOpenLabel ?? ''}`;
-} else if (status.reason === 'before_opening') {
-  shortLabel = status.nextOpenShortLabel ?? `ab ${status.todayOpen}`;
-  fullLabel = `Geschlossen — ${status.nextOpenLabel ?? ''}`;
-} else if (status.reason === 'after_closing') {
-  shortLabel = status.nextOpenShortLabel ?? 'morgen wieder';
-  fullLabel = `Geschlossen — ${status.nextOpenLabel ?? ''}`;
-}
 ---
 
 <header class="sticky top-0 z-30 border-b border-brand-gold/20 bg-brand-black/90 backdrop-blur">
@@ -68,16 +40,21 @@ if (status.isOpen && status.reason === 'regular') {
       </span>
     </a>
 
-    <!-- Compact status: dot + 1-2 words on mobile, full label ≥sm -->
+    <!--
+      Compact status: dot + 1-2 words on mobile, full label ≥sm.
+      Initial render = neutral; header.client.ts hydratisiert den echten Status.
+      `data-loading` versteckt den Pill bis JS gelaufen ist (CSS in global.css).
+    -->
     <span
-      class={`flex items-center gap-1.5 text-xs whitespace-nowrap ${toneClass}`}
+      class="flex items-center gap-1.5 text-xs whitespace-nowrap text-brand-cream/60"
       data-opening-pill
+      data-loading
       role="status"
-      aria-label={fullLabel}
+      aria-label="Öffnungszeiten werden geladen"
     >
-      <span class={`w-2 h-2 rounded-full ${dotColor} animate-pulse`} aria-hidden="true"></span>
-      <span class="sm:hidden font-semibold">{shortLabel}</span>
-      <span class="hidden sm:inline">{fullLabel}</span>
+      <span class="w-2 h-2 rounded-full bg-brand-cream/30" data-opening-dot aria-hidden="true"></span>
+      <span class="sm:hidden font-semibold" data-opening-short></span>
+      <span class="hidden sm:inline" data-opening-full></span>
     </span>
 
     <!-- Desktop nav (hidden on mobile) -->

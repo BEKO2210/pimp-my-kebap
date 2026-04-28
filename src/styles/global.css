@@ -102,6 +102,13 @@ input[aria-invalid='true'] {
   .cart-added-pulse, .cart-bar-pulse { animation: none; }
 }
 
+/* Header-Status-Pill: bis header.client.ts den echten Status setzt, bleibt
+ * der Pill zwar im Layout (kein Reflow), aber unsichtbar — verhindert das
+ * Aufflackern eines stale Build-Time-Wertes auf der statisch deployten Site. */
+[data-opening-pill][data-loading] {
+  visibility: hidden;
+}
+
 a { color: inherit; text-decoration: none; }
 
 h1, h2, h3, .display { font-family: var(--font-display); letter-spacing: -0.01em; }

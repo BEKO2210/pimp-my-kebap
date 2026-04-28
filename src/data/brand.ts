@@ -5,17 +5,20 @@
 
 export const BRAND = {
   marketingName: 'Pimp My Kebap',
-  // Gewerblich angemeldeter Name (Gewerbeschein, § 5 TMG/DDG-pflichtig im
-  // Impressum). "Pimp My Kebap" ist nur die Geschäftsbezeichnung/Marke.
-  legalName: 'Zentrum Döner',
+  // Gewerblich angemeldeter Name laut Gewerbeschein (GewA 1, Feld 3
+  // "Name des Geschäfts") — § 5 DDG-pflichtig im Impressum. "Pimp My
+  // Kebap" ist nur die Geschäftsbezeichnung/Marke.
+  legalName: 'Zentrum Pizza und Kebaphaus',
   legalForm: 'Einzelunternehmen',
 
+  // Inhaberin laut Gewerbeschein (Feld 1+4+5).
   ownerName: 'Fatma Tasocak-Savci',
   ownerLabel: 'Inhaberin',
-  // Bei einem Einzelunternehmen gibt es rechtlich KEINEN "Geschäftsführer"
-  // (das ist ein Begriff des GmbHG). Ali ist faktisch Betriebsleiter und
-  // darf das Geschäft im Tagesgeschäft vertreten — diese Bezeichnung ist
-  // rechtlich sauber und vermeidet Abmahn-Angriffsfläche.
+  // Im Gewerbeschein (Feld 14) ist KEINE vertretungsberechtigte Person
+  // eingetragen — bei Einzelunternehmen i.d.R. nicht moeglich, der Inhaber
+  // vertritt selbst. Ali ist faktisch Betriebsleiter im Tagesgeschäft;
+  // das ist eine freiwillige Zusatzinformation, kein rechtlicher Titel.
+  // "Geschäftsführer" waere falsch (GmbHG-Begriff).
   managerName: 'Ali Murat Tasocak',
   managerLabel: 'Betriebsleiter',
 

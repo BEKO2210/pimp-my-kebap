@@ -6,11 +6,13 @@ export const NotesSchema = z
   .string()
   .max(280, 'Notiz darf maximal 280 Zeichen enthalten.')
   // Whitelist: ASCII letters/digits, German umlauts, common punctuation, newline.
-  .regex(/^[a-zA-Z0-9äöüÄÖÜß ,.!?:\-+\n]*$/u, 'Notiz enthält unzulässige Zeichen.');
+  // Inkl. ( ) / ' — kommt in echten Bestell-Notizen vor ("1/2 scharf",
+  // "Klingel kaputt (bitte anrufen)", "Anna's Tür").
+  .regex(/^[a-zA-Z0-9äöüÄÖÜß ,.!?:'()/\-+\n]*$/u, 'Notiz enthält unzulässige Zeichen.');
 
 /** Strips disallowed characters and clamps to 280 chars. Safe to feed to NotesSchema. */
 export function sanitizeNotes(raw: string): string {
-  const stripped = raw.replace(/[^a-zA-Z0-9äöüÄÖÜß ,.!?:\-+\n]/gu, '');
+  const stripped = raw.replace(/[^a-zA-Z0-9äöüÄÖÜß ,.!?:'()/\-+\n]/gu, '');
   return stripped.slice(0, 280);
 }
 

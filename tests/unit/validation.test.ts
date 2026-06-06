@@ -24,16 +24,20 @@ describe('NotesSchema', () => {
 
 describe('sanitizeNotes', () => {
   it('strips disallowed characters but keeps allowed letters', () => {
-    // < > / are dropped; letters inside the tags are kept
-    expect(sanitizeNotes('Hi <b>there</b>!')).toBe('Hi bthereb!');
+    // < > are dropped; letters (and the now-allowed "/") inside the tags stay
+    expect(sanitizeNotes('Hi <b>there</b>!')).toBe('Hi bthere/b!');
   });
 
-  it('strips angle brackets and quotes', () => {
-    expect(sanitizeNotes('"><img/onerror=1>')).toBe('imgonerror1');
+  it('strips angle brackets, quotes and equals (no tag/attr injection)', () => {
+    // < > " = & remain blacklisted, so no HTML tag or attribute can survive.
+    expect(sanitizeNotes('"><img/onerror=1>')).toBe('img/onerror1');
   });
 
-  it('keeps umlauts and punctuation', () => {
+  it('keeps umlauts and common order punctuation', () => {
     expect(sanitizeNotes('Süß, scharf? Ja!')).toBe('Süß, scharf? Ja!');
+    expect(sanitizeNotes('1/2 scharf (bitte klingeln), Anna\'s Tür')).toBe(
+      '1/2 scharf (bitte klingeln), Anna\'s Tür',
+    );
   });
 
   it('clamps to 280 chars', () => {

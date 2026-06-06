@@ -109,6 +109,13 @@ input[aria-invalid='true'] {
   visibility: hidden;
 }
 
+/* Schüler-Sektion: am Wochenende / Feiertag clientseitig komplett ausblenden
+ * (menuHydrate.client.ts setzt .school-day-off). Eigene Klasse statt [hidden],
+ * damit der Speisekarten-Filter (der [hidden] toggelt) nicht in Konflikt
+ * geraet. Außerhalb des Zeitfensters (werktags >16:00) nur abdimmen. */
+.school-day-off { display: none !important; }
+[data-school-section].school-closed { opacity: 0.6; }
+
 a { color: inherit; text-decoration: none; }
 
 h1, h2, h3, .display { font-family: var(--font-display); letter-spacing: -0.01em; }

@@ -9,41 +9,36 @@ import Icon from '../Icon.astro';
 
 interface Props {
   item: MenuItem;
-  promo?: boolean;
-  effectivePrice: number | null;
-  /** Whether this item can be ordered right now (false e.g. for school items outside school hours). */
-  orderable?: boolean;
-  /** Reason why the item is not orderable, displayed instead of the stepper. */
-  unavailableReason?: string;
-  /** Wochentags-Kuerzel der heutigen Tages-Aktion ("Mo", "Di", "Mi", "Sa") —
-   *  wird im Promo-Sublabel auf der Card angezeigt ("Mo-Special heute · −2,00 €").
-   *  Undefined wenn heute kein Offer-Tag — dann bleibt der Sublabel aus, der
-   *  Strikethrough wird trotzdem gezeigt. */
-  dayShortLabel?: string;
 }
 
-const { item, promo, effectivePrice, orderable = true, unavailableReason, dayShortLabel } = Astro.props;
-// Promo-Anzeige: Originalpreis + Ersparnis ausrechnen (nur wenn beides bekannt).
-const showPromoCompare =
-  promo === true && item.priceEur !== null && effectivePrice !== null && effectivePrice < item.priceEur;
-const savingsEur = showPromoCompare ? (item.priceEur as number) - (effectivePrice as number) : 0;
+const { item } = Astro.props;
+// WICHTIG: Karten werden weekday-NEUTRAL gerendert (kanonischer Vollpreis,
+// kein Tages-Aktion-Promo, Schüler immer als "bestellbar"). Die Site ist
+// statisch (GitHub Pages) — ein build-time Promo/Schulzeit-Wert waere fuer
+// alle Besucher bis zum naechsten Build eingefroren. menuHydrate.client.ts
+// rechnet Promo-Preise + Schüler-Verfügbarkeit nach DOM-Ready clientseitig.
+const fullPrice = item.priceEur; // number | null ("Auf Anfrage")
+const isOnRequest = fullPrice === null;
 const slug = CATEGORY_TO_PLACEHOLDER[item.category] ?? 'doener';
 const photoBase = withBase(`/images/meals/${item.id}`);
 const placeholder = withBase(`/images/placeholders/${slug}.svg`);
-const isOnRequest = effectivePrice === null;
-const canOrder = !isOnRequest && orderable;
+const isSchoolItem = item.schoolHoursOnly === true;
+// Kanonisch bestellbar = solange ein Preis existiert. Die Schüler-Zeitfenster-
+// Sperre (Mo–Fr ≤16:00) wird erst clientseitig gesetzt.
+const canOrder = !isOnRequest;
 // When the item carries options (Beilage / Drehspieß / …) the +-button no
 // longer adds directly — it opens the options dialog. The options payload is
 // JSON-serialised onto the card so the client doesn't need a separate fetch.
 const hasOptions = (item.options?.length ?? 0) > 0;
+const promoMap = item.promoPriceMap ?? {};
 const optionsPayload = hasOptions
   ? JSON.stringify({
       itemId: item.id,
       itemName: item.name,
       category: item.category,
       description: item.description,
-      basePriceEur: effectivePrice,
-      promo: promo ?? false,
+      basePriceEur: fullPrice,
+      promo: false,
       options: item.options,
       imgBase: `/images/meals/${item.id}`,
       fallback: `/images/placeholders/${slug}.svg`,
@@ -56,8 +51,11 @@ const optionsPayload = hasOptions
   data-item-id={item.id}
   data-item-name={item.name}
   data-item-category={item.category}
-  data-item-price={effectivePrice ?? ''}
-  data-item-promo={promo ? 'true' : 'false'}
+  data-item-price={fullPrice ?? ''}
+  data-item-base-price={fullPrice ?? ''}
+  data-item-promo="false"
+  data-item-promo-map={JSON.stringify(promoMap)}
+  data-item-school={isSchoolItem ? 'true' : 'false'}
   data-item-tag={item.tag ?? ''}
   data-item-markings={(item.markings ?? []).join(',')}
   data-item-search={`${item.name} ${item.description ?? ''} ${item.tag ?? ''}`.toLowerCase()}
@@ -93,9 +91,8 @@ const optionsPayload = hasOptions
     {item.tag === 'vegetarisch' && (
       <span class="absolute top-2 left-2 badge badge-veg">Vegetarisch</span>
     )}
-    {promo && (
-      <span class="absolute top-2 right-2 badge badge-gold">Aktion</span>
-    )}
+    {/* Promo-Badge wird clientseitig eingeblendet (Tages-Aktion). */}
+    <span class="absolute top-2 right-2 badge badge-gold" data-promo-badge hidden>Aktion</span>
   </div>
   <div class="p-4 flex flex-col gap-2 flex-1">
     <div class="flex items-baseline justify-between gap-2">
@@ -113,23 +110,18 @@ const optionsPayload = hasOptions
             <span class="text-sm text-brand-cream/60">Auf Anfrage</span>
           ) : (
             <>
-              {showPromoCompare && item.priceEur !== null && (
-                <del class="text-brand-cream/55 text-sm num mr-1.5 font-normal align-middle">
-                  {formatEUR(item.priceEur)}
-                </del>
-              )}
-              <span itemprop="price" data-content={String(effectivePrice ?? 0)}>{formatEUR(effectivePrice ?? 0)}</span>
+              {/* Originalpreis (Strikethrough) — clientseitig bei Aktion eingeblendet. */}
+              <del class="text-brand-cream/55 text-sm num mr-1.5 font-normal align-middle" data-price-original hidden></del>
+              <span itemprop="price" data-price-current data-content={String(fullPrice ?? 0)}>{formatEUR(fullPrice ?? 0)}</span>
             </>
           )}
         </p>
-        {showPromoCompare && (
-          <p class="text-[11px] text-brand-gold/90 num leading-tight font-semibold">
-            {dayShortLabel ? `${dayShortLabel}-Special` : 'Tages-Aktion'} · −{formatEUR(savingsEur)}
-          </p>
+        {!isOnRequest && (
+          <p class="text-[11px] text-brand-gold/90 num leading-tight font-semibold" data-price-savings hidden></p>
         )}
       </div>
       {canOrder && (
-        <div class="inline-flex items-center gap-1 shrink-0" role="group" aria-label={`Menge ${item.name}`}>
+        <div class="inline-flex items-center gap-1 shrink-0" role="group" aria-label={`Menge ${item.name}`} data-order-stepper>
           <button
             type="button"
             data-item-dec
@@ -145,8 +137,9 @@ const optionsPayload = hasOptions
           >{hasOptions ? 'Auswählen' : '+'}</button>
         </div>
       )}
-      {!canOrder && !isOnRequest && unavailableReason && (
-        <span class="text-xs text-brand-cream/55 shrink-0">{unavailableReason}</span>
+      {/* Schüler-Hinweis (außerhalb Schulzeit) — clientseitig ein-/ausgeblendet. */}
+      {isSchoolItem && canOrder && (
+        <span class="text-xs text-brand-cream/55 shrink-0" data-order-reason hidden>Nur Mo–Fr bis 16:00 Uhr</span>
       )}
     </div>
   </div>

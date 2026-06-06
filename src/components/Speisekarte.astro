@@ -6,16 +6,14 @@ import { DRINKS } from '../data/drinks';
 import MenuSection from './MenuSection/MenuSection.astro';
 import Drinks from './MenuSection/Drinks.astro';
 import ItemOptionsDialog from './MenuSection/ItemOptionsDialog.astro';
-import { getCurrentWeekday, isSchoolDay, isSchoolHoursWindow } from '../lib/time';
 import Icon from './Icon.astro';
 
-const weekday = getCurrentWeekday();
-const schoolHours = isSchoolHoursWindow();
-const schoolDay = isSchoolDay();
-// On Sat/Sun and holidays the Schüler section is irrelevant — no special
-// price applies anyway and the kitchen mostly isn't open. Drop it entirely
-// from the rendered list (and the quick-jump nav) instead of dimming it.
-const visibleCategories = ALL_CATEGORIES.filter((c) => c !== 'schueler' || schoolDay);
+// Site ist statisch (GitHub Pages) — Wochentag/Schulzeit duerfen NICHT zur
+// Build-Zeit eingefroren werden. Alle Kategorien (inkl. Schüler) werden immer
+// gerendert; menuHydrate.client.ts blendet die Schüler-Sektion + den
+// Quick-Jump-Link am Wochenende/Feiertag clientseitig aus und setzt
+// Promo-Preise + Verfügbarkeit nach dem aktuellen Tag.
+const visibleCategories = ALL_CATEGORIES;
 const filterableAllergens: Array<keyof typeof ALLERGENS> = ['a', 'c', 'd', 'e', 'f'];
 
 // Pre-compute item counts so each accordion summary can show "(N Speisen)".
@@ -139,8 +137,6 @@ const drinkCount = DRINKS.reduce((sum, d) => sum + d.variants.length, 0);
   return (
     <MenuSection
       category={c}
-      weekday={weekday}
-      schoolHoursOpen={schoolHours}
       itemCount={itemsByCategory(c).length}
       {...ctaProps}
     />
@@ -150,6 +146,9 @@ const drinkCount = DRINKS.reduce((sum, d) => sum + d.variants.length, 0);
 <ItemOptionsDialog />
 
 <script>
+  // Reihenfolge: erst clientseitig hydratisieren (Promo-Preise + Schüler-
+  // Verfügbarkeit setzen), dann Cart-Stepper + Filter verdrahten.
+  import './MenuSection/menuHydrate.client.ts';
   import './MenuSection/menuSection.client.ts';
   import './MenuSection/menuFilter.client.ts';
 </script>

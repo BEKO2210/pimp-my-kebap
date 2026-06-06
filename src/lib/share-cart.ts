@@ -64,6 +64,12 @@ export function tryHydrateFromUrl(): boolean {
     const decoded = b64decode(hash.slice(HASH_KEY.length + 1));
     const parsed = PersistedCartSchema.safeParse(JSON.parse(decoded));
     if (!parsed.success) return false;
+    // 24h-TTL durchsetzen — analog hydrateCart(). Ohne diesen Check wuerde ein
+    // alter geteilter Link (mit stale Preisen) auch nach Ablauf noch greifen.
+    if (parsed.data.expiresAtMs < Date.now()) {
+      history.replaceState(null, '', location.pathname + location.search);
+      return false;
+    }
     $lines.set(parsed.data.lines as unknown as CartLine[]);
     $customer.set(parsed.data.customer as unknown as CustomerInfo);
     // Clean the hash so a refresh doesn't re-apply the same payload

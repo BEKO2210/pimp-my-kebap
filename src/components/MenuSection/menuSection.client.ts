@@ -47,19 +47,21 @@ if (cards.length > 0) {
     const id = card.dataset.itemId ?? '';
     const name = card.dataset.itemName ?? id;
     const cat = (card.dataset.itemCategory as MenuCategory) ?? 'drehspiess';
-    const promo = card.dataset.itemPromo === 'true';
-    const price = Number.parseFloat(card.dataset.itemPrice ?? '');
-    const orderable = card.dataset.itemOrderable !== 'false';
     const hasOptions = card.dataset.itemHasOptions === 'true';
-    const optionsRaw = card.dataset.itemOptions;
 
     const incBtn = card.querySelector<HTMLButtonElement>('[data-item-inc]');
     const decBtn = card.querySelector<HTMLButtonElement>('[data-item-dec]');
 
     if (incBtn) {
       incBtn.addEventListener('click', () => {
+        // Preis/Promo/Verfügbarkeit/Options frisch lesen — menuHydrate.client.ts
+        // schreibt diese Attribute beim Tageswechsel (Promo-Preis, Schulzeit) um.
+        const promo = card.dataset.itemPromo === 'true';
+        const price = Number.parseFloat(card.dataset.itemPrice ?? '');
+        const orderable = card.dataset.itemOrderable !== 'false';
+        const optionsRaw = card.dataset.itemOptions;
         if (Number.isNaN(price)) return;
-        if (!orderable) return; // server-rendered as not orderable; ignore stray clicks
+        if (!orderable) return; // not orderable right now; ignore stray clicks
         // Items with options always open the dialog. Quantity stepper still
         // works on the - side for previously-added (configured) lines.
         if (hasOptions && optionsRaw) {

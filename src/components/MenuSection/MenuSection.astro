@@ -2,16 +2,12 @@
 // Powered by skill: frontend-design
 import type { MenuCategory } from '../../data/menu';
 import { itemsByCategory, CATEGORY_LABEL } from '../../data/menu';
-import { effectiveMenuPrice } from '../../lib/pricing';
-import { offerForDay } from '../../data/weeklyOffers';
 import ItemCard from '../ItemCard/ItemCard.astro';
 import Icon from '../Icon.astro';
 import { withBase } from '../../lib/url';
 
 interface Props {
   category: MenuCategory;
-  weekday: 1 | 2 | 3 | 4 | 5 | 6 | 7;
-  schoolHoursOpen?: boolean;
   /** When set, descriptive blurb under heading. */
   blurb?: string;
   /** Pre-computed item count for the summary line. */
@@ -25,8 +21,6 @@ interface Props {
 
 const {
   category,
-  weekday,
-  schoolHoursOpen = true,
   blurb,
   itemCount,
   ctaHref,
@@ -36,19 +30,18 @@ const {
 } = Astro.props;
 const items = itemsByCategory(category);
 const isSchoolSection = category === 'schueler';
-const sectionDimmed = isSchoolSection && !schoolHoursOpen;
 const count = itemCount ?? items.length;
-// Tages-Aktion (z.B. "Mo", "Di") fuer den Sublabel auf Promo-Cards. Wenn der
-// aktuelle Wochentag kein WeeklyOffer-Special hat (Do/Fr/So), bleibt das hier
-// undefined — Cards zeigen dann zwar evtl. einen Promo-Preis (falls
-// promoPriceMap separat gepflegt), aber ohne Day-Sublabel.
-const todayShortLabel = offerForDay(weekday)?.shortLabel;
+// Hinweis: Promo-Preise (Tages-Aktion) und die Schüler-Verfügbarkeit
+// (Mo–Fr ≤16:00) werden NICHT zur Build-Zeit gesetzt — die Site ist statisch.
+// menuHydrate.client.ts uebernimmt das clientseitig. Hier wird kanonisch der
+// "Schulzeit offen"-Zustand gerendert; der Client schaltet ggf. auf "zu" um.
 ---
 
 <section
   id={`section-${category}`}
-  class={`px-4 sm:px-6 lg:px-8 ${sectionDimmed ? 'opacity-60' : ''}`}
+  class="px-4 sm:px-6 lg:px-8"
   data-menu-section={category}
+  data-school-section={isSchoolSection ? 'true' : undefined}
   aria-labelledby={`heading-${category}`}
 >
   <div class="mx-auto max-w-6xl">
@@ -65,8 +58,8 @@ const todayShortLabel = offerForDay(weekday)?.shortLabel;
             ({count} {count === 1 ? 'Speise' : 'Speisen'})
           </span>
           {isSchoolSection && (
-            <span class={`badge ${schoolHoursOpen ? 'badge-veg' : 'badge-spicy'} hidden sm:inline-flex shrink-0`}>
-              {schoolHoursOpen ? 'Mo–Fr ≤16:00' : 'außerhalb Schulzeit'}
+            <span class="badge badge-veg hidden sm:inline-flex shrink-0" data-school-badge>
+              Mo–Fr ≤16:00
             </span>
           )}
         </div>
@@ -104,16 +97,7 @@ const todayShortLabel = offerForDay(weekday)?.shortLabel;
       )}
 
       <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-5">
-        {items.map((item) => {
-          const eff = effectiveMenuPrice(item, weekday);
-          const promo = eff !== null && item.priceEur !== null && eff < item.priceEur;
-          // Schüler-Items sind nur Mo–Fr bis 16:00 (außerhalb Feiertag) bestellbar.
-          const orderable = item.schoolHoursOnly ? schoolHoursOpen : true;
-          const unavailableReason = item.schoolHoursOnly && !schoolHoursOpen
-            ? 'Nur Mo–Fr bis 16:00 Uhr'
-            : undefined;
-          return <ItemCard item={item} promo={promo} effectivePrice={eff} orderable={orderable} unavailableReason={unavailableReason} dayShortLabel={todayShortLabel} />;
-        })}
+        {items.map((item) => <ItemCard item={item} />)}
       </div>
     </details>
   </div>

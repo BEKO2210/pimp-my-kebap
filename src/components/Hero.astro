@@ -4,11 +4,15 @@
 // gold ↔ fire-orange accents (no purple), varied radii.
 import { BRAND } from '../data/brand';
 import { withBase } from '../lib/url';
-import { offerForDay } from '../data/weeklyOffers';
-import { getCurrentWeekday } from '../lib/time';
+import { WEEKLY_OFFERS } from '../data/weeklyOffers';
 import Icon from './Icon.astro';
 
-const offer = offerForDay(getCurrentWeekday());
+// Die Site ist statisch — der "Heute"-Tagesangebots-Karte darf NICHT zur
+// Build-Zeit eingefroren werden (sonst stuende z.B. das Mo-Angebot auch am
+// Mittwoch). hero.client.ts picked nach getCurrentWeekday() das passende
+// Angebot und blendet die Karte ein (oder versteckt sie an Tagen ohne Aktion).
+const offersJson = JSON.stringify(WEEKLY_OFFERS);
+const offerHref = withBase('/') + '#aktion';
 ---
 
 <section
@@ -84,18 +88,21 @@ const offer = offerForDay(getCurrentWeekday());
           />
         </picture>
       </div>
-      {offer && (
-        <a
-          href={withBase('/') + '#aktion'}
-          class="mt-6 block card !rounded-tl-3xl !rounded-br-none p-4 hover:translate-x-1 transition-transform"
-          aria-label={`Heute: ${offer.title}`}
-        >
-          <p class="eyebrow">Heute · {offer.shortLabel}</p>
-          <p class="display text-2xl text-brand-cream mt-1">{offer.title}</p>
-          <p class="text-brand-cream/65 text-sm mt-1">{offer.description}</p>
-          <p class="text-brand-gold mt-2 num font-semibold">{offer.badge}</p>
-        </a>
-      )}
+      <a
+        href={offerHref}
+        class="mt-6 block card !rounded-tl-3xl !rounded-br-none p-4 hover:translate-x-1 transition-transform"
+        data-hero-offer
+        data-offers={offersJson}
+        hidden
+      >
+        <p class="eyebrow">Heute · <span data-hero-day></span></p>
+        <p class="display text-2xl text-brand-cream mt-1" data-hero-title></p>
+        <p class="text-brand-cream/65 text-sm mt-1" data-hero-desc></p>
+        <p class="text-brand-gold mt-2 num font-semibold" data-hero-badge></p>
+      </a>
+      <script>
+        import './hero.client.ts';
+      </script>
     </div>
   </div>
 

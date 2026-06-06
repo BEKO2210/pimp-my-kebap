@@ -24,6 +24,7 @@ import { BREADS } from '../../data/breads';
 import { BASES, MEATS } from '../../data/configurator';
 import { SAUCES } from '../../data/sauces';
 import { TOPPINGS } from '../../data/ingredients';
+import { MIN_DELIVERY_ORDER_EUR } from '../../data/delivery';
 import { copyShareCartLink } from '../../lib/share-cart';
 import { recordOrder } from '../../lib/history';
 import { toast } from '../../lib/toast';
@@ -261,7 +262,7 @@ if (root) {
       plzInvalid = plzMissing || plzBadFormat;
       streetInvalid = streetMissing;
       if (t.belowDeliveryMinimum) {
-        warn = `Lieferung erst ab ${formatEUR(20)}. Bitte mehr Artikel hinzufügen.`;
+        warn = `Lieferung erst ab ${formatEUR(MIN_DELIVERY_ORDER_EUR)}. Bitte mehr Artikel hinzufügen.`;
       } else if (plzMissing || streetMissing) {
         warn = 'Lieferung: PLZ und Straße eingeben.';
       } else if (plzBadFormat) {

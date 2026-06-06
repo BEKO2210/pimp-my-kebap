@@ -184,7 +184,7 @@ export function buildWhatsAppMessage({ cart, now = new Date() }: BuildWhatsAppOp
   }
   totalsBlock.push(`GESAMT:        ${formatEUR(totals.grandTotalEur)}`);
   if (totals.belowDeliveryMinimum) {
-    totalsBlock.push(`Hinweis: Lieferung erst ab ${formatEUR(20)} möglich.`);
+    totalsBlock.push(`Hinweis: Lieferung erst ab ${formatEUR(MIN_DELIVERY_ORDER_EUR)} möglich.`);
   }
 
   const noteBlock = customer.notes?.trim()

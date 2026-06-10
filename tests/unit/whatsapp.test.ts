@@ -136,7 +136,7 @@ describe('computeTotals', () => {
     const msg = buildWhatsAppMessage({ cart: { lines: all, customer } });
     expect(msg).toContain('Kebap Basic'); // kebab line
     expect(msg).toContain('Pimp my Pizza · Salami, Mais'); // pizza-configurator line
-    expect(msg).toContain('Margherita'); // speisekarte line
+    expect(msg).toContain('1x Pizza Margherita'); // speisekarte line — als Pizza gekennzeichnet
     expect(msg).toContain('Cola'); // drink line
     expect(msg).toContain('GESAMT:');
   });
@@ -319,6 +319,84 @@ describe('buildWhatsAppMessage', () => {
     expect(msg).not.toContain('Schmelzkäse');
     expect(msg).not.toContain('Toppings:');
     expect(msg).not.toContain('Mehr Fleisch:');
+  });
+});
+
+describe('buildWhatsAppMessage — Pizza-Kennzeichnung', () => {
+  it('stellt Speisekarten-Pizzen ohne Präfix ein "Pizza" voran (alte Cart-Daten)', () => {
+    const stale: CartLine = {
+      kind: 'menu',
+      id: 'm-stale',
+      quantity: 1,
+      itemId: 'pizza-salami',
+      itemName: 'Salami', // vor dem cartItemName-Fix persistierte Linie
+      category: 'pizza',
+      unitPriceEur: 9.0,
+    };
+    const msg = buildWhatsAppMessage({ cart: { lines: [stale], customer } });
+    expect(msg).toContain('1x Pizza Salami');
+  });
+
+  it('verdoppelt "Pizza" nicht bei bereits qualifizierten Namen', () => {
+    const lines: CartLine[] = [
+      {
+        kind: 'menu',
+        id: 'm-a',
+        quantity: 1,
+        itemId: 'pimp-pizza-salami',
+        itemName: 'Pimp my Pizza · Salami',
+        category: 'pizza',
+        unitPriceEur: 9.0,
+      },
+      {
+        kind: 'menu',
+        id: 'm-b',
+        quantity: 1,
+        itemId: 'pizza-zentrum',
+        itemName: 'Pizza Zentrum',
+        category: 'pizza',
+        unitPriceEur: 10.5,
+      },
+      {
+        kind: 'menu',
+        id: 'm-c',
+        quantity: 1,
+        itemId: 'pizzabrot',
+        itemName: 'Pizzabrot',
+        category: 'pizza',
+        unitPriceEur: 7.0,
+      },
+    ];
+    const msg = buildWhatsAppMessage({ cart: { lines, customer } });
+    expect(msg).toContain('1x Pimp my Pizza · Salami');
+    expect(msg).toContain('1x Pizza Zentrum');
+    expect(msg).toContain('1x Pizzabrot');
+    expect(msg).not.toContain('Pizza Pizza');
+    expect(msg).not.toContain('Pizza Pimp');
+  });
+
+  it('lässt Nicht-Pizza-Kategorien unangetastet', () => {
+    const line: CartLine = {
+      kind: 'menu',
+      id: 'm-d',
+      quantity: 2,
+      itemId: 'salat-gemischt',
+      itemName: 'Gemischter Salat',
+      category: 'salate',
+      unitPriceEur: 5.5,
+    };
+    const msg = buildWhatsAppMessage({ cart: { lines: [line], customer } });
+    expect(msg).toContain('2x Gemischter Salat');
+  });
+});
+
+describe('buildWhatsAppMessage — Vor-Ort-Zeitlabel', () => {
+  it('nennt die Zeitzeile bei Vor-Ort-Verzehr "Uhrzeit" statt "Abholung"', () => {
+    const msg = buildWhatsAppMessage({
+      cart: { lines: [kebab(1)], customer: { ...customer, fulfillment: 'vor-ort' } },
+    });
+    expect(msg).toContain('Uhrzeit: ASAP');
+    expect(msg).not.toContain('Abholung: ASAP');
   });
 });
 

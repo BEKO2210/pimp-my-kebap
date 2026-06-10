@@ -305,6 +305,16 @@ export function itemsByCategory(cat: MenuCategory): MenuItem[] {
   return MENU.filter((m) => m.category === cat);
 }
 
+/**
+ * Name, wie er im Warenkorb / in der WhatsApp-Bestellung erscheint. Pizza-
+ * Sorten heißen auf der Karte nur "Salami"/"Funghi" — ohne den Sektions-
+ * Kontext wäre "1x Salami" in der Bestellung nicht als Pizza erkennbar.
+ */
+export function cartItemName(item: Pick<MenuItem, 'name' | 'category'>): string {
+  if (item.category === 'pizza' && !/pizza/i.test(item.name)) return `Pizza ${item.name}`;
+  return item.name;
+}
+
 export const ALL_CATEGORIES: MenuCategory[] = [
   'drehspiess',
   'schueler',

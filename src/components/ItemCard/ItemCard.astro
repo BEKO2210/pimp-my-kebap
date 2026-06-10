@@ -2,7 +2,7 @@
 // Powered by skill: frontend-design, accessibility, image-optimization
 import type { MenuItem } from '../../data/menu';
 import AllergenBadge from '../AllergenBadge.astro';
-import { CATEGORY_TO_PLACEHOLDER } from '../../data/menu';
+import { CATEGORY_TO_PLACEHOLDER, CATEGORY_LABEL, cartItemName } from '../../data/menu';
 import { formatEUR } from '../../lib/format';
 import { withBase } from '../../lib/url';
 import Icon from '../Icon.astro';
@@ -34,7 +34,7 @@ const promoMap = item.promoPriceMap ?? {};
 const optionsPayload = hasOptions
   ? JSON.stringify({
       itemId: item.id,
-      itemName: item.name,
+      itemName: cartItemName(item),
       category: item.category,
       description: item.description,
       basePriceEur: fullPrice,
@@ -49,7 +49,7 @@ const optionsPayload = hasOptions
 <article
   class="card overflow-hidden flex flex-col"
   data-item-id={item.id}
-  data-item-name={item.name}
+  data-item-name={cartItemName(item)}
   data-item-category={item.category}
   data-item-price={fullPrice ?? ''}
   data-item-base-price={fullPrice ?? ''}
@@ -58,7 +58,7 @@ const optionsPayload = hasOptions
   data-item-school={isSchoolItem ? 'true' : 'false'}
   data-item-tag={item.tag ?? ''}
   data-item-markings={(item.markings ?? []).join(',')}
-  data-item-search={`${item.name} ${item.description ?? ''} ${item.tag ?? ''}`.toLowerCase()}
+  data-item-search={`${cartItemName(item)} ${CATEGORY_LABEL[item.category]} ${item.description ?? ''} ${item.tag ?? ''}`.toLowerCase()}
   data-item-orderable={canOrder ? 'true' : 'false'}
   data-item-has-options={hasOptions ? 'true' : 'false'}
   data-item-options={optionsPayload}

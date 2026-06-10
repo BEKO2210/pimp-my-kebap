@@ -1,10 +1,14 @@
 name: Deploy
 
+# Deploy NUR von main: GitHub Pages hat genau ein Deployment-Ziel (Production).
+# Feature-Branches (claude/**) wuerden sonst bei jedem Push einen Production-
+# Deploy versuchen — das github-pages-Environment lehnt das ab (Protection
+# Rule "main only") und jeder Branch-Push endet mit einem roten Deploy-Run.
+# Branch-Validierung uebernimmt ci.yml (Lint/Typecheck/Tests/Build).
 on:
   push:
     branches:
       - main
-      - 'claude/**'
   workflow_dispatch:
 
 permissions:

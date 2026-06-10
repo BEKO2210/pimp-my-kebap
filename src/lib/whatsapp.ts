@@ -8,6 +8,7 @@ import { BASES, MEATS } from '../data/configurator';
 import { SAUCES } from '../data/sauces';
 import { TOPPINGS } from '../data/ingredients';
 import { BRAND, resolveWhatsAppNumber } from '../data/brand';
+import { cartItemName } from '../data/menu';
 import { findZone, MIN_DELIVERY_ORDER_EUR, DELIVERY_ZONE_OTHER } from '../data/delivery';
 
 const SEPARATOR = '─────────────────────────────────';
@@ -66,8 +67,11 @@ function describeKebab(line: Extract<CartLine, { kind: 'kebab' }>): string[] {
 
 function describeMenuItem(line: Extract<CartLine, { kind: 'menu' }>): string[] {
   const promo = line.promoApplied ? ' (Aktion)' : '';
+  // cartItemName ist idempotent — qualifiziert auch Linien aus aelteren
+  // localStorage-Carts, deren itemName noch ohne "Pizza"-Praefix gespeichert ist.
+  const name = cartItemName({ name: line.itemName, category: line.category });
   return [
-    `${line.quantity}x ${line.itemName}${promo}`,
+    `${line.quantity}x ${name}${promo}`,
     line.optionsLabel ? `   • ${line.optionsLabel}` : null,
     line.notes && line.notes.trim() ? `   • Anmerkung: ${line.notes.trim()}` : null,
     `   = ${formatEUR(round2(line.unitPriceEur * line.quantity))}`,
@@ -152,7 +156,12 @@ export function buildWhatsAppMessage({ cart, now = new Date() }: BuildWhatsAppOp
       : customer.fulfillment === 'lieferung'
         ? 'Lieferung'
         : 'Abholung';
-  const timeLabel = customer.fulfillment === 'lieferung' ? 'Lieferung' : 'Abholung';
+  const timeLabel =
+    customer.fulfillment === 'lieferung'
+      ? 'Lieferung'
+      : customer.fulfillment === 'vor-ort'
+        ? 'Uhrzeit'
+        : 'Abholung';
   const pickupLabel =
     customer.pickup.kind === 'asap'
       ? 'ASAP'
@@ -208,9 +217,9 @@ export function buildWhatsAppMessage({ cart, now = new Date() }: BuildWhatsAppOp
 
   const footer = [
     SEPARATOR,
-    customer.fulfillment === 'lieferung'
-      ? `Restaurant: ${BRAND.address.street}, ${BRAND.address.postalCode} ${BRAND.address.city}`
-      : `Abholung bei: ${BRAND.address.street}, ${BRAND.address.postalCode} ${BRAND.address.city}`,
+    customer.fulfillment === 'abholung'
+      ? `Abholung bei: ${BRAND.address.street}, ${BRAND.address.postalCode} ${BRAND.address.city}`
+      : `Restaurant: ${BRAND.address.street}, ${BRAND.address.postalCode} ${BRAND.address.city}`,
     `Rückfragen: ${BRAND.contact.phoneDisplay}`,
   ];
 

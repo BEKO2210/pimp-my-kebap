@@ -4,7 +4,8 @@ import globals from 'globals';
 import tsPlugin from '@typescript-eslint/eslint-plugin';
 import tsParser from '@typescript-eslint/parser';
 import astroPlugin from 'eslint-plugin-astro';
-import astroParser from 'astro-eslint-parser';
+// v2 hat keinen Default-Export mehr — Namespace-Import als Parser-Objekt.
+import * as astroParser from 'astro-eslint-parser';
 
 export default [
   js.configs.recommended,

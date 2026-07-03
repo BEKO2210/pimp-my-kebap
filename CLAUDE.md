@@ -12,14 +12,13 @@ keine DB, keine Cookies, keine Tracker. DSGVO-konform.
 Hosting: **GitHub Pages** (`beko2210.github.io/pimp-my-kebap`).
 Cloudflare-Pages-Setup ist via `wrangler.toml` ebenfalls vorbereitet.
 
-## Stack (Stand 2026-04-26)
+## Stack (Stand 2026-07-03)
 
-- **Astro 6.1.9** (static, Islands-Hydration) · **TypeScript strict**
+- **Astro 7.0.6** (static, Islands-Hydration, Vite 8) · **TypeScript strict**
 - **Tailwind v4** (`@tailwindcss/vite`) · eigene Tokens in `src/styles/tokens.css`
 - **nanostores** (Cart) · **Zod** (localStorage-Validation)
 - **Vitest** Unit · **Playwright** E2E (lokal **und** in CI via `e2e.yml`)
 - **sharp** für Build-Image-Pipeline (AVIF/WebP/PWA-Icons)
-- **Vite 7.3.6 (gepinnt)** via `"overrides"` in `package.json` — siehe Gotcha #10
 
 ## Architektur-Konventionen (wichtig!)
 
@@ -73,10 +72,15 @@ data/menu.ts | data/configurator.ts
    (siehe [`LICENSE`](./LICENSE)) — Code-Eigentum: Belkis Aslani; Inhalte (Marke,
    Menü, Fotos): Inhaberin. **Diese Attribution darf nicht entfernt oder versteckt
    werden** — explizit Bestandteil der Lizenzbedingungen.
-10. **`overrides: { "vite": "7.3.6" }`** in `package.json` ist Pflicht. Vitest 4.x zieht
-    sonst Vite 8.x als Top-Level-Hoist, und `@tailwindcss/vite 4.2.4` bricht dann gegen
-    Vite-8's Rolldown-Resolver (`Missing field tsconfigPaths`-Error im Build). Wenn
-    Vitest / Tailwind alle Vite-8-kompatibel werden, kann der Override raus.
+10. **Vite-Override ist Geschichte** (seit Astro-7-Migration): Astro 7 verlangt Vite 8,
+    `@tailwindcss/vite ≥ 4.3.2` und Vitest ≥ 4.1.9 sind Vite-8-kompatibel — der frühere
+    `overrides`-Pin in `package.json` wurde entfernt und darf nicht zurückkommen.
+11. **View Transitions nur bei `prefers-reduced-motion: no-preference`** (`global.css`).
+    Grund: a11y + im Headless-Chromium bleibt die Cross-Document-Transition sonst dauerhaft
+    aktiv und ihr Overlay blockiert alle Klicks. Die E2E-Suite erzwingt deshalb
+    `page.emulateMedia({ reducedMotion: 'reduce' })` über `tests/e2e/fixtures.ts` —
+    **alle Specs importieren `test`/`expect` von dort**, nicht von `@playwright/test`
+    (die `use.reducedMotion`-Config-Option greift in Playwright 1.61 nicht).
 
 ## Quality-Gates (vor jedem Commit)
 

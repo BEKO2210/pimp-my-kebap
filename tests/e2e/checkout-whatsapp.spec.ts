@@ -4,7 +4,8 @@
 // abgefangen und die WhatsApp-Nachricht ZEICHENGENAU gegen den Erwartungswert
 // verglichen (Preise, Aufpreise, Pfand, Liefergebühr, Adresse, Footer).
 
-import { test, expect, type Page } from '@playwright/test';
+import { test, expect } from './fixtures';
+import type { Page } from '@playwright/test';
 import {
   money,
   moneyRe,

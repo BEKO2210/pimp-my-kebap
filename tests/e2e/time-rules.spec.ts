@@ -2,7 +2,7 @@
 // Aktionstage (Mo Dönerteller, Di Pide, Mi Pizza), Schüler-Zeitfenster
 // (Mo–Fr ≤ 16:00) und der Sonntags-Ruhetag.
 
-import { test, expect } from '@playwright/test';
+import { test, expect } from './fixtures';
 import { moneyRe, pinClock, BERLIN, openMenuSection, acceptDialogs, stubWindowOpen, openedUrls, decodeWhatsAppUrl, openCartViaWeiter } from './helpers';
 import { MENU } from '../../src/data/menu';
 

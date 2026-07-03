@@ -19,6 +19,11 @@ export default defineConfig({
     // leben in Europe/Berlin — Tests auch.
     timezoneId: 'Europe/Berlin',
     locale: 'de-DE',
+    // Hinweis: prefers-reduced-motion wird NICHT hier gesetzt — Playwright
+    // 1.61 kennt die use.reducedMotion-Option nicht mehr. Stattdessen
+    // erzwingt tests/e2e/fixtures.ts page.emulateMedia({ reducedMotion })
+    // pro Page (deaktiviert die Cross-Document View Transitions, deren
+    // Overlay im Headless-Browser sonst alle Klicks blockiert).
   },
   projects: [
     {

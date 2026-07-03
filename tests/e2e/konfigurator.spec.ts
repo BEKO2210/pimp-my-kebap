@@ -2,7 +2,8 @@
 // Extras — inklusive zeichengenauer Preisprüfung nach jedem Schritt und dem
 // Redirect-Verhalten nach "In den Warenkorb".
 
-import { test, expect, type Page } from '@playwright/test';
+import { test, expect } from './fixtures';
+import type { Page } from '@playwright/test';
 import { moneyRe, pinClock, BERLIN } from './helpers';
 import { BASES, MEATS } from '../../src/data/configurator';
 import { BREADS } from '../../src/data/breads';

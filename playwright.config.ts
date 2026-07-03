@@ -10,8 +10,15 @@ export default defineConfig({
   reporter: [['list'], ['html', { open: 'never' }]],
   use: {
     // The build deploys under a project-pages sub-path; preview server mirrors that.
-    baseURL: 'http://localhost:4321/pimp-my-kebap',
+    // Trailing slash is load-bearing: tests navigate with RELATIVE paths
+    // ("konfigurator"), because absolute ones ("/konfigurator") would resolve
+    // against the host root and drop the /pimp-my-kebap base.
+    baseURL: 'http://localhost:4321/pimp-my-kebap/',
     trace: 'retain-on-failure',
+    // Kundschaft & Geschäftslogik (Öffnungszeiten, Schulzeit, Aktionstage)
+    // leben in Europe/Berlin — Tests auch.
+    timezoneId: 'Europe/Berlin',
+    locale: 'de-DE',
   },
   projects: [
     {
@@ -29,7 +36,9 @@ export default defineConfig({
   ],
   webServer: {
     command: 'npm run preview',
-    url: 'http://localhost:4321',
+    // Root liefert 404 (Site liegt unter dem base-Pfad) — Playwright wertet
+    // 404 nicht als "ready", deshalb muss die Probe auf den base-Pfad zeigen.
+    url: 'http://localhost:4321/pimp-my-kebap',
     reuseExistingServer: !process.env.CI,
     timeout: 60_000,
   },

@@ -17,9 +17,9 @@ Cloudflare-Pages-Setup ist via `wrangler.toml` ebenfalls vorbereitet.
 - **Astro 6.1.9** (static, Islands-Hydration) · **TypeScript strict**
 - **Tailwind v4** (`@tailwindcss/vite`) · eigene Tokens in `src/styles/tokens.css`
 - **nanostores** (Cart) · **Zod** (localStorage-Validation)
-- **Vitest** Unit · **Playwright** E2E (lokal, nicht in CI)
+- **Vitest** Unit · **Playwright** E2E (lokal **und** in CI via `e2e.yml`)
 - **sharp** für Build-Image-Pipeline (AVIF/WebP/PWA-Icons)
-- **Vite 7.3.2 (gepinnt)** via `"overrides"` in `package.json` — siehe Gotcha #10
+- **Vite 7.3.6 (gepinnt)** via `"overrides"` in `package.json` — siehe Gotcha #10
 
 ## Architektur-Konventionen (wichtig!)
 
@@ -73,7 +73,7 @@ data/menu.ts | data/configurator.ts
    (siehe [`LICENSE`](./LICENSE)) — Code-Eigentum: Belkis Aslani; Inhalte (Marke,
    Menü, Fotos): Inhaberin. **Diese Attribution darf nicht entfernt oder versteckt
    werden** — explizit Bestandteil der Lizenzbedingungen.
-10. **`overrides: { "vite": "7.3.2" }`** in `package.json` ist Pflicht. Vitest 4.x zieht
+10. **`overrides: { "vite": "7.3.6" }`** in `package.json` ist Pflicht. Vitest 4.x zieht
     sonst Vite 8.x als Top-Level-Hoist, und `@tailwindcss/vite 4.2.4` bricht dann gegen
     Vite-8's Rolldown-Resolver (`Missing field tsconfigPaths`-Error im Build). Wenn
     Vitest / Tailwind alle Vite-8-kompatibel werden, kann der Override raus.
@@ -84,7 +84,11 @@ data/menu.ts | data/configurator.ts
 npm run typecheck && npm run lint && npm test && npm run build
 ```
 
-CI macht genau das (`.github/workflows/ci.yml`). E2E (`npm run test:e2e`) läuft nur lokal.
+CI macht genau das (`.github/workflows/ci.yml`). E2E (`npm run test:e2e`) läuft lokal
+**und** in CI (`.github/workflows/e2e.yml`, Chromium + WebKit gegen den Production-Build).
+Wichtig für neue E2E-Tests: `goto()` mit **relativen** Pfaden (`'konfigurator'`, `'.'`) —
+die baseURL endet mit `/`, absolute Pfade würden den `/pimp-my-kebap`-Base-Pfad verlieren.
+Zeitabhängige Tests pinnen die Uhr mit `pinClock()` aus `tests/e2e/helpers.ts`.
 
 ## Branch- &amp; Workflow-Policy
 

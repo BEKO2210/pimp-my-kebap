@@ -1,0 +1,42 @@
+name: E2E
+
+# Kompletter Website-Test: jede Seite, jeder Button, jedes Menü und die
+# WhatsApp-Bestellausgabe — auf Desktop Chrome, Pixel 7 (Chromium) und
+# iPhone 13 (WebKit). Läuft gegen den Production-Build (astro preview).
+
+on:
+  push:
+    branches: [main, claude/**]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  e2e:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      CI: 'true'
+      PUBLIC_RESTAURANT_WHATSAPP: '491742116095'
+      PUBLIC_SITE_URL: 'https://beko2210.github.io/pimp-my-kebap'
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version: '22'
+          cache: 'npm'
+      - run: npm ci
+      - name: Install Playwright browsers (Chromium + WebKit)
+        run: npx playwright install --with-deps chromium webkit
+      - name: Build (Production, mit base-Pfad)
+        run: npm run build
+      - name: E2E-Tests (Desktop Chrome · Pixel 7 · iPhone 13)
+        run: npx playwright test
+      - name: Upload Playwright-Report
+        if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: playwright-report
+          path: playwright-report
+          retention-days: 7

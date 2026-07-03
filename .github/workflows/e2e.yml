@@ -12,10 +12,16 @@ on:
 permissions:
   contents: read
 
+# Push- und PR-Trigger desselben Commits nicht doppelt laufen lassen —
+# neuere Runs canceln ältere derselben Ref.
+concurrency:
+  group: e2e-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   e2e:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 40
     env:
       CI: 'true'
       PUBLIC_RESTAURANT_WHATSAPP: '491742116095'

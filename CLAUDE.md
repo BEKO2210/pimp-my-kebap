@@ -19,7 +19,7 @@ Cloudflare-Pages-Setup ist via `wrangler.toml` ebenfalls vorbereitet.
 - **nanostores** (Cart) · **Zod** (localStorage-Validation)
 - **Vitest** Unit · **Playwright** E2E (lokal **und** in CI via `e2e.yml`)
 - **sharp** für Build-Image-Pipeline (AVIF/WebP/PWA-Icons)
-- **Vite 7.3.2 (gepinnt)** via `"overrides"` in `package.json` — siehe Gotcha #10
+- **Vite 7.3.6 (gepinnt)** via `"overrides"` in `package.json` — siehe Gotcha #10
 
 ## Architektur-Konventionen (wichtig!)
 
@@ -73,7 +73,7 @@ data/menu.ts | data/configurator.ts
    (siehe [`LICENSE`](./LICENSE)) — Code-Eigentum: Belkis Aslani; Inhalte (Marke,
    Menü, Fotos): Inhaberin. **Diese Attribution darf nicht entfernt oder versteckt
    werden** — explizit Bestandteil der Lizenzbedingungen.
-10. **`overrides: { "vite": "7.3.2" }`** in `package.json` ist Pflicht. Vitest 4.x zieht
+10. **`overrides: { "vite": "7.3.6" }`** in `package.json` ist Pflicht. Vitest 4.x zieht
     sonst Vite 8.x als Top-Level-Hoist, und `@tailwindcss/vite 4.2.4` bricht dann gegen
     Vite-8's Rolldown-Resolver (`Missing field tsconfigPaths`-Error im Build). Wenn
     Vitest / Tailwind alle Vite-8-kompatibel werden, kann der Override raus.

@@ -115,8 +115,13 @@ Einmalig in **Settings → Pages → Source** auf **GitHub Actions** stellen.
 `npm test` — Unit-Tests für `lib/`: pricing, whatsapp, time, holidays, validation, format.
 Coverage-Schwelle **≥ 85 %** für `src/lib/`. CI bricht bei Verletzung ab.
 
-`npm run test:e2e` — Playwright-Suite (iPhone 13, Pixel 7, Desktop) für die zentralen
-Flows (Konfigurator, Speisekarte, Cart, Hamburger).
+`npm run test:e2e` — Playwright-Suite (iPhone 13, Pixel 7, Desktop), die die komplette
+Website abdeckt: alle Seiten & Navigation, Kebap-/Pizza-Konfigurator (jede Option mit
+Preisprüfung), Speisekarte (alle Items, Filter, Options-Dialog, Getränke/Pfand),
+Cart-Drawer (Lieferzonen, Mindestbestellwert, Validierung, Persistenz, Teilen) und den
+Checkout bis zur zeichengenau geprüften WhatsApp-Nachricht. Zeitabhängige Regeln
+(Aktionstage, Schülerfenster, Sonntag) laufen mit eingefrorener Uhr deterministisch.
+Läuft in CI über `.github/workflows/e2e.yml`.
 
 ## Übergabe
 

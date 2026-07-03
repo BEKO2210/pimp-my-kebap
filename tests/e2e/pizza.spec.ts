@@ -1,7 +1,8 @@
 // Pimp-My-Pizza-Konfigurator: alle Toppings, Standard- vs. Premium-Preis,
 // Summary-Text und Add-to-Cart-Redirect.
 
-import { test, expect, type Page } from '@playwright/test';
+import { test, expect } from './fixtures';
+import type { Page } from '@playwright/test';
 import { moneyRe, pinClock, BERLIN } from './helpers';
 import {
   PIZZA_TOPPINGS,

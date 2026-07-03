@@ -1,7 +1,7 @@
 // Alle Routen + globale UI-Elemente: Header-Navigation, Öffnungs-Pill,
 // Wochenbanner, Footer (inkl. Pflicht-Attribution), Rechtsseiten, 404.
 
-import { test, expect } from '@playwright/test';
+import { test, expect } from './fixtures';
 import { pinClock, BERLIN } from './helpers';
 import { BRAND } from '../../src/data/brand';
 

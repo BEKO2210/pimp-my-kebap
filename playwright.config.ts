@@ -19,6 +19,10 @@ export default defineConfig({
     // leben in Europe/Berlin — Tests auch.
     timezoneId: 'Europe/Berlin',
     locale: 'de-DE',
+    // Deaktiviert u. a. die Cross-Document View Transitions (global.css):
+    // im Headless-Browser wird deren Overlay sonst nie abgebaut und
+    // blockiert nach jeder Navigation sämtliche Klicks.
+    reducedMotion: 'reduce',
   },
   projects: [
     {

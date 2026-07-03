@@ -2,7 +2,7 @@
 // Suche + Filter (vegetarisch/scharf/Allergene/Reset), Options-Dialog
 // (Pflichtwahl, Aufpreise, Mehrfachwahl) und Getränke inkl. Pfand.
 
-import { test, expect } from '@playwright/test';
+import { test, expect } from './fixtures';
 import { moneyRe, pinClock, BERLIN, openMenuSection } from './helpers';
 import { MENU, ALL_CATEGORIES } from '../../src/data/menu';
 import { DRINKS } from '../../src/data/drinks';

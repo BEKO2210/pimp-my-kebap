@@ -309,12 +309,19 @@ body.has-cart-bar #toast-region { bottom: 5.25rem; }
 }
 
 /* ────────────────────────────────────────────────────────────
- * View Transitions — Astro 5 native API
+ * View Transitions — Cross-Document (native Browser-API)
+ *
+ * Nur bei no-preference aktivieren: Nutzer mit reduzierter Bewegung
+ * bekommen keine Seiten-Übergangsanimation (a11y). Nebeneffekt: In
+ * Headless-Chromium (E2E, reducedMotion: 'reduce') bleibt sonst die
+ * Transition dauerhaft aktiv und ihr Overlay blockiert alle Klicks.
  * ──────────────────────────────────────────────────────────── */
-@view-transition { navigation: auto; }
-::view-transition-old(root),
-::view-transition-new(root) {
-  animation-duration: 0.25s;
+@media (prefers-reduced-motion: no-preference) {
+  @view-transition { navigation: auto; }
+  ::view-transition-old(root),
+  ::view-transition-new(root) {
+    animation-duration: 0.25s;
+  }
 }
 
 /* ────────────────────────────────────────────────────────────

@@ -16,7 +16,7 @@ jobs:
       PUBLIC_SITE_URL: 'https://beko2210.github.io/pimp-my-kebap'
     steps:
       - uses: actions/checkout@v7
-      - uses: actions/setup-node@v6
+      - uses: actions/setup-node@v7
         with:
           node-version: '22'
           cache: 'npm'

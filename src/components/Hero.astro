@@ -6,6 +6,9 @@ import { BRAND } from '../data/brand';
 import { withBase } from '../lib/url';
 import { WEEKLY_OFFERS } from '../data/weeklyOffers';
 import Icon from './Icon.astro';
+import { BREADS } from '../data/breads';
+import { SAUCES } from '../data/sauces';
+import { TOPPINGS } from '../data/ingredients';
 
 // Die Site ist statisch — der "Heute"-Tagesangebots-Karte darf NICHT zur
 // Build-Zeit eingefroren werden (sonst stuende z.B. das Mo-Angebot auch am
@@ -13,6 +16,12 @@ import Icon from './Icon.astro';
 // Angebot und blendet die Karte ein (oder versteckt sie an Tagen ohne Aktion).
 const offersJson = JSON.stringify(WEEKLY_OFFERS);
 const offerHref = withBase('/') + '#aktion';
+// Zahlen aus den Daten ableiten, damit Hero und Sortiment nicht auseinanderlaufen.
+const stats = [
+  { label: 'Brote', value: BREADS.length },
+  { label: 'Soßen', value: SAUCES.length },
+  { label: 'Zutaten', value: TOPPINGS.length },
+];
 ---
 
 <section
@@ -27,8 +36,8 @@ const offerHref = withBase('/') + '#aktion';
   </div>
 
   <div class="mx-auto max-w-6xl grid gap-10 lg:grid-cols-12 lg:items-center">
-    <!-- Text column: 7/12, deliberately not centered -->
-    <div class="lg:col-span-7 text-left">
+    <!-- Text column: 7/12 — mobil/Tablet zentriert, Desktop linksbündig neben dem Logo -->
+    <div class="lg:col-span-7 text-center lg:text-left">
       <p class="eyebrow">
         <span>{BRAND.slogans.tagline}</span>
       </p>
@@ -40,34 +49,29 @@ const offerHref = withBase('/') + '#aktion';
         Kebap. <span class="text-brand-orange">Pay</span> Your<br />
         Style<span class="text-brand-gold">.</span>
       </h1>
-      <p class="mt-5 text-brand-cream/80 max-w-xl text-lg leading-relaxed">
+      <p class="mt-5 mx-auto lg:mx-0 text-brand-cream/80 max-w-xl text-lg leading-relaxed">
         4 Brote, 6 Soßen, 18 frische Zutaten. Stell ihn dir genau so zusammen,
         wie du ihn liebst — und sende deine Bestellung in 30 Sekunden per WhatsApp.
       </p>
-      <div class="mt-8 flex flex-wrap items-center gap-3">
-        <a href={withBase('/konfigurator')} class="btn-primary">Pimp my Kebap →</a>
-        <a href={withBase('/pimp-my-pizza')} class="btn-secondary inline-flex items-center gap-2">
-          <Icon name="pizza" size={16} class="text-brand-gold" />
+      <!-- Haupt-CTA volle Breite, die zwei Neben-CTAs je halbe Breite darunter -->
+      <div class="mt-8 mx-auto lg:mx-0 max-w-xl grid grid-cols-2 gap-3">
+        <a href={withBase('/konfigurator')} class="btn-primary col-span-2 w-full text-lg">Pimp my Kebap →</a>
+        <a href={withBase('/pimp-my-pizza')} class="btn-secondary w-full !px-3 inline-flex items-center gap-2 whitespace-nowrap">
+          <Icon name="pizza" size={16} class="text-brand-gold shrink-0" />
           <span>Pimp my Pizza</span>
         </a>
-        <a href={withBase('/speisekarte')} class="btn-secondary inline-flex items-center gap-2">
-          <Icon name="menu-list" size={16} class="text-brand-gold" />
+        <a href={withBase('/speisekarte')} class="btn-secondary w-full !px-3 inline-flex items-center gap-2 whitespace-nowrap">
+          <Icon name="menu-list" size={16} class="text-brand-gold shrink-0" />
           <span>Speisekarte</span>
         </a>
       </div>
-      <dl class="mt-10 grid grid-cols-3 gap-4 max-w-md">
-        <div>
-          <dt class="text-xs uppercase tracking-widest text-brand-cream/55">Brote</dt>
-          <dd class="display text-3xl text-brand-cream num">4</dd>
-        </div>
-        <div>
-          <dt class="text-xs uppercase tracking-widest text-brand-cream/55">Soßen</dt>
-          <dd class="display text-3xl text-brand-cream num">6</dd>
-        </div>
-        <div>
-          <dt class="text-xs uppercase tracking-widest text-brand-cream/55">Zutaten</dt>
-          <dd class="display text-3xl text-brand-cream num">19</dd>
-        </div>
+      <dl class="mt-10 mx-auto lg:mx-0 grid grid-cols-3 gap-4 max-w-md">
+        {stats.map((st) => (
+          <div>
+            <dt class="text-xs uppercase tracking-widest text-brand-cream/55">{st.label}</dt>
+            <dd class="display text-3xl text-brand-cream num">{st.value}</dd>
+          </div>
+        ))}
       </dl>
     </div>
 

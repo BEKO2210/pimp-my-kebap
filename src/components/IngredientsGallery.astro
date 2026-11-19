@@ -2,6 +2,8 @@
 // Powered by skill: frontend-design
 import { TOPPINGS } from '../data/ingredients';
 import Icon from './Icon.astro';
+import AllergenBadge from './AllergenBadge.astro';
+import AllergenNotice from './AllergenNotice.astro';
 ---
 
 <section id="zutaten" class="px-4 sm:px-6 lg:px-8 py-12" aria-labelledby="zutaten-heading">
@@ -16,8 +18,10 @@ import Icon from './Icon.astro';
         <li class="card p-3 flex flex-col items-center justify-center gap-1 text-center min-h-[5rem]">
           <span class="text-brand-cream text-sm">{t.name}</span>
           {t.spicy && <Icon name="flame" size={14} class="text-brand-red-fire" ariaLabel="scharf" />}
+          <AllergenBadge markings={t.markings} itemName={t.name} />
         </li>
       ))}
     </ul>
+    <AllergenNotice class="mt-6" />
   </div>
 </section>

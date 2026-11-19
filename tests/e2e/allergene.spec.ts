@@ -41,6 +41,42 @@ test('Konfigurator: Soßen tragen Allergen-Badges (Ei bei Mayo, Milch bei Joghur
   expect(joghurtLabel).not.toContain('Eier');
 });
 
+test('Konfigurator: Kräuter-Knoblauch-Joghurt trägt Milch UND Ei (enthält Mayo)', async ({ page }) => {
+  await page.goto('konfigurator');
+  const label = await page
+    .locator('[data-cfg-sauce-card="kraeuter_knoblauch"] [aria-label^="Allergene"]')
+    .getAttribute('aria-label');
+  expect(label).toContain('Milch');
+  expect(label).toContain('Eier');
+});
+
+test('Konfigurator: Brot-Zutaten (ohne Milch) und Allergie-Hinweis bei den Zutaten', async ({ page }) => {
+  await page.goto('konfigurator');
+  await page.locator('[data-cfg-base="kebap_basic"]').click();
+  const breadInfo = page.locator('[data-cfg-bread-ingredients]');
+  await expect(breadInfo).toBeVisible();
+  await expect(breadInfo).toContainText('Weizenmehl, Wasser, Öl, Salz');
+  await expect(breadInfo).toContainText('ohne Milch');
+  // Sesambrot zusätzlich mit Sesam (e)
+  await expect(
+    page.locator('[data-cfg-bread="sesam"] [aria-label^="Allergene"]'),
+  ).toHaveAttribute('aria-label', /Sesam/);
+  // Feta-Topping mit Milch, Hinweis direkt unter den Toppings
+  await expect(
+    page.locator('[data-cfg-topping-card="feta"] [aria-label^="Allergene"]'),
+  ).toHaveAttribute('aria-label', /Milch/);
+  await expect(
+    page.locator('fieldset[data-cfg-step="toppings"] [data-allergen-notice]'),
+  ).toContainText('Allergien oder Unverträglichkeiten?');
+});
+
+test('Startseite: Zutaten-Galerie zeigt den Allergie-Hinweis', async ({ page }) => {
+  await page.goto('.');
+  await expect(page.locator('#zutaten [data-allergen-notice]')).toContainText(
+    'Bitte sprechen Sie uns vor Ihrer Bestellung an.',
+  );
+});
+
 test('Konfigurator: Ofengemüse/Grillgemüse ist aus den Toppings verschwunden', async ({ page }) => {
   await page.goto('konfigurator');
   await expect(page.locator('[data-cfg-topping-card]')).toHaveCount(18);

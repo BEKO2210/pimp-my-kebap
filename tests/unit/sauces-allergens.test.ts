@@ -1,5 +1,5 @@
-// Allergen-Kennzeichnung der Soßen & Dips (laut Betreiberin: alle Soßen
-// außer den Joghurt-Soßen auf Mayonnaise-Basis → Eier) sowie die
+// Allergen-Kennzeichnung der Soßen & Dips (laut Betreiber: ALLE Soßen
+// enthalten Mayonnaise → Eier, einzige Ausnahme Naturjoghurt) sowie die
 // Sortiments-Invariante "kein Grillgemüse/Ofengemüse mehr".
 
 import { describe, it, expect } from 'vitest';
@@ -8,7 +8,7 @@ import { TOPPINGS } from '../../src/data/ingredients';
 import { ALLERGENS, ADDITIVES } from '../../src/data/allergens';
 import { MENU } from '../../src/data/menu';
 
-const JOGHURT_IDS = ['naturjoghurt', 'kraeuter_knoblauch'];
+const OHNE_MAYO = 'naturjoghurt';
 
 describe('Soßen-Allergene', () => {
   it('jede Soße trägt eine Allergen-Kennzeichnung (keine pauschal "allergenfrei")', () => {
@@ -18,18 +18,21 @@ describe('Soßen-Allergene', () => {
     }
   });
 
-  it('Joghurt-Soßen sind mit Milch (d) gekennzeichnet, nicht mit Ei', () => {
-    for (const id of JOGHURT_IDS) {
-      const s = SAUCES.find((x) => x.id === id)!;
-      expect(s.markings).toContain('d');
-      expect(s.markings).not.toContain('f');
+  it('Naturjoghurt (ohne Mayo) trägt Milch (d), aber kein Ei', () => {
+    const s = SAUCES.find((x) => x.id === OHNE_MAYO)!;
+    expect(s.markings).toContain('d');
+    expect(s.markings).not.toContain('f');
+  });
+
+  it('alle übrigen Soßen enthalten Mayonnaise und sind mit Eiern (f) gekennzeichnet', () => {
+    for (const s of SAUCES.filter((x) => x.id !== OHNE_MAYO)) {
+      expect(s.markings, s.id).toContain('f');
     }
   });
 
-  it('alle Mayonnaise-Soßen (Nicht-Joghurt) sind mit Eiern (f) gekennzeichnet', () => {
-    for (const s of SAUCES.filter((x) => !JOGHURT_IDS.includes(x.id))) {
-      expect(s.markings, s.id).toContain('f');
-    }
+  it('Kräuter-Knoblauch-Joghurt trägt Milch (d) UND Ei (f)', () => {
+    const s = SAUCES.find((x) => x.id === 'kraeuter_knoblauch')!;
+    expect(s.markings).toEqual(expect.arrayContaining(['d', 'f']));
   });
 
   it('alle verwendeten Codes existieren im Allergen-/Zusatzstoff-Katalog', () => {

@@ -1,12 +1,13 @@
 ---
 // Powered by skill: frontend-design, accessibility
-import { BREADS } from '../../data/breads';
+import { BREADS, BREAD_BASE_INGREDIENTS } from '../../data/breads';
 import { BASES, MEATS } from '../../data/configurator';
 import { SAUCES, FREE_SAUCE_COUNT } from '../../data/sauces';
 import { TOPPINGS } from '../../data/ingredients';
 import { formatEUR } from '../../lib/format';
 import Icon from '../Icon.astro';
 import AllergenBadge from '../AllergenBadge.astro';
+import AllergenNotice from '../AllergenNotice.astro';
 ---
 
 <section
@@ -90,6 +91,10 @@ import AllergenBadge from '../AllergenBadge.astro';
         <legend class="display text-2xl text-brand-cream mb-4">
           <span class="text-brand-gold mr-2 num">2.</span>Wähle dein Brot
         </legend>
+        <p class="text-xs text-brand-cream/60 mb-4" data-cfg-bread-ingredients>
+          Unser Brotteig: <strong class="text-brand-cream/80">{BREAD_BASE_INGREDIENTS.join(', ')}</strong>
+          — ohne Milch, ohne Ei. Allergen: Gluten (a), beim Sesambrot zusätzlich Sesam (e).
+        </p>
         <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
           {BREADS.map((b) => (
             <button
@@ -103,6 +108,7 @@ import AllergenBadge from '../AllergenBadge.astro';
                 {b.isNew && <span class="badge badge-new">NEU</span>}
               </span>
               <span class="text-xs text-brand-cream/60">{b.description}</span>
+              <span class="mt-auto"><AllergenBadge markings={b.markings} itemName={b.name} /></span>
             </button>
           ))}
         </div>
@@ -117,8 +123,9 @@ import AllergenBadge from '../AllergenBadge.astro';
           {FREE_SAUCE_COUNT} Soßen sind in der Basis dabei — jede weitere kostet +0,50 €.
         </p>
         <p class="text-xs text-brand-cream/60 mb-4" data-cfg-allergen-note>
-          Allergene: Soßen auf Mayonnaise-Basis enthalten <strong class="text-brand-cream/80">Eier (f)</strong>,
-          Joghurt-Soßen enthalten <strong class="text-brand-cream/80">Milch (d)</strong>.
+          Allergene: Alle Soßen außer Naturjoghurt enthalten Mayonnaise und damit
+          <strong class="text-brand-cream/80">Eier (f)</strong>; Joghurt-Soßen enthalten
+          zusätzlich <strong class="text-brand-cream/80">Milch (d)</strong>.
           Bei Fragen sprich uns gerne an.
         </p>
         <div class="grid grid-cols-2 sm:grid-cols-3 gap-2">
@@ -163,11 +170,13 @@ import AllergenBadge from '../AllergenBadge.astro';
               <span class="text-brand-cream text-xs inline-flex items-center justify-center gap-1 flex-wrap">
                 <span>{t.name}</span>
                 {t.spicy && <Icon name="flame" size={10} class="text-brand-red-fire" ariaLabel="scharf" />}
+                <AllergenBadge markings={t.markings} itemName={t.name} />
                 {t.baseIncluded && <span class="text-brand-green-leaf block text-[10px] basis-full font-semibold">in Basis · kostenlos</span>}
               </span>
             </label>
           ))}
         </div>
+        <AllergenNotice class="mt-4" />
       </fieldset>
 
       <!-- Step 5 — Extras -->

@@ -18,14 +18,14 @@ export interface SauceOption {
   markings?: Markings;
 }
 
-// Allergen-Kennzeichnung laut Betreiberin: alle Soßen außer den beiden
-// Joghurt-Soßen werden auf Mayonnaise-Basis hergestellt → Eier (f).
-// Joghurt-Soßen enthalten Milch (d) — nicht "allergenfrei".
+// Allergen-Kennzeichnung laut Betreiber: ALLE Soßen enthalten Mayonnaise
+// (→ Eier, f) — einzige Ausnahme ist die Naturjoghurt-Soße. Joghurt-Anteil
+// bedeutet zusätzlich Milch (d); keine Soße gilt als "allergenfrei".
 // ACHTUNG: Senf ist im Allergen-Katalog (allergens.ts) nicht erfasst;
 // falls die Mayonnaise Senf enthält, muss der Katalog erweitert werden.
 export const SAUCES: readonly SauceOption[] = [
   { id: 'naturjoghurt', name: 'Naturjoghurt', description: 'Mild, frisch, cremig.', markings: ['d'] },
-  { id: 'kraeuter_knoblauch', name: 'Kräuter-Knoblauch-Joghurt', description: 'Hausspezialität.', markings: ['d'] },
+  { id: 'kraeuter_knoblauch', name: 'Kräuter-Knoblauch-Joghurt', description: 'Hausspezialität.', markings: ['d', 'f'] },
   { id: 'bbq', name: 'BBQ', description: 'Süß-rauchig.', markings: ['f'] },
   { id: 'mango_avocado', name: 'Mango-Avocado', description: 'Exotisch, fruchtig.', markings: ['f'] },
   { id: 'cocktail', name: 'Cocktail', description: 'Klassisch.', markings: ['f'] },

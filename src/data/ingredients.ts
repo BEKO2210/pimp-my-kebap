@@ -22,12 +22,16 @@ export type ToppingId =
   | 'tomaten'
   | 'oliven';
 
+import type { Markings } from './allergens';
+
 export interface Topping {
   id: ToppingId;
   name: string;
   spicy?: boolean;
   /** included in the kebap base (not chargeable, displayed for transparency) */
   baseIncluded?: boolean;
+  /** Allergen-Codes (allergens.ts) — nur gesicherte Angaben eintragen. */
+  markings?: Markings;
 }
 
 /** All 18 ingredients. Order is the visual order in the gallery. */
@@ -48,7 +52,7 @@ export const TOPPINGS: readonly Topping[] = [
   { id: 'kidneybohnen', name: 'Kidneybohnen' },
   { id: 'granatapfel', name: 'Granatapfel' },
   { id: 'oliven', name: 'Oliven' },
-  { id: 'feta', name: 'Feta' },
+  { id: 'feta', name: 'Feta', markings: ['d'] },
   { id: 'jalapenos', name: 'Jalapeños', spicy: true },
 ] as const;
 

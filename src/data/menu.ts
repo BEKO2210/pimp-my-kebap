@@ -55,6 +55,8 @@ export interface ItemChoice {
   label: string;
   /** Surcharge added on top of the item's base price (e.g. Steak +1,00 €). */
   priceDeltaEur?: number;
+  /** Allergen-Codes der Wahl (z. B. Soßen) — im Options-Dialog angezeigt. */
+  markings?: Markings;
 }
 
 export interface ItemOption {
@@ -126,7 +128,7 @@ const OPT_SAUCEN: ItemOption = {
   id: 'saucen',
   label: 'Soßen',
   multi: true,
-  choices: SAUCES.map((s) => ({ id: s.id, label: s.name })),
+  choices: SAUCES.map((s) => ({ id: s.id, label: s.name, markings: s.markings })),
 };
 
 /** Lighter dip set for items where the customer just wants something to dip
@@ -137,8 +139,9 @@ const OPT_DIPS: ItemOption = {
   multi: true,
   choices: [
     { id: 'ketchup', label: 'Ketchup' },
-    { id: 'mayo', label: 'Mayo' },
-    { id: 'currymayo', label: 'Curry-Mayo' },
+    // Mayonnaise enthält Ei (f) — gleiche Basis wie die Mayo-Soßen.
+    { id: 'mayo', label: 'Mayo', markings: ['f'] },
+    { id: 'currymayo', label: 'Curry-Mayo', markings: ['f'] },
   ],
 };
 

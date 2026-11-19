@@ -25,6 +25,20 @@ const drinkCount = DRINKS.reduce((sum, d) => sum + d.variants.length, 0);
     <p class="eyebrow">Vollständige Karte</p>
     <h2 class="display text-3xl sm:text-5xl text-brand-cream mt-2 mb-6">Speisekarte</h2>
 
+    <!-- Allergen-Hinweis (LMIV): gut sichtbar vor der Karte, Kürzel-Legende
+         liefern die ⓘ-Badges an den Items (allergens.ts). -->
+    <aside
+      data-allergen-notice
+      class="mb-6 rounded-xl border border-brand-gold/40 bg-brand-charcoal/60 p-4 sm:p-5 flex items-start gap-3"
+    >
+      <span class="text-brand-gold text-lg leading-none shrink-0" aria-hidden="true">ⓘ</span>
+      <p class="text-sm text-brand-cream/85 leading-relaxed">
+        <strong class="text-brand-cream">Allergien oder Unverträglichkeiten?</strong>
+        Bitte sprechen Sie uns vor Ihrer Bestellung an. Wir informieren Sie gerne über
+        die enthaltenen Allergene und Zutaten unserer Speisen und Soßen.
+      </p>
+    </aside>
+
     <div class="flex flex-col gap-3 mb-6">
       <!-- Search + Filter trigger row -->
       <div class="flex gap-2 items-stretch">
@@ -122,7 +136,7 @@ const drinkCount = DRINKS.reduce((sum, d) => sum + d.variants.length, 0);
           ctaHref: '/konfigurator',
           ctaLabel: 'Pimp my Kebap — eigenen Drehspieß bauen',
           ctaDescription:
-            '4 Brote, 6 Soßen, 19 Zutaten — stell dir deinen Kebap genau so zusammen, wie du ihn liebst.',
+            '4 Brote, 6 Soßen, 18 Zutaten — stell dir deinen Kebap genau so zusammen, wie du ihn liebst.',
           ctaIcon: 'kebap' as const,
         }
       : c === 'pizza'

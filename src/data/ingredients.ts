@@ -1,6 +1,6 @@
 // Powered by skill: frontend-design
-// 19 frische Zutaten / Toppings — 4 davon kostenlos in der Basis (Salat,
-// Kraut, Zwiebeln, Tomaten), die restlichen 15 kosten 0,50 € pro Auswahl.
+// 18 frische Zutaten / Toppings — 4 davon kostenlos in der Basis (Salat,
+// Kraut, Zwiebeln, Tomaten), die restlichen 14 kosten 0,50 € pro Auswahl.
 
 export type ToppingId =
   | 'salat'
@@ -16,7 +16,6 @@ export type ToppingId =
   | 'rucola'
   | 'petersilie'
   | 'spinat'
-  | 'ofengemuese'
   | 'feta'
   | 'kraut'
   | 'zwiebeln'
@@ -31,7 +30,7 @@ export interface Topping {
   baseIncluded?: boolean;
 }
 
-/** All 19 ingredients. Order is the visual order in the gallery. */
+/** All 18 ingredients. Order is the visual order in the gallery. */
 export const TOPPINGS: readonly Topping[] = [
   { id: 'salat', name: 'Salat', baseIncluded: true },
   { id: 'kraut', name: 'Kraut', baseIncluded: true },
@@ -50,7 +49,6 @@ export const TOPPINGS: readonly Topping[] = [
   { id: 'granatapfel', name: 'Granatapfel' },
   { id: 'oliven', name: 'Oliven' },
   { id: 'feta', name: 'Feta' },
-  { id: 'ofengemuese', name: 'Ofengemüse' },
   { id: 'jalapenos', name: 'Jalapeños', spicy: true },
 ] as const;
 

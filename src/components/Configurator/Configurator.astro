@@ -6,6 +6,7 @@ import { SAUCES, FREE_SAUCE_COUNT } from '../../data/sauces';
 import { TOPPINGS } from '../../data/ingredients';
 import { formatEUR } from '../../lib/format';
 import Icon from '../Icon.astro';
+import AllergenBadge from '../AllergenBadge.astro';
 ---
 
 <section
@@ -112,12 +113,17 @@ import Icon from '../Icon.astro';
         <legend class="display text-2xl text-brand-cream mb-4">
           <span class="text-brand-gold mr-2 num">3.</span>Wähle deine Soßen
         </legend>
-        <p class="text-sm text-brand-cream/70 mb-4">
+        <p class="text-sm text-brand-cream/70 mb-2">
           {FREE_SAUCE_COUNT} Soßen sind in der Basis dabei — jede weitere kostet +0,50 €.
+        </p>
+        <p class="text-xs text-brand-cream/60 mb-4" data-cfg-allergen-note>
+          Allergene: Soßen auf Mayonnaise-Basis enthalten <strong class="text-brand-cream/80">Eier (f)</strong>,
+          Joghurt-Soßen enthalten <strong class="text-brand-cream/80">Milch (d)</strong>.
+          Bei Fragen sprich uns gerne an.
         </p>
         <div class="grid grid-cols-2 sm:grid-cols-3 gap-2">
           {SAUCES.map((s) => (
-            <label class="card card-selectable p-3 flex items-center gap-3 cursor-pointer" data-cfg-sauce-card={s.id}>
+            <label class="card card-selectable p-3 flex items-center justify-between gap-3 cursor-pointer" data-cfg-sauce-card={s.id}>
               <input
                 type="checkbox"
                 class="sr-only"
@@ -128,6 +134,7 @@ import Icon from '../Icon.astro';
                 {s.name}
                 {s.spicy && <Icon name="flame" size={12} class="text-brand-red-fire" ariaLabel="scharf" />}
               </span>
+              <AllergenBadge markings={s.markings} itemName={s.name} />
             </label>
           ))}
         </div>

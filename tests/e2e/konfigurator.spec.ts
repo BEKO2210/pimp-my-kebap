@@ -168,17 +168,25 @@ test.describe('Preislogik (Live-Summe)', () => {
 
   test('Maximal-Konfiguration rechnet korrekt zusammen', async ({ page }) => {
     // Kebap Basic 6,50 + Steak 1,00 + 3×1,50 Fleisch + 1,00 Schmelzkäse
-    // + alle 6 Soßen (4 × 0,50) + alle 15 Zahl-Toppings (15 × 0,50) = 22,50 €
+    // + alle Soßen über den 2 freien (je 0,50) + alle Zahl-Toppings (je 0,50).
+    // Erwartung dynamisch aus den Daten, damit Sortimentspflege (z. B. der
+    // Wegfall von Ofengemüse) den Test nicht hart brechen lässt.
+    const chargeableToppings = TOPPINGS.filter((t) => !t.baseIncluded);
+    const expected =
+      6.5 + 1 + 3 * 1.5 + 1 +
+      Math.max(0, SAUCES.length - 2) * 0.5 +
+      chargeableToppings.length * 0.5;
+
     await page.locator('[data-cfg-base="kebap_basic"]').click();
     await page.locator('[data-cfg-bread="vital"]').click();
     await page.locator('[data-cfg-meat="rindersteak"]').click();
     for (const s of SAUCES) await page.locator(`[data-cfg-sauce-card="${s.id}"]`).click();
-    for (const t of TOPPINGS.filter((t) => !t.baseIncluded)) {
+    for (const t of chargeableToppings) {
       await page.locator(`[data-cfg-topping-card="${t.id}"]`).click();
     }
     await page.locator('input[data-cfg-flag="schmelzkaese"]').check();
     for (let i = 0; i < 3; i++) await page.locator('[data-cfg-extra-meat="inc"]').click();
-    await expect(total(page)).toHaveText(moneyRe(22.5));
+    await expect(total(page)).toHaveText(moneyRe(expected));
   });
 });
 

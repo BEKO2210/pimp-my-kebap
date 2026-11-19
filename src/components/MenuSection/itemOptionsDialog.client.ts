@@ -7,11 +7,13 @@ import { addLine } from '../../lib/cart';
 import { formatEUR } from '../../lib/format';
 import { withBase } from '../../lib/url';
 import type { MenuCategory } from '../../data/menu';
+import { describeMarkings, type Markings } from '../../data/allergens';
 
 interface ChoiceData {
   id: string;
   label: string;
   priceDeltaEur?: number;
+  markings?: Markings;
 }
 interface OptionData {
   id: string;
@@ -92,7 +94,20 @@ if (dialogEl) {
         btn.dataset.choiceId = choice.id;
 
         const label = document.createElement('span');
-        label.textContent = choice.label;
+        label.className = 'inline-flex items-baseline gap-1.5';
+        const labelText = document.createElement('span');
+        labelText.textContent = choice.label;
+        label.appendChild(labelText);
+        // Allergen-Kürzel (z. B. "ⓘ f" für Eier) — nur Anzeige im Dialog;
+        // das Warenkorb-/WhatsApp-Label bleibt der reine Soßen-Name.
+        if (choice.markings && choice.markings.length > 0) {
+          const allergens = document.createElement('span');
+          allergens.className = 'text-[10px] uppercase tracking-wider text-brand-cream/50';
+          allergens.textContent = `ⓘ ${choice.markings.join(',')}`;
+          allergens.title = `${choice.label}: ${describeMarkings(choice.markings)}`;
+          allergens.setAttribute('aria-label', `Allergene: ${describeMarkings(choice.markings)}`);
+          label.appendChild(allergens);
+        }
         btn.appendChild(label);
 
         if (choice.priceDeltaEur && choice.priceDeltaEur > 0) {
